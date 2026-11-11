@@ -2,9 +2,2565 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Alex-Mon</title>
-<meta http-equiv="refresh" content="0; url=AlexMon.html">
-<link rel="canonical" href="AlexMon.html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alex-Mon · Underwater Archaeological Heritage Monitoring</title>
+<style>
+:root{
+  --ink:#eafcff; --muted:#a9d8e4; --faint:#72aabd;
+  --aqua:#2de2e6; --teal:#00cfc1; --gold:#ffd27a; --coral:#ff7a5c; --kelp:#37d399;
+  --stone:#8f8467;
+  --panel:rgba(4,38,68,.56); --panel2:rgba(8,60,98,.5);
+  --line:rgba(160,235,255,.2); --line2:rgba(160,235,255,.36);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:#031f3a; color:var(--ink); overflow:hidden;
+  font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ================= OCEAN BACKGROUND ================= */
+.ocean{position:fixed;inset:0;z-index:0;overflow:hidden;
+  background:linear-gradient(180deg,#0a87a8 0%,#07608a 25%,#04406a 55%,#021d38 100%)}
+.ocean .shallow{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease;
+  background:linear-gradient(180deg,#72f0ee 0%,#25bfd0 28%,#0d86ae 62%,#06527a 100%)}
+body.shallow .ocean .shallow{opacity:1}
+.ocean .vignette{position:absolute;inset:0;pointer-events:none;z-index:4;
+  background:radial-gradient(120% 90% at 50% 40%,transparent 45%,rgba(0,10,25,.55) 100%)}
+
+.surface{position:absolute;top:0;left:0;width:200%;height:46px;opacity:.5;animation:waveX 14s linear infinite}
+.surface.s2{top:10px;opacity:.25;animation-duration:22s;animation-direction:reverse}
+@keyframes waveX{to{transform:translateX(-50%)}}
+
+.rays{position:absolute;inset:-10% 0 0 0;pointer-events:none;mix-blend-mode:screen;z-index:1}
+.ray{position:absolute;top:-5%;height:115%;width:12vw;filter:blur(7px);transform-origin:50% 0;
+  background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,.06) 55%,transparent 85%);
+  animation:raySway 10s ease-in-out infinite alternate}
+@keyframes raySway{from{transform:rotate(14deg) scaleX(.8);opacity:.45}to{transform:rotate(22deg) scaleX(1.25);opacity:.9}}
+
+.bubbles{position:absolute;inset:0;pointer-events:none;z-index:3}
+.bubble{position:absolute;bottom:-40px;border-radius:50%;
+  background:radial-gradient(circle at 30% 28%,rgba(255,255,255,.95) 0 12%,rgba(255,255,255,.25) 30%,rgba(160,240,255,.08) 70%);
+  border:1px solid rgba(255,255,255,.45);animation:bubbleUp linear infinite}
+@keyframes bubbleUp{
+  0%{transform:translate(0,0);opacity:0}8%{opacity:1}
+  25%{transform:translate(16px,-28vh)}50%{transform:translate(-12px,-58vh)}
+  75%{transform:translate(14px,-88vh)}95%{opacity:.9}
+  100%{transform:translate(0,-120vh);opacity:0}}
+
+.ruins{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.ruins .monument{opacity:.78;filter:drop-shadow(0 0 12px rgba(115,190,200,.16));}
+.seabed{position:absolute;left:0;right:0;bottom:0;height:29vh;pointer-events:none;z-index:2}
+.seabed svg.sand{position:absolute;inset:auto 0 0 0;width:100%;height:100%}
+.kelp{position:absolute;bottom:-4px;transform-origin:50% 100%;animation:kelpCurrent 4.8s ease-in-out infinite alternate;filter:drop-shadow(0 0 7px rgba(55,211,153,.12))}
+.kelp:nth-of-type(3n){animation-duration:6.8s}
+.kelp:nth-of-type(4n){animation-duration:3.9s;animation-direction:alternate-reverse}
+.kelp svg{display:block;height:100%;width:auto}
+@keyframes kelpCurrent{0%{transform:rotate(-7deg) skewX(-4deg)}45%{transform:rotate(2deg) skewX(1deg)}100%{transform:rotate(8deg) skewX(4deg)}}
+.kelp-bubble{position:absolute;width:8px;height:8px;border:1px solid rgba(220,250,255,.9);border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.95),rgba(160,240,255,.24) 70%);
+  box-shadow:0 0 9px rgba(170,245,255,.32);pointer-events:none;animation:kelpBubbleRise var(--rise,4s) ease-out infinite}
+@keyframes kelpBubbleRise{0%{transform:translateY(0) scale(.7);opacity:0}12%{opacity:.9}
+  80%{opacity:.65}100%{transform:translate(12px,-115px) scale(1);opacity:0}}
+
+/* ================= DECK FRAMEWORK ================= */
+.deck{position:fixed;inset:0;z-index:5}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+  padding:5.5vh 8vw 8vh;opacity:0;visibility:hidden;transform:translateY(24px) scale(.99);
+  transition:opacity .6s ease,transform .6s ease,visibility .6s;overflow:hidden}
+.slide.active{opacity:1;visibility:visible;transform:none;z-index:2}
+.slide.prev{transform:translateY(-24px) scale(.99)}
+.slide-inner{width:100%;max-width:1180px;margin:0 auto;transform-origin:center center;will-change:transform}
+
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--aqua),var(--gold));z-index:50;transition:width .4s ease}
+.counter{position:fixed;bottom:22px;right:28px;font-size:.82rem;color:var(--muted);z-index:50;letter-spacing:.05em}
+.counter b{color:var(--ink)}
+.nav-hint{position:fixed;bottom:22px;left:28px;font-size:.78rem;color:var(--muted);z-index:50}
+.nav-hint kbd{background:var(--panel);border:1px solid var(--line2);border-radius:5px;padding:.1em .45em;font:inherit;font-size:.85em}
+.brand{position:fixed;top:20px;left:28px;font-size:.78rem;color:var(--muted);z-index:50;letter-spacing:.08em;font-weight:600}
+.brand b{color:var(--aqua)}
+.theme-toggle{position:fixed;top:16px;right:24px;z-index:60;display:inline-flex;align-items:center;gap:.5em;
+  background:var(--panel);color:var(--ink);border:1px solid var(--line2);border-radius:999px;
+  padding:.45em .9em;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;backdrop-filter:blur(8px);transition:.25s}
+.theme-toggle:hover{border-color:var(--aqua);transform:translateY(-1px)}
+.dots{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:50}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:.3s}
+.dot.on{background:var(--aqua);transform:scale(1.35);box-shadow:0 0 10px var(--aqua)}
+
+/* ================= TYPOGRAPHY / SHARED ================= */
+.kicker{display:inline-flex;align-items:center;gap:.6em;font-size:.78rem;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--aqua);margin-bottom:.9rem}
+.kicker::before{content:"";width:28px;height:2px;background:linear-gradient(90deg,var(--aqua),transparent)}
+h2{font-family:Georgia,'Times New Roman',serif;font-size:2.7rem;line-height:1.1;font-weight:700;letter-spacing:-.01em;
+  text-shadow:0 2px 18px rgba(0,30,60,.5)}
+h2 .hl{background:linear-gradient(90deg,var(--aqua),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub,.lead,.tagline,.authors,.stat .l,.imp li{text-shadow:0 1px 8px rgba(0,25,50,.8)}
+.sub{margin-top:.7rem;max-width:880px;color:var(--muted);font-size:1.02rem;line-height:1.55}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 18px 50px rgba(0,15,40,.35)}
+.fnote{margin-top:.8rem;font-size:.75rem;color:var(--faint);line-height:1.45}
+
+.rise{opacity:0;transform:translateY(22px);transition:opacity .35s ease,transform .35s ease}
+.rise.revealed{opacity:1;transform:none}
+
+/* ================= SLIDE 1 · TITLE ================= */
+.title-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:2.5rem;align-items:center}
+.badge-row{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:1.3rem}
+.badge{font-size:.74rem;font-weight:600;letter-spacing:.06em;padding:.4em .95em;border-radius:999px;
+  border:1px solid var(--line2);background:rgba(4,38,68,.45);backdrop-filter:blur(6px);color:var(--muted)}
+.badge.fill{background:linear-gradient(90deg,var(--aqua),var(--teal));color:#012a3a;border-color:transparent}
+h1{font-family:Georgia,'Times New Roman',serif;font-size:7.4rem;line-height:.95;font-weight:800;letter-spacing:-.025em;
+  background:linear-gradient(100deg,#fff 0%,var(--aqua) 38%,var(--gold) 70%,#fff 100%);background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 7s linear infinite;
+  filter:drop-shadow(0 6px 24px rgba(0,40,70,.55))}
+h1 .dash{display:inline-block;color:#2de2e6;-webkit-text-fill-color:#2de2e6;margin:0 .04em;animation:dashBob 3s ease-in-out infinite}
+@keyframes shimmer{to{background-position:-220% 0}}
+@keyframes dashBob{50%{transform:translateY(-8px) rotate(-6deg)}}
+.wave-under{display:block;width:340px;height:18px;margin:.5rem 0 1rem;overflow:hidden}
+.wave-under svg{width:200%;height:100%;animation:waveX 4s linear infinite}
+.tagline{font-size:1.4rem;font-weight:600;line-height:1.3;max-width:560px}
+.ar{direction:rtl;font-family:'Segoe UI',Tahoma,Arial,sans-serif;font-size:1.25rem;color:var(--gold);margin:.5rem 0 1rem;text-align:left}
+.lead{color:var(--muted);font-size:1.02rem;line-height:1.6;max-width:560px}
+.lead strong{color:var(--ink)}
+.authors{display:flex;gap:2.2rem;margin-top:1.5rem;font-size:.9rem;color:var(--muted)}
+.authors .h{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--aqua);font-weight:700;margin-bottom:.35rem}
+
+.sonar{position:relative;width:min(420px,34vw);aspect-ratio:1;margin:0 auto}
+.sonar .disc{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,90,130,.55),rgba(2,28,52,.82) 72%);
+  border:2px solid var(--line2);box-shadow:0 0 60px rgba(45,226,230,.28),inset 0 0 50px rgba(45,226,230,.18)}
+.sonar .ring{position:absolute;border-radius:50%;border:1px solid rgba(45,226,230,.35);inset:var(--r)}
+.sonar .cross::before,.sonar .cross::after{content:"";position:absolute;background:rgba(45,226,230,.22)}
+.sonar .cross::before{left:50%;top:4%;bottom:4%;width:1px}
+.sonar .cross::after{top:50%;left:4%;right:4%;height:1px}
+.sonar .sweep{position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(45,226,230,0) 0deg,rgba(45,226,230,0) 270deg,rgba(45,226,230,.55) 360deg);
+  animation:spin 5s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sonar .pulse{position:absolute;inset:0;border-radius:50%;border:2px solid var(--aqua);animation:ping 4s ease-out infinite;opacity:0}
+.sonar .pulse.p2{animation-delay:2s}
+@keyframes ping{0%{transform:scale(.1);opacity:.9}100%{transform:scale(1);opacity:0}}
+.sonar .center{position:absolute;left:50%;top:50%;width:26%;transform:translate(-50%,-50%);filter:drop-shadow(0 0 12px rgba(255,210,122,.7))}
+.blip{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%)}
+.blip i{display:block;width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold);animation:blip 5s ease-in-out infinite;animation-delay:var(--dl)}
+.blip span{position:absolute;left:16px;top:-6px;white-space:nowrap;font-size:.7rem;font-weight:600;color:var(--ink);
+  background:rgba(2,28,52,.7);border:1px solid var(--line);padding:.15em .55em;border-radius:6px}
+.blip.l span{left:auto;right:16px}
+@keyframes blip{0%,100%{transform:scale(.8);opacity:.6}12%{transform:scale(1.6);opacity:1}40%{transform:scale(1);opacity:.85}}
+
+/* ================= SLIDE 2 · OVERVIEW ================= */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:1.1rem 0 1rem}
+.stat{padding:.95rem 1.1rem;display:flex;gap:.9rem;align-items:center}
+.stat .ic{font-size:1.9rem;width:2.6rem;text-align:center;animation:bob 3s ease-in-out infinite alternate}
+.stat .n{font-family:Georgia,serif;font-size:2.2rem;font-weight:700;line-height:1;
+  background:linear-gradient(90deg,var(--aqua),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .l{font-size:.8rem;color:var(--muted);line-height:1.3;margin-top:.25rem}
+.mapwrap{padding:.5rem;position:relative;overflow:hidden}
+.mapwrap>svg{display:block;width:100%;height:auto;border-radius:12px}
+.mapcap{position:absolute;right:1.1rem;bottom:.75rem;font-size:.68rem;color:rgba(255,255,255,.7);letter-spacing:.04em}
+.mk-ring{transform-box:fill-box;transform-origin:center;animation:mkPulse 2.4s ease-out infinite}
+.mk-ring.b{animation-delay:1.2s}
+@keyframes mkPulse{0%{transform:scale(.5);opacity:.95}100%{transform:scale(3.4);opacity:0}}
+.seaflow{stroke-dasharray:10 14;animation:dashMove 3s linear infinite}
+@keyframes dashMove{to{stroke-dashoffset:-48}}
+.maptxt{font-family:'Segoe UI',Arial,sans-serif}
+
+/* ================= SLIDE 3 · DEPTH ================= */
+.depth-grid{display:grid;grid-template-columns:310px 1fr;gap:1.2rem;margin-top:1rem;align-items:stretch}
+.chips{padding:1rem;display:flex;flex-direction:column;gap:.5rem}
+.chips h4{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--aqua);margin-bottom:.2rem}
+.chip{display:flex;align-items:center;gap:.6rem;text-align:left;font:inherit;font-size:.88rem;font-weight:600;color:var(--ink);
+  background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:.6rem .8rem;cursor:pointer;transition:.25s}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);flex:none}
+.chip:hover{border-color:var(--aqua);transform:translateX(3px)}
+.chip.on{background:linear-gradient(90deg,rgba(45,226,230,.28),rgba(45,226,230,.06));border-color:var(--aqua)}
+.readout{margin-top:.4rem;padding-top:.8rem;border-top:1px solid var(--line)}
+.readout .nm{font-family:Georgia,serif;font-size:1.05rem;font-weight:700;margin-bottom:.55rem}
+.rd{display:flex;gap:.8rem}
+.rd div{flex:1;background:rgba(0,20,40,.35);border-radius:10px;padding:.5rem .6rem}
+.rd small{display:block;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.rd b{font-family:Georgia,serif;font-size:1.25rem;color:var(--gold)}
+.readout p{font-size:.8rem;color:var(--muted);line-height:1.5;margin-top:.6rem}
+.scene{padding:.4rem;overflow:hidden}
+.scene>svg{display:block;width:100%;height:auto;border-radius:14px}
+.sw{transform-box:fill-box;transform-origin:50% 100%;animation:sway 4.5s ease-in-out infinite alternate}
+.sbub{animation:sRise 4s linear infinite;transform-box:fill-box}
+@keyframes sRise{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-90px);opacity:0}}
+.dash-flow{stroke-dasharray:5 5;animation:dashMove 2s linear infinite}
+
+/* ================= SLIDE 4 · IMPORTANCE ================= */
+.imp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-top:1.3rem}
+.imp{padding:1.2rem 1.25rem 1.1rem;position:relative;overflow:hidden;transition:transform .3s}
+.imp:hover{transform:translateY(-4px)}
+.imp::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,var(--glow),transparent 70%);opacity:.5}
+.imp .ico{font-size:2.1rem;display:inline-block;animation:bob 3s ease-in-out infinite alternate}
+.imp h3{font-family:Georgia,serif;font-size:1.3rem;margin:.4rem 0 .6rem}
+.imp ul{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.imp li{font-size:.86rem;line-height:1.45;color:var(--muted);padding-left:1.15rem;position:relative}
+.imp li::before{content:"";position:absolute;left:0;top:.5em;width:7px;height:7px;border-radius:50%;background:var(--glow2,var(--aqua))}
+.imp li b{color:var(--ink)}
+.threat{margin-top:1.1rem;padding:1rem 1.3rem;display:flex;gap:1.1rem;align-items:center;
+  border-color:rgba(255,122,92,.55);background:linear-gradient(90deg,rgba(255,122,92,.18),var(--panel) 55%)}
+.threat .ico{font-size:2rem;animation:warn 1.8s ease-in-out infinite}
+@keyframes warn{50%{transform:scale(1.18)}}
+.threat p{font-size:.93rem;line-height:1.5;color:var(--muted)}
+.threat p b{color:var(--ink)}
+.threat em{font-style:normal;color:var(--aqua);font-weight:700}
+
+/* ================= SLIDES 5-8 · SMART BUOY REFERENCE ================= */
+
+/* ================= COMPARISON CARDS (SLIDE 8) ================= */
+.comparison-grid{
+  display:grid;
+  gap:.75rem;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  margin-top:.9rem
+}
+.comparison-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  backdrop-filter:blur(10px);
+  transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;
+  opacity:0;
+  transform:translateY(20px);
+  will-change:transform,opacity
+}
+.comparison-grid.revealed .comparison-card{
+  opacity:1;
+  transform:translateY(0);
+  animation:comparisonCardIn .45s ease-out both;
+  animation-delay:calc(var(--i)*.06s)
+}
+@keyframes comparisonCardIn{from{opacity:0}to{opacity:1}}
+.comparison-grid.revealed .comparison-card:hover{transform:translateY(-4px)}
+.comparison-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 30px rgba(0,15,40,.25);
+  border-color:var(--line2)
+}
+.comparison-card h3{
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:1.1rem;
+  margin:0 0 .75rem;
+  padding:0 1.25rem;
+  color:var(--aqua);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center
+}
+.comparison-card h3::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--aqua),transparent)
+}
+.comparison-content{
+  display:grid;
+  gap:1rem;
+  padding:1.25rem
+}
+.smart-buy,.alex-mon{
+  background:rgba(4,38,68,.3);
+  border-radius:14px;
+  padding:1rem;
+  border:1px solid rgba(160,235,255,.15);
+  transition:all .3s ease
+}
+.smart-buy:hover,.alex-mon:hover{
+  background:rgba(4,38,68,.4);
+  border-color:rgba(160,235,255,.25)
+}
+.smart-buy h4,.alex-mon h4{
+  font-size:.9rem;
+  margin:0 0 .5rem;
+  color:var(--ink);
+  display:flex;
+  align-items:center;
+  gap:.5rem
+}
+.smart-buy h4::before{
+  content:"●";
+  color:var(--gold);
+  font-size:.7rem
+}
+.alex-mon h4::before{
+  content:"●";
+  color:var(--aqua);
+  font-size:.7rem
+}
+.smart-buy p,.alex-mon p{
+  font-size:.85rem;
+  color:var(--muted);
+  line-height:1.4
+}
+.comparison-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  font-size:.75rem;
+  font-weight:600;
+  padding:.35rem .8rem;
+  border-radius:999px;
+  margin-top:.5rem;
+  letter-spacing:.05em;
+  text-transform:uppercase
+}
+.comparison-badge.same{
+  background:rgba(45,226,230,.15);
+  color:var(--aqua);
+  border:1px solid rgba(45,226,230,.3)
+}
+.comparison-badge.adapted{
+  background:rgba(255,210,122,.15);
+  color:var(--gold);
+  border:1px solid rgba(255,210,122,.3)
+}
+.comparison-badge.new{
+  background:rgba(255,122,92,.15);
+  color:#ff9d7a;
+  border:1px solid rgba(255,122,92,.3)
+}
+@media (max-width:500px){
+  .comparison-grid{
+    grid-template-columns:1fr
+  }
+  .comparison-card{
+    margin:0 1rem
+  }
+}
+@media (min-width:501px) and (max-width:700px){
+  .comparison-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* ================= MEDIA QUERIES ================= */
+.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:1.1rem}
+.photo{position:relative;padding:.4rem;margin:0}
+.photo .ph{position:relative;height:300px;border-radius:12px;overflow:hidden;background:rgba(0,20,40,.5)}
+.photo img{display:block;width:100%;height:100%;object-fit:cover}
+.photo .tag{position:absolute;top:.95rem;left:.95rem;z-index:2;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:.3em .8em;border-radius:999px;background:rgba(2,28,52,.78);border:1px solid var(--line2);color:var(--aqua);backdrop-filter:blur(6px)}
+.photo figcaption{padding:.7rem .6rem .4rem;font-size:.84rem;color:var(--muted);line-height:1.5}
+.photo figcaption b{color:var(--ink)}
+.missing{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;
+  text-align:center;padding:1rem;font-size:.82rem;color:var(--muted);border:2px dashed var(--line2);border-radius:12px}
+.missing code{color:var(--gold);font-size:.85rem}
+.chiprow{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.pill{font-size:.76rem;font-weight:600;padding:.4em .9em;border-radius:999px;background:var(--panel);border:1px solid var(--line2);color:var(--ink)}
+.pill i{font-style:normal;color:var(--gold);margin-right:.35em}
+
+.vid-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:1.1rem;margin-top:1.1rem;align-items:stretch}
+.vidbox{padding:.45rem;position:relative}
+.vidbox .vf{position:relative;border-radius:12px;overflow:hidden;background:#021424;aspect-ratio:16/9;max-height:400px;width:100%}
+.vidbox video{display:block;width:100%;height:100%;object-fit:contain;background:#021424}
+.callouts{display:flex;flex-direction:column;gap:.8rem}
+.callout{padding:.95rem 1.1rem;display:flex;gap:.9rem;align-items:flex-start}
+.callout .n{flex:none;width:2rem;height:2rem;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.95rem;
+  background:linear-gradient(135deg,var(--aqua),var(--gold));color:#04263f}
+.callout h4{font-family:Georgia,serif;font-size:1.02rem;margin-bottom:.2rem}
+.callout p{font-size:.82rem;color:var(--muted);line-height:1.5;text-shadow:0 1px 8px rgba(0,25,50,.8)}
+
+.dash-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:1.1rem;margin-top:1.1rem;align-items:start}
+.browser{padding:0;overflow:hidden}
+.browser .bar{display:flex;align-items:center;gap:.45rem;padding:.55rem .8rem;background:rgba(0,20,40,.55);border-bottom:1px solid var(--line)}
+.browser .bar i{width:10px;height:10px;border-radius:50%;background:#ff6b6b}
+.browser .bar i:nth-child(2){background:#ffd23c}.browser .bar i:nth-child(3){background:#37d399}
+.browser .bar span{margin-left:.6rem;font-size:.72rem;color:var(--muted);background:rgba(255,255,255,.08);padding:.2em .8em;border-radius:999px}
+.browser .shot{position:relative;aspect-ratio:3360/1886;background:rgba(0,20,40,.5)}
+.browser img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.listcard{padding:1rem 1.15rem}
+.listcard + .listcard{margin-top:.9rem}
+.listcard h4{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--aqua);margin-bottom:.55rem}
+.listcard ul{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.listcard li{font-size:.84rem;line-height:1.4;color:var(--muted);padding-left:1.1rem;position:relative;text-shadow:0 1px 8px rgba(0,25,50,.8)}
+.listcard li::before{content:"";position:absolute;left:0;top:.5em;width:7px;height:7px;border-radius:50%;background:var(--dot,var(--aqua))}
+.listcard.alex li::before{background:var(--gold)}
+.listcard.alex{border-color:rgba(255,210,122,.5)}
+.listcard.alex h4{color:var(--gold)}
+
+.cmp{padding:.35rem .5rem .5rem;margin-top:1rem}
+.cmp .row{display:grid;grid-template-columns:150px 1fr 1fr 104px;gap:.9rem;align-items:center;padding:.5rem .7rem;border-bottom:1px solid var(--line);font-size:.8rem;line-height:1.35}
+.cmp .row:last-child{border-bottom:none}
+.cmp .head{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;padding-bottom:.35rem}
+.cmp .head .a{color:var(--gold)}
+.cmp .k{font-weight:700;color:var(--ink);font-size:.84rem}
+.cmp .sb{color:var(--muted)}
+.cmp .am{color:var(--ink)}
+.cmp .t{justify-self:end;font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.28em .75em;border-radius:999px;white-space:nowrap}
+.t.same{background:rgba(45,226,230,.18);color:var(--aqua);border:1px solid rgba(45,226,230,.5)}
+.t.adapt{background:rgba(255,210,122,.16);color:var(--gold);border:1px solid rgba(255,210,122,.5)}
+.t.new{background:rgba(255,122,92,.18);color:#ff9d7a;border:1px solid rgba(255,122,92,.55)}
+.rise.revealed .row:not(.head){animation:rowIn .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--r)*.07s + .1s)}
+@keyframes rowIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+.cmp-note{margin-top:.8rem;font-size:.78rem;color:var(--muted);line-height:1.5;text-shadow:0 1px 8px rgba(0,25,50,.8)}
+.cmp-note{padding:.45rem .7rem;border:1px solid var(--line);border-radius:9px;background:rgba(4,38,68,.78);backdrop-filter:blur(8px)}
+.cmp-note b{color:var(--gold)}
+@media (max-width:900px){.ref-grid,.vid-grid,.dash-grid{grid-template-columns:1fr}.cmp .row{grid-template-columns:1fr}}
+
+@media (max-width:900px){h1{font-size:4.6rem}.title-grid{grid-template-columns:1fr}.sonar{display:none}}
+/* Animation is intentional in this deck: no reduced-motion kill-switch (Windows "animation effects off" froze the background). */
+
+/* ================= LIVING BACKGROUND (fish, marine snow, camera pan) ================= */
+.ruins,.seabed{transition:transform 1.6s cubic-bezier(.45,.05,.2,1)}
+.ruins{left:-8%;right:-8%;inset:0 -8% 0 -8%}
+.seabed{left:-8%;right:-8%}
+.fishes{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.fish{position:absolute;left:0;top:var(--y);width:var(--w);opacity:var(--o,.55);
+  animation:fishSwim var(--d) linear infinite;animation-delay:var(--delay)}
+.fish.rev{animation-name:fishSwimRev}
+.fish svg{display:block;width:100%;height:auto;animation:fishBob 2.6s ease-in-out infinite alternate}
+.fish .tail{transform-box:fill-box;transform-origin:0% 50%;animation:tailWag .35s ease-in-out infinite alternate}
+@keyframes fishSwim{0%{transform:translateX(-12vw)}100%{transform:translateX(112vw)}}
+@keyframes fishSwimRev{0%{transform:translateX(112vw) scaleX(-1)}100%{transform:translateX(-12vw) scaleX(-1)}}
+@keyframes fishBob{from{transform:translateY(-6px) rotate(-2deg)}to{transform:translateY(6px) rotate(2deg)}}
+@keyframes tailWag{from{transform:scaleY(.75) skewY(-14deg)}to{transform:scaleY(1.05) skewY(14deg)}}
+.snow{position:absolute;inset:0;pointer-events:none;z-index:3}
+.flake{position:absolute;top:-10px;width:var(--s);height:var(--s);border-radius:50%;background:rgba(220,250,255,.55);
+  box-shadow:0 0 4px rgba(200,250,255,.4);animation:snowFall var(--d) linear infinite;animation-delay:var(--delay)}
+@keyframes snowFall{0%{transform:translate(0,0);opacity:0}10%{opacity:.8}50%{transform:translate(var(--dx),55vh)}90%{opacity:.6}100%{transform:translate(0,110vh);opacity:0}}
+.caustics{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:.35;
+  background:
+   radial-gradient(40% 18% at 20% 12%,rgba(255,255,255,.22),transparent 70%),
+   radial-gradient(30% 14% at 70% 8%,rgba(255,255,255,.18),transparent 70%),
+   radial-gradient(35% 16% at 45% 20%,rgba(200,255,255,.16),transparent 70%);
+  background-size:140% 140%;animation:causticMove 9s ease-in-out infinite alternate}
+@keyframes causticMove{0%{background-position:0% 0%,100% 0%,50% 0%}50%{background-position:40% 10%,60% 6%,20% 12%}100%{background-position:80% 0%,10% 10%,70% 4%}}
+.burst-bubble{position:fixed;bottom:-30px;z-index:40;pointer-events:none;border-radius:50%;
+  border:1.5px solid rgba(230,255,255,.85);
+  background:radial-gradient(circle at 30% 28%,rgba(255,255,255,.95) 0 10%,rgba(255,255,255,.18) 32%,rgba(160,240,255,.06) 70%);
+  animation:burstRise var(--d) cubic-bezier(.3,.6,.4,1) forwards}
+@keyframes burstRise{0%{transform:translate(0,0) scale(.6);opacity:0}10%{opacity:1}
+  50%{transform:translate(var(--dx),-60vh) scale(1)}100%{transform:translate(calc(var(--dx)*-.5),-120vh) scale(1.15);opacity:0}}
+
+/* ================= MOTION GRAPHICS (in-slide) ================= */
+.slide{transition:opacity .8s ease,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s ease,visibility .8s;filter:blur(6px)}
+.slide.active{filter:none}
+.slide:not(.active){transform:translateX(6vw) scale(.96)}
+.slide.prev:not(.active){transform:translateX(-6vw) scale(.96)}
+.rise{opacity:0;transform:translateY(34px) scale(.97);filter:blur(5px);
+  transition:opacity .6s ease,transform .75s cubic-bezier(.2,.9,.25,1.15),filter .6s ease}
+.rise.revealed{opacity:1;transform:none;filter:none}
+h2.rise{clip-path:inset(0 100% 0 0);transition:clip-path 1s cubic-bezier(.7,0,.2,1),opacity .4s ease,transform .8s ease,filter .5s}
+h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
+.kicker.rise::before{width:0;transition:width .9s cubic-bezier(.2,.8,.2,1) .2s}
+.kicker.rise.revealed::before{width:28px}
+.panel.rise,.rise .panel,.option-card,.pc-card,.local-sensor-card{background-image:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.11) 50%,transparent 65%);background-size:300% 100%;background-position:150% 0;background-repeat:no-repeat}
+.panel.rise.revealed,.rise.revealed .panel{animation:sheen 1.6s ease-out .25s 1 both}
+@keyframes sheen{from{background-position:150% 0}to{background-position:-60% 0}}
+@keyframes bob{from{transform:translateY(-3px)}to{transform:translateY(4px)}}
+@keyframes sway{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
+@keyframes popIn{0%{transform:scale(0) rotate(-25deg);opacity:0}70%{transform:scale(1.2) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+
+/* ================= MONUMENT & KELP EFFECTS ================= */
+.monument{
+  opacity:.72;
+  pointer-events:none;
+  filter:drop-shadow(0 0 10px rgba(130,205,210,.13));
+  transform-origin:50% 100%;
+}
+.comparison-card h3{font-size:.96rem;margin:0;padding:.55rem .8rem}
+.comparison-content{gap:.5rem;padding:.7rem}
+.smart-buy,.alex-mon{padding:.65rem .75rem}
+.smart-buy h4,.alex-mon h4{font-size:.8rem;margin-bottom:.3rem}
+.smart-buy p,.alex-mon p{font-size:.76rem;line-height:1.32}
+.comparison-badge{font-size:.65rem;margin-top:.25rem;padding:.28rem .65rem}
+.cmp-note{font-size:.72rem;margin-top:.55rem}
+@media (max-width:700px){.comparison-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:500px){.comparison-grid{grid-template-columns:1fr}}
+
+/* ================= SLIDE 9 · SYSTEM OVERVIEW ================= */
+.system-overview{
+  position:relative;
+  width:100%;
+  height:50vh;
+  margin:2rem auto;
+}
+.sea-level{
+  position:absolute;
+  bottom:50%;
+  left:0;
+  right:0;
+  height:4px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  z-index:10;
+}
+.wave{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.1) 0%,transparent 70%);
+  animation:waveFloat 3s ease-in-out infinite;
+}
+@keyframes waveFloat{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-4px);}
+}
+.floating-device{
+  position:absolute;
+  bottom:50%;
+  left:50%;
+  transform:translateX(-50%);
+  width:80px;
+  height:100px;
+  z-index:20;
+}
+.device-body{
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:70px;
+  background:linear-gradient(to top,var(--panel),var(--panel2));
+  border-radius:12px 12px 0 0;
+  border:1px solid var(--line);
+  backdrop-filter:blur(8px);
+  animation:deviceFloat 4s ease-in-out infinite;
+}
+@keyframes deviceFloat{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+}
+.solar-panel{
+  position:absolute;
+  top:-18px;
+  left:25%;
+  width:50%;
+  height:12px;
+  background:linear-gradient(45deg,var(--gold),#ffb84d);
+  border-radius:4px;
+  transform:rotate(15deg);
+  box-shadow:0 0 8px rgba(255,210,122,.4);
+}
+.antenna{
+  position:absolute;
+  top:-28px;
+  left:50%;
+  width:4px;
+  height:18px;
+  background:var(--aqua);
+  border-radius:2px;
+  transform:translateX(-2px);
+}
+.antenna::after{
+  content:'';
+  position:absolute;
+  top:-8px;
+  left:-6px;
+  width:16px;
+  height:8px;
+  background:radial-gradient(circle at center,var(--aqua) 0%,transparent 70%);
+  opacity:.6;
+}
+.device-label{
+  position:absolute;
+  bottom:-22px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:.75rem;
+  color:var(--muted);
+  letter-spacing:.03em;
+}
+.underwater-statue{
+  position:absolute;
+  bottom:50%;
+  left:50%;
+  transform:translateX(-50%);
+  width:60px;
+  height:140px;
+  z-index:15;
+}
+.statue-base{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  width:24px;
+  height:12px;
+  background:var(--stone);
+  transform:translateX(-50%);
+  border-radius:4px 4px 2px 2px;
+}
+.statue-figure{
+  position:absolute;
+  bottom:12px;
+  left:50%;
+  width:36px;
+  height:100px;
+  background:var(--stone);
+  transform:translateX(-50%);
+  border-radius:18px 18px 4px 4px;
+}
+.statue-figure::before{
+  content:'';
+  position:absolute;
+  top:-8px;
+  left:50%;
+  width:12px;
+  height:8px;
+  background:var(--stone);
+  transform:translateX(-50%);
+  border-radius:2px;
+}
+.sensor-wire{
+  position:absolute;
+  top:112px;
+  left:50%;
+  width:2px;
+  height:28px;
+  background:linear-gradient(to bottom,var(--aqua),var(--teal));
+  transform:translateX(-1px);
+  animation:pulseSignal 2s ease-in-out infinite;
+}
+@keyframes pulseSignal{
+  0%,100%{opacity:.3;}
+  50%{opacity:.8;}
+}
+.bubbles-around-statue{
+  position:absolute;
+  top:80px;
+  left:50%;
+  width:20px;
+  height:20px;
+  transform:translateX(-50%);
+  pointer-events:none;
+}
+.bubble-statue{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  width:4px;
+  height:4px;
+  background:radial-gradient(circle at 30% 28%,rgba(255,255,255,.9) 0 12%,rgba(255,255,255,.3) 30%,rgba(160,240,255,.1) 70%);
+  border:1px solid rgba(255,255,255,.4);
+  border-radius:50%;
+  animation:bubbleStatueRise var(--rise,3s) ease-out infinite;
+  transform:translateX(-50%);
+}
+@keyframes bubbleStatueRise{
+  0%{transform:translate(0,0) scale(.5);opacity:0}
+  10%{opacity:.7}
+  90%{opacity:.4}
+  100%{transform:translate(0,-20px) scale(1);opacity:0}
+}
+.sun{
+  position:absolute;
+  top:-10%;
+  left:-10%;
+  width:60px;
+  height:60px;
+  z-index:5;
+}
+.sun::before{
+  content:'';
+  position:absolute;
+  inset:-50%;
+  background:radial-gradient(circle at center,#ffd54a 0%,#ffb400 70%,transparent 100%);
+  opacity:.8;
+  animation:sunPulse 3s ease-in-out infinite;
+}
+@keyframes sunPulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+}
+.sun-ray{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:0;
+  height:2px;
+  background:linear-gradient(to right,transparent,var(--gold),transparent);
+  transform:translate(-50%,-50%) rotate(45deg);
+  animation:sunRay 2s linear infinite;
+}
+@keyframes sunRay{
+  0%{width:0;opacity:0}
+  30%{width:150px;opacity:.5}
+  100%{width:150px;opacity:0}
+}
+.satellite{
+  position:absolute;
+  top:-10%;
+  right:-10%;
+  width:50px;
+  height:50px;
+  z-index:5;
+}
+.satellite-body{
+  position:absolute;
+  inset:0;
+  margin:auto;
+  width:20px;
+  height:20px;
+  background:var(--panel);
+  border:2px solid var(--line2);
+  border-radius:50%;
+}
+.satellite-body::before{
+  content:'';
+  position:absolute;
+  top:-8px;
+  left:50%;
+  width:12px;
+  height:12px;
+  background:var(--aqua);
+  border-radius:50%;
+  transform:translateX(-50%);
+  opacity:.7;
+}
+.satellite-body::after{
+  content:'';
+  position:absolute;
+  bottom:-8px;
+  left:50%;
+  width:4px;
+  height:12px;
+  background:var(--aqua);
+  border-radius:2px;
+  transform:translateX(-2px);
+}
+.signal-waves{
+  position:absolute;
+  inset:0;
+}
+.signal-wave{
+  position:absolute;
+  border:2px solid var(--aqua);
+  border-radius:50%;
+  opacity:0;
+}
+.signal-wave-1{
+  width:20px;
+  height:20px;
+  animation:signalOut 2s ease-out infinite;
+}
+.signal-wave-2{
+  width:30px;
+  height:30px;
+  top:-5px;
+  left:-5px;
+  animation:signalOut 2s ease-out 0.5s infinite;
+}
+.signal-wave-3{
+  width:40px;
+  height:40px;
+  top:-10px;
+  left:-10px;
+  animation:signalOut 2s ease-out 1s infinite;
+}
+@keyframes signalOut{
+  0%{transform:scale(0.5);opacity:0}
+  30%{transform:scale(0.8);opacity:.6}
+  100%{transform:scale(1.2);opacity:0}
+}
+.system-description{
+  margin-top:2rem;
+  text-align:left;
+  max-width:600px;
+}
+.system-description ul{
+  list-style:none;
+  padding:0;
+}
+.system-description li{
+  margin:.8rem 0;
+  padding-left:1.5rem;
+  position:relative;
+}
+.system-description li::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:50%;
+  width:8px;
+  height:8px;
+  background:var(--aqua);
+  border-radius:50%;
+  transform:translateY(-50%);
+}
+.system-description strong{
+  color:var(--ink);
+}
+
+/* ================= ALEX-MON ANIMATED SYSTEM DIAGRAM ================= */
+.system-overview{
+  position:relative;width:100%;height:clamp(300px,48vh,510px);margin:1rem auto .2rem;
+  overflow:hidden;border:1px solid rgba(160,235,255,.2);border-radius:20px;
+  background:linear-gradient(180deg,rgba(4,44,72,.22) 0%,rgba(4,44,72,.18) 48%,rgba(1,24,47,.55) 100%);
+  isolation:isolate;
+}
+.system-overview .sky-glow{position:absolute;inset:0 0 50% 0;background:linear-gradient(180deg,rgba(20,128,164,.15),rgba(20,128,164,0));pointer-events:none}
+.system-overview .sea-fill{position:absolute;left:0;right:0;top:48%;bottom:0;background:linear-gradient(180deg,rgba(8,123,157,.38),rgba(2,30,57,.84));z-index:0}
+.system-overview .sea-line{position:absolute;left:-2%;top:47%;width:104%;height:30px;z-index:12;overflow:visible}
+.system-overview .sea-line path{fill:none;stroke:#8cf8f5;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(45,226,230,.65));stroke-dasharray:18 8;animation:alexWaveSlide 4s linear infinite}
+.system-overview .sea-line .wave2{stroke:rgba(210,255,255,.6);stroke-width:1.5;stroke-dasharray:10 12;animation-duration:6s;animation-direction:reverse}
+@keyframes alexWaveSlide{to{stroke-dashoffset:-104}}
+.system-overview .sun-icon{position:absolute;top:7%;left:7%;width:70px;height:70px;z-index:3;filter:drop-shadow(0 0 16px rgba(255,210,122,.45));animation:sunPulse 3.5s ease-in-out infinite}
+.system-overview .sun-rays{position:absolute;left:calc(7% + 58px);top:16%;width:29%;height:105px;z-index:2;overflow:visible;pointer-events:none}
+.system-overview .sun-rays path{fill:none;stroke:#ffd27a;stroke-width:3;stroke-linecap:round;stroke-dasharray:8 10;animation:sunRayTravel 2.4s linear infinite;filter:drop-shadow(0 0 4px rgba(255,210,122,.6))}
+@keyframes sunRayTravel{to{stroke-dashoffset:-72}}
+.system-overview .solar-label,.system-overview .network-label,.system-overview .buoy-label,.system-overview .sensor-label,.system-overview .statue-label{position:absolute;font-size:.75rem;font-weight:700;letter-spacing:.04em;color:var(--ink);background:rgba(2,29,51,.78);border:1px solid var(--line);border-radius:999px;padding:.35em .7em;backdrop-filter:blur(5px);z-index:25;white-space:nowrap}
+.system-overview .solar-label{left:8%;top:30%}
+.system-overview .buoy{position:absolute;left:50%;top:calc(47% - 55px);width:152px;height:94px;transform:translateX(-50%);z-index:16;animation:alexBuoyBob 3.2s ease-in-out infinite}
+@keyframes alexBuoyBob{0%,100%{transform:translate(-50%,0) rotate(-1deg)}50%{transform:translate(-50%,-8px) rotate(1deg)}}
+.system-overview .buoy-hull{position:absolute;left:8px;right:8px;bottom:0;height:48px;border:2px solid #8cf8f5;border-radius:12px 12px 35px 35px;background:linear-gradient(160deg,#0b6688,#06314f 75%);box-shadow:0 8px 22px rgba(0,10,30,.38),inset 0 0 15px rgba(45,226,230,.14)}
+.system-overview .buoy-hull:before{content:"ALEX-MON";position:absolute;left:0;right:0;top:13px;text-align:center;font-size:12px;letter-spacing:.13em;font-weight:900;color:#eaffff}
+.system-overview .buoy-deck{position:absolute;left:22px;right:22px;bottom:42px;height:12px;background:#ffd27a;border:2px solid #fff0bf;border-radius:5px;box-shadow:0 0 12px rgba(255,210,122,.3)}
+.system-overview .buoy-panel{position:absolute;left:16px;top:4px;width:57px;height:25px;border:2px solid #9be9ff;border-radius:3px;transform:rotate(-8deg);background:repeating-linear-gradient(90deg,#164e85 0 10px,#67c5e9 11px 12px),linear-gradient(#1e659e,#17436c);box-shadow:0 0 10px rgba(80,200,255,.28)}
+.system-overview .buoy-panel:after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:#bdeeff}
+.system-overview .buoy-antenna{position:absolute;right:29px;top:-2px;width:3px;height:27px;background:#d8ffff;border-radius:2px}
+.system-overview .buoy-antenna:after{content:"";position:absolute;left:-6px;top:-7px;width:14px;height:14px;border:2px solid var(--aqua);border-radius:50%;animation:antennaPulse 1.8s ease-out infinite}
+@keyframes antennaPulse{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.7);opacity:0}}
+.system-overview .buoy-label{left:50%;top:calc(47% - 94px);transform:translateX(-50%)}
+.system-overview .sensor-cable{position:absolute;left:50%;top:calc(47% + 34px);height:calc(36% - 15px);width:3px;transform:translateX(-50%);background:linear-gradient(180deg,#8cf8f5,#2de2e6 60%,#ffd27a);z-index:8;box-shadow:0 0 7px rgba(45,226,230,.3)}
+.system-overview .sensor-cable:after{content:"";position:absolute;left:-4px;top:20%;width:9px;height:9px;border-radius:50%;background:#d8ffff;box-shadow:0 0 12px var(--aqua);animation:cableData 2.4s linear infinite}
+@keyframes cableData{0%{top:5%;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:95%;opacity:0}}
+.system-overview .sensor-probe{position:absolute;left:50%;top:82%;width:19px;height:39px;transform:translateX(-50%);border:2px solid #bafaff;border-radius:7px;background:linear-gradient(90deg,#155c7b,#29d9df,#155c7b);z-index:17;box-shadow:0 0 12px rgba(45,226,230,.42)}
+.system-overview .sensor-probe:before{content:"";position:absolute;left:4px;right:4px;top:5px;height:4px;background:#ffd27a;border-radius:2px}
+.system-overview .sensor-label{left:calc(50% + 18px);top:83%;font-size:.68rem}
+.system-overview .seabed{position:absolute;left:0;right:0;bottom:0;height:16%;background:linear-gradient(180deg,rgba(183,157,101,.9),rgba(91,72,43,.95));clip-path:polygon(0 34%,14% 19%,28% 33%,45% 15%,62% 30%,79% 17%,100% 32%,100% 100%,0 100%);z-index:4}
+.system-overview .statue{position:absolute;left:calc(50% + 88px);bottom:9%;height:142px;width:66px;z-index:10;filter:drop-shadow(0 4px 4px rgba(0,0,0,.28));animation:statueStill 5s ease-in-out infinite}
+@keyframes statueStill{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+.system-overview .statue svg{width:100%;height:100%;overflow:visible}
+.system-overview .statue-label{left:calc(50% + 126px);bottom:7%;font-size:.68rem}
+.system-overview .statue-bubbles{position:absolute;left:calc(50% + 78px);bottom:13%;width:65px;height:100px;z-index:11;pointer-events:none}
+.system-overview .statue-bubbles i{position:absolute;bottom:0;left:var(--x);width:var(--s);height:var(--s);border:1px solid rgba(225,255,255,.85);border-radius:50%;background:rgba(210,250,255,.12);animation:alexBubbleRise var(--d) ease-in infinite;animation-delay:var(--delay)}
+@keyframes alexBubbleRise{0%{transform:translate(0,0) scale(.6);opacity:0}15%{opacity:.9}80%{opacity:.65}100%{transform:translate(9px,-95px) scale(1.1);opacity:0}}
+.system-overview .satellite{position:absolute;right:9%;top:8%;width:90px;height:62px;z-index:15;animation:satelliteFloat 5s ease-in-out infinite}
+@keyframes satelliteFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+.system-overview .satellite-core{position:absolute;left:35px;top:18px;width:22px;height:24px;border:2px solid #d5faff;border-radius:5px;background:linear-gradient(135deg,#b4cbd5,#446a80);transform:rotate(18deg)}
+.system-overview .satellite-wing{position:absolute;top:17px;width:29px;height:25px;border:1px solid #83d9ed;background:repeating-linear-gradient(90deg,#165282 0 7px,#5bb9d7 8px 9px);}
+.system-overview .satellite-wing.left{left:0;transform:skewY(-12deg)}.system-overview .satellite-wing.right{right:0;transform:skewY(12deg)}
+.system-overview .satellite-antenna{position:absolute;left:45px;top:0;width:3px;height:18px;background:#d8ffff;transform:rotate(25deg)}
+.system-overview .satellite-antenna:after{content:"";position:absolute;top:-5px;left:-5px;width:13px;height:13px;border:2px solid #ffd27a;border-radius:50%}
+.system-overview .radio-link{position:absolute;right:15%;top:25%;width:25%;height:90px;z-index:6;overflow:visible}
+.system-overview .radio-link path{fill:none;stroke:#ffd27a;stroke-width:2.5;stroke-dasharray:6 8;animation:radioTravel 1.7s linear infinite;filter:drop-shadow(0 0 4px rgba(255,210,122,.5))}
+@keyframes radioTravel{to{stroke-dashoffset:-56}}
+.system-overview .network-label{right:7%;top:28%;font-size:.68rem}
+.system-overview .link-note{position:absolute;right:3%;bottom:3%;font-size:.65rem;max-width:260px;line-height:1.35;color:rgba(220,245,255,.8);text-align:right;z-index:20}
+.system-overview .sunray-beam{position:absolute;left:15%;top:20%;width:32%;height:25%;z-index:1;background:linear-gradient(120deg,rgba(255,210,122,.2),rgba(255,210,122,.02) 65%,transparent);clip-path:polygon(0 0,100% 80%,100% 100%,0 20%);animation:beamGlow 3s ease-in-out infinite alternate}
+@keyframes beamGlow{from{opacity:.45}to{opacity:.95}}
+.system-description{margin-top:.35rem;max-width:none;text-align:left}
+.system-description ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.25rem .9rem}
+.system-description li{font-size:.78rem;line-height:1.35;margin:.3rem 0;padding-left:1rem;color:var(--muted)}
+.system-description li:before{width:6px;height:6px}
+@media(max-width:900px){.system-overview{height:42vh}.system-overview .sun-icon{width:52px;height:52px}.system-overview .statue{left:calc(50% + 70px);height:115px}.system-overview .statue-bubbles{left:calc(50% + 62px)}.system-overview .statue-label{left:calc(50% + 95px)}.system-description ul{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.system-overview{height:38vh;min-height:280px}.system-overview .buoy{transform:translateX(-50%) scale(.8);transform-origin:top center}.system-overview .satellite{right:4%;transform:scale(.75)}.system-overview .network-label{right:2%;top:31%;font-size:.58rem}.system-overview .solar-label{left:4%;font-size:.6rem}.system-overview .sun-icon{left:4%;width:44px;height:44px}.system-overview .statue{left:calc(50% + 45px);height:92px}.system-overview .statue-label{left:calc(50% + 62px);font-size:.56rem}.system-overview .statue-bubbles{left:calc(50% + 36px)}.system-overview .sensor-label{left:calc(50% + 12px);font-size:.56rem}.system-description ul{grid-template-columns:1fr}.system-description li{font-size:.7rem;margin:.1rem 0}}
+
+
+
+/* ================= SENSOR SLIDES ================= */
+.data-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.1rem;margin-top:1.5rem}
+.data-card{position:relative;overflow:hidden;padding:1.35rem 1.25rem 1.2rem;min-height:230px;transition:transform .3s,border-color .3s}
+.data-card:hover{transform:translateY(-5px);border-color:rgba(45,226,230,.65)}
+.data-card .symbol{font-size:2.2rem;display:block;margin-bottom:.65rem;filter:drop-shadow(0 0 12px rgba(45,226,230,.3));animation:bob 3.2s ease-in-out infinite alternate}
+.data-card h3{font-family:Georgia,serif;font-size:1.4rem;margin-bottom:.3rem}
+.data-card .dviz{display:block;width:120px;height:80px;margin-bottom:.6rem;overflow:visible;filter:drop-shadow(0 0 10px rgba(45,226,230,.25))}
+.data-card h3{margin-bottom:.55rem}
+@keyframes cardFlip{from{opacity:0;transform:perspective(900px) rotateY(-55deg) translateX(-30px) scale(.9)}to{opacity:1;transform:none}}
+.dviz .ion{animation:ionFloat 2.4s ease-in-out infinite alternate}
+.dviz .i2{animation-delay:-.6s}.dviz .i3{animation-delay:-1.2s}.dviz .i4{animation-delay:-1.8s}
+@keyframes ionFloat{from{transform:translate(-3px,4px)}to{transform:translate(4px,-6px)}}
+.dviz .needle{transform-origin:60px 40px;animation:needleSeek 5s cubic-bezier(.5,0,.3,1.4) infinite}
+@keyframes needleSeek{0%{transform:rotate(-30deg)}25%{transform:rotate(55deg)}50%{transform:rotate(30deg)}75%{transform:rotate(120deg)}100%{transform:rotate(-30deg)}}
+.dviz .flowline{stroke-dasharray:18 12;animation:dashMove 1s linear infinite}
+.dviz .f2{animation-duration:.55s}.dviz .f3{animation-duration:1.6s}
+.data-card p{font-size:.88rem;color:var(--muted);line-height:1.5}
+.data-card .index{position:absolute;right:12px;top:8px;font-family:Georgia,serif;font-size:3.2rem;font-weight:800;color:rgba(255,255,255,.06)}
+.data-card:after{content:"";position:absolute;width:130px;height:130px;border-radius:50%;right:-55px;bottom:-60px;background:radial-gradient(circle,rgba(45,226,230,.16),transparent 72%)}
+.sensor-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:1.05rem}
+.sensor-card{padding:1.05rem 1.1rem;min-height:260px;position:relative;overflow:hidden}
+.sensor-card .sensor-icon{font-size:1.9rem;margin-bottom:.45rem;display:inline-block;animation:bob 3.5s ease-in-out infinite alternate}
+.sensor-card h3{font-family:Georgia,serif;font-size:1.15rem;color:var(--aqua);margin-bottom:.25rem}
+.sensor-card .ar-label{font-size:1.05rem;color:var(--gold);font-weight:800;direction:rtl;text-align:left;margin-bottom:.6rem}
+.sensor-card p{font-size:.81rem;line-height:1.45;color:var(--muted);margin:.35rem 0}
+.sensor-card b{color:var(--ink)}
+.sensor-type{display:inline-block;font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;border:1px solid var(--line2);border-radius:999px;padding:.28rem .65rem;margin:.1rem 0 .5rem;color:var(--gold)}
+.sensor-note{margin-top:.85rem;padding:.7rem 1rem;font-size:.78rem;line-height:1.45;color:var(--muted)}
+.sensor-note b{color:var(--gold)}
+/* Make the background life visibly alive without distracting from the text. */
+.kelp{filter:drop-shadow(0 0 3px rgba(40,220,160,.08))}
+.kelp-bubble{box-shadow:0 0 8px rgba(170,245,255,.18)}
+.monument{opacity:.72;filter:drop-shadow(0 0 12px rgba(20,160,190,.18));animation:ruinDrift 11s ease-in-out infinite alternate}
+.monument:nth-child(even){animation-delay:-5.5s}
+@keyframes ruinDrift{from{translate:0 0;opacity:.58}to{translate:0 -7px;opacity:.82}}
+@keyframes kelpBubbleDrift{0%{transform:translate(0,0) scale(.55);opacity:0}12%{opacity:.9}55%{transform:translate(10px,-62px) scale(1);opacity:.78}100%{transform:translate(-6px,-135px) scale(.85);opacity:0}}
+.kelp-bubble{animation-name:kelpBubbleDrift}
+.ruin-bubble{position:absolute;bottom:var(--base,23%);left:var(--x);width:var(--size,7px);height:var(--size,7px);border:1px solid rgba(220,250,255,.88);border-radius:50%;background:rgba(210,250,255,.16);box-shadow:0 0 8px rgba(150,235,255,.22);animation:ruinBubbleRise var(--duration,5s) ease-out infinite;animation-delay:var(--delay,0s)}
+@keyframes ruinBubbleRise{0%{transform:translate(0,0) scale(.6);opacity:0}12%{opacity:.8}75%{opacity:.6}100%{transform:translate(var(--drift,12px),-150px) scale(1.1);opacity:0}}
+@media(max-width:900px){.data-grid,.sensor-grid{grid-template-columns:1fr}.data-card,.sensor-card{min-height:0}.data-card{padding:1rem}.sensor-card{padding:.9rem}}
+
+
+/* ================= SALINITY SENSOR DEEP-DIVE SLIDES ================= */
+.salinity-slide{isolation:isolate}
+.salinity-slide:before,.salinity-slide:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1}
+.salinity-slide:before{background:linear-gradient(180deg,rgba(2,37,64,.12),rgba(2,20,42,.38))}
+.salinity-slide:after{inset:auto -5% -5% -5%;height:35%;background:linear-gradient(180deg,transparent,rgba(0,28,52,.55));}
+.water-ribbons{position:absolute;left:-10%;right:-10%;top:10%;height:75%;overflow:hidden;pointer-events:none;z-index:-1;opacity:.55}
+.water-ribbons span{position:absolute;left:-15%;width:130%;height:90px;border:1px solid rgba(140,248,245,.19);border-color:rgba(140,248,245,.18) transparent transparent transparent;border-radius:50%;animation:ribbonDrift 11s ease-in-out infinite alternate}
+.water-ribbons span:nth-child(1){top:10%;animation-duration:13s}
+.water-ribbons span:nth-child(2){top:34%;left:-5%;animation-duration:16s;animation-direction:alternate-reverse}
+.water-ribbons span:nth-child(3){top:58%;animation-duration:19s}
+.water-ribbons span:nth-child(4){top:76%;left:-20%;animation-duration:15s;animation-direction:alternate-reverse}
+@keyframes ribbonDrift{from{transform:translateX(-3%) translateY(0) scaleX(.98)}to{transform:translateX(4%) translateY(18px) scaleX(1.04)}}
+.salinity-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:1rem;margin-top:1rem;align-items:stretch}
+.salinity-panel{padding:1rem 1.1rem;position:relative;overflow:hidden;min-width:0}
+.salinity-panel h3{font:700 1.18rem Georgia,serif;color:var(--aqua);margin-bottom:.55rem}
+.salinity-panel p,.salinity-panel li{font-size:.83rem;line-height:1.45;color:var(--muted)}
+.salinity-panel ul{list-style:none;display:flex;flex-direction:column;gap:.45rem;margin-top:.55rem}
+.salinity-panel li{padding-left:1rem;position:relative}
+.salinity-panel li:before{content:"";position:absolute;left:0;top:.5em;width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 7px rgba(255,210,122,.4)}
+.sensor-illustration{height:235px;position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(17,143,173,.25),rgba(1,27,50,.7));margin-bottom:.7rem}
+.sensor-illustration .waterline{position:absolute;left:-5%;right:-5%;top:17%;height:24px;border-top:2px solid rgba(160,255,255,.7);border-radius:50%;animation:waterlineMove 5s ease-in-out infinite alternate}
+.sensor-illustration .probe{position:absolute;left:50%;top:39%;width:34px;height:94px;transform:translateX(-50%);border:2px solid #c8faff;border-radius:10px;background:linear-gradient(90deg,#14516e,#36dbe1 45%,#0a4665);box-shadow:0 0 18px rgba(45,226,230,.25);animation:probeFloat 4s ease-in-out infinite}
+.sensor-illustration .probe:before{content:"";position:absolute;left:6px;right:6px;top:12px;height:4px;background:var(--gold);border-radius:3px;box-shadow:0 12px 0 rgba(255,210,122,.7),0 24px 0 rgba(255,210,122,.45)}
+.sensor-illustration .probe:after{content:"";position:absolute;left:50%;top:-18px;width:3px;height:18px;background:#bdfaff;transform:translateX(-50%)}
+.sensor-illustration .cable{position:absolute;left:50%;top:15%;height:24%;width:3px;background:linear-gradient(#fff,#2de2e6);transform:translateX(-50%)}
+.sensor-illustration .buoy-mini{position:absolute;left:50%;top:7%;width:86px;height:22px;transform:translateX(-50%);border:2px solid #9dfcff;border-radius:7px 7px 12px 12px;background:#075777;animation:probeFloat 3.5s ease-in-out infinite}
+.sensor-illustration .buoy-mini:before{content:"";position:absolute;left:23px;top:-9px;width:38px;height:7px;border:1px solid #fff0bf;background:var(--gold);border-radius:2px}
+.sensor-illustration .signal{position:absolute;left:calc(50% + 30px);top:52%;font-size:.68rem;color:var(--aqua);letter-spacing:.08em;text-transform:uppercase}
+.sensor-illustration .waterbubble{position:absolute;bottom:-15px;left:var(--x);width:var(--s);height:var(--s);border:1px solid rgba(220,250,255,.85);border-radius:50%;animation:waterBubbleUp var(--d) linear infinite;animation-delay:var(--delay);background:rgba(220,250,255,.12)}
+@keyframes waterlineMove{from{transform:translateX(-2%) translateY(0)}to{transform:translateX(2%) translateY(5px)}}
+@keyframes probeFloat{0%,100%{translate:0 0}50%{translate:0 -5px}}
+@keyframes waterBubbleUp{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-270px) translateX(12px);opacity:0}}
+.formula-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.45rem;align-items:center;margin-top:.8rem}
+.formula-node{padding:.65rem .45rem;border:1px solid var(--line2);border-radius:11px;background:rgba(2,33,57,.5);text-align:center;font-size:.76rem;font-weight:700;line-height:1.3;animation:nodeGlow 3.5s ease-in-out infinite}
+.formula-node:nth-of-type(3){animation-delay:.6s}.formula-node:nth-of-type(5){animation-delay:1.2s}
+.formula-arrow{color:var(--gold);font-weight:900;animation:arrowPulse 1.6s ease-in-out infinite}
+@keyframes nodeGlow{50%{border-color:rgba(45,226,230,.65);box-shadow:0 0 14px rgba(45,226,230,.09)}}
+@keyframes arrowPulse{50%{opacity:.45;transform:translateX(3px)}}
+.sensor-options-grid,.pros-cons-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;margin-top:.85rem}
+.option-card,.pc-card{position:relative;overflow:hidden;padding:.9rem 1rem;background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(9px);transition:transform .32s ease,border-color .32s ease,box-shadow .32s ease;min-width:0}
+.option-card:before,.pc-card:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(180deg,var(--aqua),var(--gold));opacity:.85}
+.option-card:hover,.pc-card:hover{transform:translateY(-4px) scale(1.008);border-color:rgba(45,226,230,.7);box-shadow:0 12px 30px rgba(0,15,40,.3)}
+.rise.revealed .option-card,.rise.revealed .pc-card,.rise.revealed .local-sensor-card{animation:optionEnter .7s cubic-bezier(.2,.9,.25,1.15) both,sheen 1.6s ease-out both;animation-delay:calc(var(--i,0)*.14s),calc(var(--i,0)*.14s + .45s)}
+@keyframes optionEnter{from{opacity:0;transform:perspective(900px) rotateX(-28deg) translateY(36px) scale(.94)}to{opacity:1;transform:none}}
+.option-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.45rem}
+.option-head{padding-right:0;min-height:64px;align-items:flex-start}
+.option-title{flex:1;min-width:0;padding-right:.25rem}
+.option-meta{display:flex;align-items:center;gap:.45rem;flex:none}
+.option-price{display:inline-flex;align-items:center;justify-content:center;min-width:70px;min-height:34px;padding:.35rem .55rem;border-radius:10px;border:1px solid rgba(255,210,122,.42);background:rgba(255,210,122,.1);color:var(--gold);font-weight:900;font-size:.88rem;letter-spacing:.01em;white-space:nowrap;box-shadow:inset 0 0 12px rgba(255,210,122,.04)}
+.option-photo{width:60px;height:58px;object-fit:contain;display:block;border-radius:9px;border:1px solid var(--line2);background:rgba(225,250,255,.92);padding:3px;transition:transform .3s ease,box-shadow .3s ease}
+.option-photo:hover{transform:scale(1.08);box-shadow:0 0 16px rgba(45,226,230,.25)}
+.option-photo-placeholder{width:60px;height:58px;display:grid;place-items:center;border-radius:9px;border:1px dashed var(--line2);background:rgba(4,38,68,.45);color:var(--faint);font-size:.58rem;letter-spacing:.08em;text-align:center}
+.local-sensor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:1rem}
+.local-sensor-card{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(120px,.72fr) minmax(0,1.28fr);gap:1rem;align-items:center;padding:1rem;background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(9px);transition:transform .32s ease,border-color .32s ease,box-shadow .32s ease;min-width:0}
+.local-sensor-card:hover{transform:translateY(-5px);border-color:rgba(45,226,230,.7);box-shadow:0 14px 32px rgba(0,15,40,.32)}
+.local-sensor-card img{width:100%;height:185px;object-fit:contain;border-radius:12px;background:rgba(235,249,252,.96);padding:.45rem;animation:localPhotoFloat 4s ease-in-out infinite}
+.local-sensor-card:nth-child(2) img{animation-delay:-1.7s}
+@keyframes localPhotoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.local-sensor-card h3{font:700 1.08rem Georgia,serif;color:var(--aqua);line-height:1.25;margin:.3rem 0 .5rem}
+.local-sensor-price{font-size:1.3rem;font-weight:900;color:var(--gold);margin:.3rem 0 .65rem}
+.local-sensor-card p,.local-sensor-card li{font-size:.75rem;line-height:1.4;color:var(--muted)}
+.local-sensor-card ul{list-style:none;display:flex;flex-direction:column;gap:.32rem;margin-top:.5rem}
+.local-sensor-card li{padding-left:.9rem;position:relative}
+.local-sensor-card li:before{content:"•";position:absolute;left:0;color:var(--aqua);font-weight:900}
+.local-warning{margin-top:.6rem;padding:.55rem .65rem;border-radius:10px;background:rgba(255,122,92,.1);border:1px solid rgba(255,122,92,.3);color:#ffc0ad;font-size:.7rem;line-height:1.4}
+.local-link{display:inline-block;margin-top:.6rem;color:var(--aqua);font-size:.7rem;text-decoration:none;border-bottom:1px solid rgba(45,226,230,.45)}
+.local-link:hover{color:var(--gold)}
+@media(max-width:900px){.local-sensor-grid{gap:.6rem}.local-sensor-card{grid-template-columns:1fr;padding:.75rem}.local-sensor-card img{height:125px}.option-photo,.option-photo-placeholder{width:48px;height:48px}.option-price{min-width:58px;font-size:.75rem}}
+@media(max-width:600px){.local-sensor-grid{grid-template-columns:1fr}.option-head{min-height:50px}.option-title h3{font-size:.9rem}.option-photo,.option-photo-placeholder{width:42px;height:42px}.option-price{min-width:52px;padding:.25rem .35rem;font-size:.7rem}}
+
+.option-head h3,.pc-card h3{font:700 1.02rem Georgia,serif;color:var(--aqua);line-height:1.2}
+.option-number{font-size:.68rem;color:var(--gold);letter-spacing:.12em;font-weight:800;white-space:nowrap}
+.option-type{font-size:.65rem;letter-spacing:.09em;text-transform:uppercase;color:var(--gold);margin:.1rem 0 .45rem}
+.option-card ul,.pc-card ul{list-style:none;display:flex;flex-direction:column;gap:.28rem}
+.option-card li,.pc-card li{font-size:.75rem;line-height:1.36;color:var(--muted);padding-left:.9rem;position:relative}
+.option-card li:before{content:"";position:absolute;left:0;top:.48em;width:5px;height:5px;border-radius:50%;background:var(--aqua)}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.6rem}
+.tags span{font-size:.64rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:.28em .7em;border-radius:999px;opacity:0}
+.tag-ok{background:rgba(55,211,153,.14);color:#74e5bd;border:1px solid rgba(55,211,153,.45)}
+.tag-ok::before{content:"✓ "}
+.tag-check{background:rgba(255,210,122,.12);color:var(--gold);border:1px solid rgba(255,210,122,.45)}
+.tag-check::before{content:"? "}
+.rise.revealed .tags span{animation:tagPop .5s cubic-bezier(.2,.9,.3,1.4) both;animation-delay:calc(var(--i,0)*.14s + .6s)}
+.rise.revealed .tags span:nth-child(2){animation-delay:calc(var(--i,0)*.14s + .75s)}
+.rise.revealed .tags span:nth-child(3){animation-delay:calc(var(--i,0)*.14s + .9s)}
+@keyframes tagPop{from{opacity:0;transform:scale(.4) translateY(8px)}to{opacity:1;transform:none}}
+.option-card .spec-foot{border-top:1px solid var(--line);padding-top:.4rem;margin-top:.5rem;font-size:.68rem;line-height:1.35;color:var(--faint)}
+.pc-card.good:before{background:linear-gradient(180deg,#37d399,#2de2e6)}
+.pc-card.caution:before{background:linear-gradient(180deg,#ff7a5c,#ffd27a)}
+.pc-card h3{display:flex;align-items:center;gap:.45rem;margin-bottom:.5rem}
+.pc-card.good h3{color:#74e5bd}.pc-card.caution h3{color:#ffb09a}
+.pc-card.good li:before,.pc-card.caution li:before{position:absolute;left:0;top:0;font-weight:900}
+.pc-card.good li,.pc-card.caution li{padding-left:1.05rem}
+.pc-card.good li:before{content:"+";color:#74e5bd}.pc-card.caution li:before{content:"−";color:#ff9d7a}
+/* slide 17 · pipe flow sensor */
+.egypt-flow-visual .pf-drop{animation:pfFlow 2.5s linear infinite}
+@keyframes pfFlow{from{transform:translateX(0)}to{transform:translateX(420px)}}
+.egypt-flow-visual .pf-rotor{transform:translate(210px,165px);animation:pfSpin 1s linear infinite}
+@keyframes pfSpin{from{transform:translate(210px,165px) rotate(0)}to{transform:translate(210px,165px) rotate(360deg)}}
+.egypt-flow-visual .pf-swirl{stroke-dasharray:8 8;animation:dashMove 1s linear infinite}
+.egypt-flow-visual .pf-led{animation:pfBlink 1s steps(1) infinite}
+@keyframes pfBlink{0%{opacity:1}20%,100%{opacity:.15}}
+.egypt-flow-visual .pf-square{animation:pfSquare 1s linear infinite}
+@keyframes pfSquare{from{transform:translateX(0)}to{transform:translateX(-20px)}}
+
+/* slide 15 · acoustic current meter */
+.current-scene .cm-p{animation:cmDrift 6s linear infinite}
+@keyframes cmDrift{from{transform:translateX(-20px)}to{transform:translateX(700px)}}
+.current-scene .cm-stream{stroke-dasharray:14 16;animation:currentDash 1.8s linear infinite}
+.current-scene .cm-stream.s2{animation-duration:2.6s}
+.current-scene .cm-surface{animation:cmSurf 3s linear infinite}
+@keyframes cmSurf{to{transform:translateX(35px)}}
+.current-scene .cm-vector{stroke-dasharray:240;stroke-dashoffset:240;animation:vectorDraw 1.6s ease-out .4s forwards,vectorGlow 2s ease-in-out 2s infinite alternate}
+.current-scene .cm-led{animation:sigFade 1.2s ease-in-out infinite}
+.current-scene .cm-w1{animation:cmW1 .6s linear infinite}
+.current-scene .cm-w2{animation:cmW2 .42s linear infinite}
+@keyframes cmW1{from{transform:translateX(-20px)}to{transform:translateX(0)}}
+@keyframes cmW2{from{transform:translateX(-14px)}to{transform:translateX(0)}}
+.current-scene .cm-compass{transform-origin:40px 38px;animation:cmCompass 4s ease-in-out infinite alternate}
+@keyframes cmCompass{from{transform:rotate(62deg)}to{transform:rotate(76deg)}}
+
+/* slide 11 · conductivity cell */
+.cell-demo{border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(17,143,173,.18),rgba(1,27,50,.6));padding:.3rem;margin-bottom:.7rem}
+.cell-demo svg{display:block;width:100%;height:auto}
+.cell-demo .ip{animation:ionP 3s linear infinite}
+.cell-demo .in{animation:ionN 3s linear infinite}
+@keyframes ionP{0%{transform:translateX(-35px);opacity:0}15%,85%{opacity:1}100%{transform:translateX(45px);opacity:0}}
+@keyframes ionN{0%{transform:translateX(35px);opacity:0}15%,85%{opacity:1}100%{transform:translateX(-45px);opacity:0}}
+.cell-demo .salt,.cell-demo .lab-sea,.cell-demo .e-fast{animation:saltCycle 10s ease-in-out infinite}
+.cell-demo .lab-fresh,.cell-demo .e-slow{animation:freshCycle 10s ease-in-out infinite}
+@keyframes saltCycle{0%,38%{opacity:0}48%,90%{opacity:1}100%{opacity:0}}
+@keyframes freshCycle{0%,38%{opacity:1}48%,90%{opacity:0}100%{opacity:1}}
+.cell-demo .e-flow{stroke-dasharray:5 11}
+.cell-demo .e-slow{animation:freshCycle 10s ease-in-out infinite,eFlow 2.6s linear infinite}
+.cell-demo .e-fast{animation:saltCycle 10s ease-in-out infinite,eFlow .55s linear infinite}
+@keyframes eFlow{to{stroke-dashoffset:-32}}
+.cell-demo .cell-needle{transform-origin:260px 52px;animation:needleCycle 10s cubic-bezier(.5,0,.3,1.3) infinite}
+@keyframes needleCycle{0%,38%{transform:rotate(-55deg)}48%,90%{transform:rotate(50deg)}100%{transform:rotate(-55deg)}}
+.cell-demo .cell-surface{animation:icWave 2.5s linear infinite}
+.cell-steps{list-style:none;display:flex;flex-direction:column;gap:.45rem;margin-top:.5rem}
+.cell-steps li{display:flex;gap:.6rem;align-items:flex-start;padding-left:0!important}
+.cell-steps li::before{display:none}
+.cell-steps b{flex:none;width:1.5rem;height:1.5rem;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--aqua),var(--gold));color:#04263f;font-size:.75rem}
+.cell-steps span{font-size:.8rem;line-height:1.42;color:var(--muted)}
+.rise.revealed .cell-steps li{animation:rowIn .6s cubic-bezier(.2,.8,.2,1) both}
+.rise.revealed .cell-steps li:nth-child(2){animation-delay:.25s}.rise.revealed .cell-steps li:nth-child(3){animation-delay:.5s}
+
+/* slide 9 · step-by-step system build */
+.system-overview .sv-step{position:absolute;inset:0;pointer-events:none}
+.system-overview .sv-step.rise{transform:translateY(26px) scale(.98)}
+.system-overview .sv-step.rise.revealed{transform:none}
+.system-overview .sn{display:inline-grid;place-items:center;width:1.45em;height:1.45em;margin-right:.25em;border-radius:50%;background:linear-gradient(135deg,var(--aqua),var(--gold));color:#04263f;font-size:.85em}
+.sv-step.revealed .solar-label,.sv-step.revealed .buoy-label,.sv-step.revealed .sensor-label,.sv-step.revealed .network-label{animation:labelGlow 1.4s ease-out .3s both}
+@keyframes labelGlow{0%{box-shadow:0 0 0 0 rgba(45,226,230,.8);border-color:var(--aqua)}100%{box-shadow:0 0 0 16px rgba(45,226,230,0);border-color:var(--line)}}
+.system-overview .buoy-glow{position:absolute;left:50%;top:calc(47% - 30px);width:180px;height:60px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,210,122,.35),transparent);z-index:15;animation:beamGlow 2.4s ease-in-out infinite alternate}
+.system-overview .probe-ping{position:absolute;left:50%;top:calc(82% + 18px);width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;border:2px solid var(--aqua);z-index:16;animation:ping 2.4s ease-out infinite}
+.system-overview .probe-ping.p2{animation-delay:1.2s}
+.sv-legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem;margin-top:.7rem}
+.sv-legend>div{display:flex;gap:.6rem;align-items:flex-start;padding:.6rem .7rem;border-radius:12px;border:1px solid var(--line);background:rgba(4,38,68,.55);backdrop-filter:blur(8px);opacity:.18;transform:translateY(10px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.9,.25,1.2),border-color .6s}
+.sv-legend>div.on{opacity:1;transform:none;border-color:rgba(45,226,230,.55)}
+.sv-legend b{flex:none;width:1.7rem;height:1.7rem;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--aqua),var(--gold));color:#04263f;font-weight:900;font-size:.85rem}
+.sv-legend strong{display:block;color:var(--ink);font-size:.86rem;margin-bottom:.1rem}
+.sv-legend span{font-size:.74rem;line-height:1.35;color:var(--muted)}
+@media(max-width:900px){.sv-legend{grid-template-columns:1fr 1fr}}
+
+/* slide 10 · parameters one by one */
+.data-card.rise{transform:none;filter:none}
+.data-card.rise.revealed{animation:cardFlip .9s cubic-bezier(.2,.9,.25,1.1) both,sheen 1.6s ease-out .6s both}
+.data-card.rise.revealed .dviz{animation:popIn .8s cubic-bezier(.2,.9,.3,1.3) .35s both}
+
+/* slide 8 · similarity lanes */
+.sim-wrap{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1rem;margin-top:1.1rem;align-items:stretch}
+.lane{padding:.95rem;border-radius:18px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.lane::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--lc)}
+.lane.same{--lc:var(--aqua)}.lane.adapted{--lc:var(--gold)}.lane.new{--lc:#ff9d7a}
+.lane-head{display:flex;align-items:center;gap:.55rem;margin-bottom:.8rem;font-size:.72rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--lc)}
+.lane-dot{width:10px;height:10px;border-radius:50%;background:var(--lc);box-shadow:0 0 10px var(--lc);animation:warn 1.8s ease-in-out infinite}
+.lane-tiles{display:grid;gap:.75rem}
+.lane-tiles.two{grid-template-columns:1fr 1fr}
+.tile{display:flex;gap:.8rem;align-items:center;padding:.75rem .8rem;border-radius:14px;background:rgba(2,30,52,.5);border:1px solid var(--line);transition:transform .3s,border-color .3s}
+.tile:hover{transform:translateY(-3px);border-color:var(--lc)}
+.tile svg{width:58px;height:58px;flex:none;overflow:hidden;filter:drop-shadow(0 0 8px rgba(45,226,230,.22))}
+.tile h4{font:700 1rem Georgia,serif;color:var(--ink);margin-bottom:.2rem}
+.tile p{font-size:.76rem;line-height:1.38;color:var(--muted)}
+.lane.rise .tile{opacity:0}
+.lane.rise.revealed .tile{animation:optionEnter .7s cubic-bezier(.2,.9,.25,1.15) both;animation-delay:calc(var(--t)*.18s + .25s)}
+.lane.rise.revealed .tile svg{animation:popIn .7s cubic-bezier(.2,.9,.3,1.3) both;animation-delay:calc(var(--t)*.18s + .5s)}
+/* animated icon parts */
+.ic-bob{animation:bob 1.6s ease-in-out infinite alternate}
+.ic-wave{animation:icWave 1.4s linear infinite}
+@keyframes icWave{to{transform:translateX(15px)}}
+.ic-spin{transform-origin:18px 18px;animation:spin 6s linear infinite}
+.ic-charge{transform-box:fill-box;transform-origin:50% 100%;animation:icCharge 2.6s ease-in-out infinite}
+@keyframes icCharge{0%{transform:scaleY(.15);fill:#ff9d7a}60%,100%{transform:scaleY(1);fill:#37d399}}
+.ic-core{transform-box:fill-box;transform-origin:center;animation:warn 1.4s ease-in-out infinite}
+.ic-blink{animation:sigFade 1.6s ease-in-out infinite}
+.ic-blink.b2{animation-delay:.4s}.ic-blink.b3{animation-delay:.8s}.ic-blink.b4{animation-delay:1.2s}
+.ic-bar{transform-box:fill-box;transform-origin:50% 100%;animation:icBar 2.2s ease-in-out infinite alternate}
+.ic-bar.k2{animation-delay:-.5s}.ic-bar.k3{animation-delay:-1s}.ic-bar.k4{animation-delay:-1.5s}
+@keyframes icBar{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+.ic-sway{transform-origin:30px 12px;animation:icSway 2.4s ease-in-out infinite alternate}
+@keyframes icSway{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+.ic-drop{animation:icDrop 1.5s ease-in infinite}
+@keyframes icDrop{0%{transform:translateY(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateY(25px);opacity:0}}
+.ic-glow{animation:icGlow 1.5s ease-in-out infinite}
+@keyframes icGlow{0%,70%{stroke:#bafaff}85%{stroke:#ffd27a;fill:#1f7f9e}100%{stroke:#bafaff}}
+.ic-ring{transform-box:fill-box;transform-origin:center;animation:ping 2.2s ease-out infinite}
+.tile .sw1,.tile .sw2,.tile .sw3{animation:sigFade 1.5s ease-out infinite}
+.tile .sw2{animation-delay:.25s}.tile .sw3{animation-delay:.5s}
+@media(max-width:900px){.sim-wrap{grid-template-columns:1fr}.lane-tiles.two{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.lane-tiles.two{grid-template-columns:1fr}}
+
+/* comparison matrix */
+.matrix{margin-top:1rem;padding:.5rem .8rem}
+.mx-row{display:grid;grid-template-columns:minmax(170px,1.5fr) repeat(4,minmax(0,1fr));align-items:center;gap:.5rem;padding:.55rem .4rem;border-bottom:1px solid var(--line)}
+.mx-row:last-child{border-bottom:none}
+.mx-head span{font:700 .95rem Georgia,serif;color:var(--aqua);text-align:center}
+.mx-k{font-size:.86rem;font-weight:700;color:var(--ink)}
+.mx-row i,.mx-legend i{justify-self:center;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;font-style:normal;font-weight:900;font-size:.9rem}
+.mx-row i.y,.mx-legend i.y{background:rgba(55,211,153,.18);border:1.5px solid #37d399;color:#74e5bd}
+.mx-row i.y::after,.mx-legend i.y::after{content:"✓"}
+.mx-row i.m,.mx-legend i.m{background:rgba(255,210,122,.14);border:1.5px solid var(--gold);color:var(--gold)}
+.mx-row i.m::after,.mx-legend i.m::after{content:"?"}
+.mx-row i.n,.mx-legend i.n{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.25);color:var(--faint)}
+.mx-row i.n::after,.mx-legend i.n::after{content:"–"}
+.mx-score b{justify-self:stretch;height:10px;border-radius:99px;background:rgba(255,255,255,.08);position:relative;overflow:hidden;margin:0 .6rem}
+.mx-score b::after{content:"";position:absolute;inset:0 auto 0 0;width:0;border-radius:99px;background:linear-gradient(90deg,var(--aqua),var(--gold));box-shadow:0 0 12px rgba(45,226,230,.5)}
+.matrix.rise .mx-row:not(.mx-head){opacity:0}
+.matrix.rise.revealed .mx-row:not(.mx-head){animation:rowIn .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--r)*.16s + .2s)}
+.matrix.rise.revealed .mx-row i{animation:popIn .55s cubic-bezier(.2,.9,.3,1.4) both;animation-delay:calc(var(--r)*.16s + .45s)}
+.matrix.rise.revealed .mx-row i:nth-of-type(2){animation-delay:calc(var(--r)*.16s + .53s)}
+.matrix.rise.revealed .mx-row i:nth-of-type(3){animation-delay:calc(var(--r)*.16s + .61s)}
+.matrix.rise.revealed .mx-row i:nth-of-type(4){animation-delay:calc(var(--r)*.16s + .69s)}
+.matrix.rise.revealed .mx-score b::after{animation:barFill 1.4s cubic-bezier(.2,.8,.2,1) 1.5s both}
+@keyframes barFill{to{width:var(--w)}}
+.mx-legend{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.2rem;margin-top:.7rem;font-size:.78rem;color:var(--muted)}
+.mx-legend span{display:inline-flex;align-items:center;gap:.45rem}
+.mx-legend i{width:20px;height:20px;font-size:.7rem}
+.mx-pick{margin-left:auto;padding:.35rem .8rem;border-radius:999px;border:1px solid rgba(255,210,122,.5);background:rgba(255,210,122,.1);color:var(--ink)}
+.mx-pick b{color:var(--gold)}
+@media(max-width:700px){.mx-row{grid-template-columns:110px repeat(4,minmax(0,1fr));gap:.25rem}.mx-head span{font-size:.7rem}.mx-k{font-size:.7rem}.mx-row i{width:22px;height:22px}.mx-pick{margin-left:0}}
+.slide-footnote{margin-top:.6rem;font-size:.68rem;line-height:1.4;color:var(--faint)}
+@media(max-width:900px){.salinity-layout{grid-template-columns:1fr}.sensor-illustration{height:170px}.sensor-options-grid,.pros-cons-grid{gap:.5rem}.option-card,.pc-card{padding:.7rem}}
+@media(max-width:600px){.sensor-options-grid,.pros-cons-grid{grid-template-columns:1fr}.option-card li,.pc-card li{font-size:.7rem}.salinity-panel p,.salinity-panel li{font-size:.75rem}.formula-flow{gap:.2rem}.formula-node{font-size:.65rem;padding:.5rem .2rem}}
+
+
+/* ================= CURRENT METER SLIDES ================= */
+.current-explainer{display:grid;grid-template-columns:.82fr 1.18fr;gap:1rem;margin-top:1rem;align-items:stretch}
+.current-steps{display:grid;grid-template-columns:1fr;gap:.65rem}
+.current-step{padding:.85rem 1rem;display:grid;grid-template-columns:2.2rem 1fr;gap:.7rem;align-items:start}
+.current-step .step-no{width:2rem;height:2rem;display:grid;place-items:center;border-radius:50%;font-weight:900;color:#032b42;background:linear-gradient(135deg,var(--aqua),var(--gold));}
+.current-step h3{font-family:Georgia,serif;font-size:1rem;margin:.05rem 0 .25rem;color:var(--ink)}
+.current-step p{font-size:.79rem;line-height:1.42;color:var(--muted)}
+.current-scene{position:relative;overflow:hidden;min-height:300px;padding:.55rem;background:linear-gradient(180deg,rgba(3,74,108,.52),rgba(2,24,47,.78));}
+.current-scene svg{width:100%;height:100%;min-height:300px;display:block}
+.current-scene .flow-dash{stroke-dasharray:12 15;animation:currentDash 2.1s linear infinite}
+.current-scene .flow-dash.slow{animation-duration:3.4s;animation-direction:reverse}
+.current-scene .particle{animation:particleDrift 4.5s linear infinite}
+.current-scene .particle.p2{animation-delay:-1.4s}
+.current-scene .particle.p3{animation-delay:-2.8s}
+.current-scene .vector{stroke-dasharray:260;stroke-dashoffset:260;animation:vectorDraw 1.8s ease-out forwards,vectorGlow 2s ease-in-out 1.8s infinite alternate}
+.current-scene .sound-wave{transform-box:fill-box;transform-origin:center;animation:soundPulse 2.2s ease-out infinite}
+.current-scene .sound-wave.w2{animation-delay:.65s}
+@keyframes currentDash{to{stroke-dashoffset:-54}}
+@keyframes particleDrift{0%{transform:translateX(-38px);opacity:0}12%{opacity:.9}85%{opacity:.9}100%{transform:translateX(70px);opacity:0}}
+@keyframes vectorDraw{to{stroke-dashoffset:0}}
+@keyframes vectorGlow{from{filter:drop-shadow(0 0 2px rgba(45,226,230,.3))}to{filter:drop-shadow(0 0 9px rgba(45,226,230,.9))}}
+@keyframes soundPulse{0%{opacity:.8;transform:scale(.65)}100%{opacity:0;transform:scale(1.45)}}
+.current-legend{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.65rem}
+.current-legend span{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .65rem;border:1px solid var(--line);border-radius:999px;background:rgba(2,30,52,.55);font-size:.72rem;color:var(--muted)}
+.current-legend i{width:8px;height:8px;border-radius:50%;background:var(--aqua);display:inline-block}
+.current-legend .gold-dot{background:var(--gold)}
+.current-sensor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:1rem}
+.current-sensor-card{display:grid;grid-template-columns: minmax(145px,.78fr) minmax(0,1.22fr);gap:1rem;padding:1rem;min-width:0;align-items:start}
+.current-sensor-card .product-image{width:100%;height:205px;object-fit:contain;border-radius:12px;background:rgba(0,17,34,.38);border:1px solid var(--line);padding:.4rem}
+.current-sensor-card h3{font-family:Georgia,serif;font-size:1.22rem;color:var(--aqua);margin:.15rem 0 .3rem}
+.current-sensor-card .vendor{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:.45rem}
+.current-sensor-card .fit-label{display:inline-block;font-size:.67rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(45,226,230,.38);color:var(--aqua);background:rgba(45,226,230,.1);padding:.3em .65em;border-radius:999px;margin:.15rem 0 .55rem}
+.current-sensor-card ul{list-style:none;display:flex;flex-direction:column;gap:.33rem;margin:.25rem 0 .65rem}
+.current-sensor-card li{font-size:.78rem;line-height:1.38;color:var(--muted);padding-left:1rem;position:relative}
+.current-sensor-card li:before{content:"";position:absolute;left:0;top:.48em;width:6px;height:6px;border-radius:50%;background:var(--aqua)}
+.current-sensor-card .product-link{display:inline-flex;color:var(--gold);font-size:.76rem;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(255,210,122,.45);padding-bottom:.15rem}
+.current-sensor-card .product-link:hover{color:#fff}
+.current-caveat{margin-top:.7rem;padding:.65rem .8rem;border-radius:10px;border:1px solid rgba(255,210,122,.35);background:rgba(255,210,122,.08);font-size:.73rem;line-height:1.42;color:var(--muted)}
+.current-caveat b{color:var(--gold)}
+.diff-strip{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-top:.9rem;padding:.75rem 1rem}
+.diff-side{display:flex;align-items:center;gap:.8rem}
+.diff-side svg{flex:none;width:90px;height:50px}
+.diff-side b{display:block;font:700 .92rem Georgia,serif;color:var(--aqua);margin-bottom:.15rem}
+.diff-side span{font-size:.76rem;line-height:1.4;color:var(--muted)}
+.diff-vs{font:900 1.1rem Georgia,serif;color:var(--gold);width:2.6rem;height:2.6rem;display:grid;place-items:center;border-radius:50%;border:1.5px solid rgba(255,210,122,.6);animation:warn 2s ease-in-out infinite}
+.diff-side .sw1,.diff-side .sw2,.diff-side .sw3{animation:sigFade 1.5s ease-out infinite}
+.diff-side .sw2{animation-delay:.25s}.diff-side .sw3{animation-delay:.5s}
+@keyframes sigFade{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+.diff-side .rotor{transform:translate(44px,25px);animation:rotorTurn .7s linear infinite}
+@keyframes rotorTurn{from{transform:translate(44px,25px) rotate(0)}to{transform:translate(44px,25px) rotate(360deg)}}
+.diff-side .flow-arrow{stroke-dasharray:6 4;animation:dashMove 1s linear infinite}
+@media(max-width:700px){.diff-strip{grid-template-columns:1fr}.diff-vs{justify-self:center}}
+.current-source{font-size:.68rem;line-height:1.35;color:var(--faint);margin-top:.55rem}
+@media(max-width:900px){
+ .current-explainer{grid-template-columns:1fr}
+ .current-steps{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .current-step{grid-template-columns:1fr;gap:.45rem}
+ .current-sensor-grid{grid-template-columns:1fr}
+ .current-sensor-card{grid-template-columns:180px minmax(0,1fr)}
+}
+@media(max-width:600px){
+ .current-steps{grid-template-columns:1fr}
+ .current-sensor-card{grid-template-columns:1fr}
+ .current-sensor-card .product-image{height:155px}
+}
+
+
+
+/* Staged current-meter explanation: animate first, explain on the next advance */
+.current-slide[data-current-demo="true"] .current-explainer{grid-template-columns:1fr;transition:grid-template-columns .5s ease;align-items:stretch}
+.current-slide[data-current-demo="true"].demo-stage .current-steps{display:none}
+.current-slide[data-current-demo="true"].demo-stage .current-scene{width:min(100%,900px);margin:0 auto;min-height:clamp(280px,43vh,430px)}
+.current-slide[data-current-demo="true"].demo-stage .current-scene svg{min-height:clamp(280px,43vh,430px)}
+.current-slide[data-current-demo="true"].explain-stage .current-explainer{grid-template-columns:.82fr 1.18fr}
+.current-slide[data-current-demo="true"].explain-stage .current-steps{display:grid;order:-1}
+.current-slide[data-current-demo="true"].explain-stage .current-explainer>div:first-child{order:1}
+.current-slide[data-current-demo="true"].explain-stage .current-scene{min-height:300px}
+.current-slide[data-current-demo="true"] .current-scene .particle{animation:particleDrift 3.8s linear infinite!important}
+.current-slide[data-current-demo="true"] .current-scene .particle.p2{animation-delay:-1.25s!important}
+.current-slide[data-current-demo="true"] .current-scene .particle.p3{animation-delay:-2.5s!important}
+.current-slide[data-current-demo="true"] .current-scene .sound-wave{animation:soundPulse 1.7s ease-out infinite!important}
+.current-slide[data-current-demo="true"] .current-scene .sound-wave.w2{animation-delay:.55s!important}
+.current-slide[data-current-demo="true"] .current-scene .flow-dash{animation:currentDash 1.6s linear infinite!important}
+.current-slide[data-current-demo="true"] .current-scene .flow-dash.slow{animation-duration:2.5s!important}
+.current-slide[data-current-demo="true"] .current-scene .vector{animation:vectorGlow 1.8s ease-in-out infinite alternate!important;stroke-dasharray:none!important;stroke-dashoffset:0!important}
+@media(max-width:900px){
+ .current-slide[data-current-demo="true"].explain-stage .current-explainer{grid-template-columns:1fr}
+ .current-slide[data-current-demo="true"].explain-stage .current-scene{order:0}
+ .current-slide[data-current-demo="true"].explain-stage .current-steps{order:1;grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:600px){
+ .current-slide[data-current-demo="true"].explain-stage .current-steps{grid-template-columns:1fr}
+}
+
+
+/* Egyptian inline pipe-flow sensor option */
+.egypt-current-slide .egypt-flow-card{display:grid;grid-template-columns:.95fr 1.05fr;gap:1.25rem;align-items:center;padding:1.2rem;margin-top:1rem}
+.egypt-flow-visual{min-width:0;padding:.35rem;border:1px solid var(--line);border-radius:15px;background:linear-gradient(180deg,rgba(4,57,82,.5),rgba(2,24,47,.72));overflow:hidden}
+.egypt-flow-visual svg{width:100%;height:auto;display:block}
+.pipe-flow-dash{animation:pipeFlow 1.5s linear infinite}
+.rotor-spin{transform-origin:0 0;animation:rotorSpin 1s linear infinite}
+@keyframes pipeFlow{to{stroke-dashoffset:-60}}
+@keyframes rotorSpin{to{transform:translate(0,59px) rotate(360deg)}}
+.egypt-flow-details .vendor{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:.45rem}
+.egypt-flow-details h3{font:700 clamp(1.25rem,2vw,1.8rem)/1.2 Georgia,serif;color:var(--aqua);margin:.2rem 0 .5rem}
+.egypt-flow-subtitle{font-size:.88rem;line-height:1.45;color:var(--muted)}
+.egypt-flow-price{font-size:2rem;font-weight:900;color:var(--gold);margin:.55rem 0 .7rem;text-shadow:0 0 18px rgba(255,210,122,.18)}
+.egypt-flow-specs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem;margin:.6rem 0 .8rem}
+.egypt-flow-specs span{display:flex;flex-direction:column;gap:.25rem;padding:.55rem .6rem;border:1px solid var(--line);border-radius:10px;background:rgba(2,30,52,.5);font-size:.73rem;color:var(--muted)}
+.egypt-flow-specs b{font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.egypt-flow-warning{display:flex;gap:.85rem;align-items:flex-start;margin-top:.85rem;padding:.85rem 1rem;border-radius:14px;border:1px solid rgba(255,122,92,.5);background:linear-gradient(90deg,rgba(255,122,92,.16),rgba(4,38,68,.65))}
+.egypt-flow-warning .warning-icon{flex:none;width:1.8rem;height:1.8rem;display:grid;place-items:center;border-radius:50%;background:rgba(255,122,92,.2);border:1px solid rgba(255,122,92,.6);color:#ffb09a;font-weight:900}
+.egypt-flow-warning b{display:block;color:#ffb09a;font-size:.9rem;margin-bottom:.2rem}
+.egypt-flow-warning p{font-size:.79rem;line-height:1.45;color:var(--muted)}
+.egypt-flow-warning strong{color:var(--ink)}
+@media(max-width:900px){.egypt-current-slide .egypt-flow-card{grid-template-columns:1fr}.egypt-flow-visual svg{max-height:260px}.egypt-flow-specs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.egypt-flow-specs{grid-template-columns:1fr}.egypt-flow-specs span{flex-direction:row;justify-content:space-between}.egypt-flow-warning p{font-size:.72rem}}
+
+</style>
 </head>
-<body><a href="AlexMon.html">Open Alex-Mon</a></body>
+<body>
+
+<!-- ============ UNDERWATER WORLD (persistent background) ============ -->
+<div class="ocean" aria-hidden="true">
+  <div class="shallow"></div>
+  <div class="caustics"></div>
+  <div class="rays" id="rays"></div>
+  <div class="fishes" id="fishes"></div>
+  <div class="snow" id="snow"></div>
+  <svg class="surface" viewBox="0 0 1200 46" preserveAspectRatio="none"><path fill="rgba(255,255,255,.55)" d="M0 24 Q75 4 150 24 T300 24 T450 24 T600 24 T750 24 T900 24 T1050 24 T1200 24 V0 H0Z"/></svg>
+  <svg class="surface s2" viewBox="0 0 1200 46" preserveAspectRatio="none"><path fill="rgba(200,250,255,.6)" d="M0 20 Q50 34 100 20 T200 20 T300 20 T400 20 T500 20 T600 20 T700 20 T800 20 T900 20 T1000 20 T1100 20 T1200 20 V0 H0Z"/></svg>
+  <div class="bubbles" id="bubbles"></div>
+  <div class="ruins" id="ruins"></div>
+  <div class="seabed" id="seabed">
+    <svg class="sand" viewBox="0 0 1200 120" preserveAspectRatio="none">
+      <defs><linearGradient id="sandG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9b27c"/><stop offset="1" stop-color="#6d5b3a"/></linearGradient></defs>
+      <path d="M0 78 Q120 56 260 74 T520 70 T800 76 T1050 62 T1200 72 V120 H0Z" fill="url(#sandG)" opacity=".92"/>
+      <path d="M0 96 Q200 82 420 96 T820 94 T1200 90 V120 H0Z" fill="#4e402a" opacity=".5"/>
+    </svg>
+  </div>
+  <div class="vignette"></div>
+</div>
+
+<div class="progress" id="progress"></div>
+<div class="brand">Alex<b>-Mon</b> &nbsp;×&nbsp; SSTM Research</div>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle water depth"><span id="themeIcon">🌤️</span><span id="themeLabel">Shallow</span></button>
+
+<div class="deck" id="deck">
+
+<!-- ===================== 1 · TITLE ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <div class="title-grid">
+      <div>
+        <div class="badge-row rise" style="--i:0">
+          <span class="badge fill">Field-ready deployment</span>
+          <span class="badge">Alexandria · Egypt</span>
+          <span class="badge">IoT · Underwater monitoring</span>
+        </div>
+        <h1 class="rise" style="--i:1">Alex<span class="dash">-</span>Mon</h1>
+        <span class="wave-under rise" style="--i:2"><svg viewBox="0 0 680 18" preserveAspectRatio="none"><path d="M0 9Q21 0 42 9T85 9T127 9T170 9T212 9T255 9T297 9T340 9T382 9T425 9T467 9T510 9T552 9T595 9T637 9T680 9" fill="none" stroke="#2de2e6" stroke-width="3" stroke-linecap="round"/></svg></span>
+        <div class="tagline rise" style="--i:3">Underwater Archaeological Heritage Monitoring System</div>
+        <div class="ar rise" style="--i:4">رصد آثار الإسكندرية الغارقة</div>
+        <p class="lead rise" style="--i:5">
+          A cabled, modular monitoring station that continuously tracks
+          <strong>salinity, temperature, depth</strong> and <strong>water currents</strong>
+          around Alexandria's submerged monuments, with all processing kept safely <strong>above water</strong>.
+        </p>
+        <div class="authors rise" style="--i:6">
+          <div><div class="h">Presented by</div>Youssef Khaled Omar</div>
+          <div><div class="h">Program</div>SSTM<br>2026</div>
+        </div>
+      </div>
+
+      <div class="sonar rise" style="--i:3">
+        <div class="disc"></div>
+        <div class="ring" style="--r:16%"></div><div class="ring" style="--r:32%"></div><div class="ring" style="--r:3%"></div>
+        <div class="cross"></div>
+        <div class="sweep"></div>
+        <div class="pulse"></div><div class="pulse p2"></div>
+        <svg class="center" viewBox="0 0 60 100">
+          <path d="M22 96L26 38H34L38 96Z" fill="#ffd27a"/><path d="M26 38H34L35 30H25Z" fill="#c9983a"/>
+          <rect x="24" y="18" width="12" height="12" rx="2" fill="#fff6d0"/><path d="M22 18L30 8 38 18Z" fill="#c9983a"/>
+          <path d="M22 60H38M23 78H37" stroke="#8a6620" stroke-width="3"/>
+        </svg>
+        <div class="blip l" style="--x:30%;--y:30%;--dl:0s"><i></i><span>Qaitbay</span></div>
+        <div class="blip" style="--x:44%;--y:70%;--dl:1.2s"><i></i><span>Eastern Harbour</span></div>
+        <div class="blip" style="--x:70%;--y:38%;--dl:2.4s"><i></i><span>Canopus</span></div>
+        <div class="blip l" style="--x:80%;--y:20%;--dl:3.6s"><i></i><span>Heracleion</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 2 · OVERVIEW + MAP ===================== -->
+<section class="slide" data-hook="stats">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Overview · Submerged heritage</span>
+    <h2 class="rise" style="--i:1">Alexandria's <span class="hl">sunken monuments</span></h2>
+    <p class="sub rise" style="--i:2">Earthquakes, soil liquefaction and rising seas drowned parts of ancient Alexandria, Canopus and Thonis-Heracleion. Today their ruins lie along about 30 km of coastline, from Qaitbay Citadel to Abu Qir Bay.</p>
+
+    <div class="stats">
+      <div class="panel stat rise" style="--i:3"><div class="ic">🏛️</div><div><div class="n"><span class="count" data-to="4">0</span></div><div class="l">major sunken sites: Qaitbay, Eastern Harbour, Canopus, Heracleion</div></div></div>
+      <div class="panel stat rise" style="--i:4"><div class="ic">🧱</div><div><div class="n"><span class="count" data-to="3000" data-suffix="+">0</span></div><div class="l">architectural pieces recorded at the Qaitbay site alone</div></div></div>
+      <div class="panel stat rise" style="--i:5"><div class="ic">⏳</div><div><div class="n"><span class="count" data-to="2000" data-suffix="+">0</span></div><div class="l">years old: Ptolemaic and Roman-era remains</div></div></div>
+      <div class="panel stat rise" style="--i:6"><div class="ic">📏</div><div><div class="n">≈ <span class="count" data-to="30">0</span> km</div><div class="l">of coast between the westernmost and easternmost site</div></div></div>
+    </div>
+
+    <div class="panel mapwrap rise" style="--i:7">
+      <svg viewBox="0 0 1180 270" role="img" aria-label="Schematic map of Alexandria coast showing sunken sites">
+        <defs>
+          <linearGradient id="mSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a4d78"/><stop offset="1" stop-color="#0c6f96"/></linearGradient>
+          <linearGradient id="mLand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9c593"/><stop offset="1" stop-color="#a68d57"/></linearGradient>
+          <marker id="ar1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#ffd27a"/></marker>
+        </defs>
+        <rect width="1180" height="270" fill="url(#mSea)"/>
+        <g fill="none" stroke="rgba(255,255,255,.22)" stroke-width="1.5" class="seaflow">
+          <path d="M20 40Q120 24 220 40T420 40T620 40T820 40"/><path d="M300 70Q400 54 500 70T700 70T900 70" /><path d="M640 100Q740 86 840 100"/>
+        </g>
+        <!-- land -->
+        <path d="M0 270V160C40 158 80 150 120 148C140 146 150 120 170 108C190 98 212 98 224 106C242 124 250 140 275 148C300 152 330 142 350 138C420 128 480 130 540 128C620 126 700 124 780 120C830 118 870 112 895 106C910 104 925 110 928 122C935 150 960 175 1010 185C1070 195 1130 170 1180 150V270Z" fill="url(#mLand)"/>
+        <path d="M0 160C40 158 80 150 120 148C140 146 150 120 170 108C190 98 212 98 224 106C242 124 250 140 275 148C300 152 330 142 350 138C420 128 480 130 540 128C620 126 700 124 780 120C830 118 870 112 895 106C910 104 925 110 928 122C935 150 960 175 1010 185C1070 195 1130 170 1180 150" fill="none" stroke="#8ff4f6" stroke-width="2.5" opacity=".85"/>
+        <path d="M10 176C60 172 100 166 135 164C160 150 178 132 204 130C232 148 252 164 280 166C320 168 345 156 370 152C440 144 490 146 545 144C625 142 705 140 785 136C835 134 872 128 892 124" fill="none" stroke="rgba(70,50,20,.45)" stroke-width="2" stroke-dasharray="6 5"/>
+        <text class="maptxt" x="520" y="215" text-anchor="middle" font-size="46" font-weight="800" letter-spacing="18" fill="rgba(70,50,20,.28)">ALEXANDRIA</text>
+        <text class="maptxt" x="120" y="30" font-size="13" font-style="italic" letter-spacing="6" fill="rgba(255,255,255,.4)">MEDITERRANEAN SEA</text>
+        <text class="maptxt" x="1085" y="148" text-anchor="middle" font-size="12" font-style="italic" letter-spacing="3" fill="rgba(255,255,255,.45)">ABU QIR BAY</text>
+
+        <!-- land landmarks -->
+        <g class="maptxt" font-size="12" fill="#3b2f1a" font-weight="600">
+          <rect x="217" y="112" width="9" height="9" fill="#3b2f1a"/><text x="208" y="132" text-anchor="end">Qaitbay Citadel</text>
+          <circle cx="540" cy="143" r="4" fill="#3b2f1a"/><text x="540" y="164" text-anchor="middle">Montaza</text>
+          <circle cx="880" cy="125" r="4" fill="#3b2f1a"/><text x="862" y="147" text-anchor="middle">Abu Qir</text>
+          <circle cx="320" cy="160" r="3.5" fill="#3b2f1a"/><text x="320" y="180" text-anchor="middle">City centre</text>
+        </g>
+
+        <!-- distance bracket -->
+        <g stroke="#ffd27a" stroke-width="1.6" fill="none"><line x1="224" y1="236" x2="895" y2="236" marker-start="url(#ar1)" marker-end="url(#ar1)"/><path d="M224 228V244M895 228V244"/></g>
+        <rect x="518" y="224" width="86" height="24" rx="12" fill="#04263f" stroke="#ffd27a"/>
+        <text class="maptxt" x="561" y="241" text-anchor="middle" font-size="13" font-weight="700" fill="#ffd27a">≈ 30 km</text>
+
+        <!-- site markers -->
+        <g class="maptxt">
+          <!-- Qaitbay -->
+          <circle class="mk-ring" cx="222" cy="86" r="8" fill="none" stroke="#ffd27a" stroke-width="2"/><circle class="mk-ring b" cx="222" cy="86" r="8" fill="none" stroke="#ffd27a" stroke-width="2"/>
+          <circle cx="222" cy="86" r="7" fill="#ffd27a" stroke="#fff" stroke-width="2"/>
+          <line x1="214" y1="80" x2="196" y2="64" stroke="#fff" opacity=".6"/>
+          <text x="96" y="50" font-size="13" font-weight="700" fill="#fff">Qaitbay · Pharos Lighthouse</text>
+          <text x="96" y="66" font-size="11.5" fill="#bfeaf5">6–8 m deep · 3,000+ pieces</text>
+          <!-- Eastern Harbour -->
+          <circle class="mk-ring" cx="292" cy="132" r="8" fill="none" stroke="#ff9d7a" stroke-width="2"/><circle class="mk-ring b" cx="292" cy="132" r="8" fill="none" stroke="#ff9d7a" stroke-width="2"/>
+          <circle cx="292" cy="132" r="7" fill="#ff9d7a" stroke="#fff" stroke-width="2"/>
+          <line x1="294" y1="124" x2="318" y2="92" stroke="#fff" opacity=".6"/>
+          <text x="322" y="82" font-size="13" font-weight="700" fill="#fff">Eastern Harbour</text>
+          <text x="322" y="98" font-size="11.5" fill="#bfeaf5">Antirhodos · royal quarter · 2–8 m</text>
+          <!-- Canopus -->
+          <circle class="mk-ring" cx="950" cy="106" r="8" fill="none" stroke="#7dffb5" stroke-width="2"/><circle class="mk-ring b" cx="950" cy="106" r="8" fill="none" stroke="#7dffb5" stroke-width="2"/>
+          <circle cx="950" cy="106" r="7" fill="#7dffb5" stroke="#fff" stroke-width="2"/>
+          <line x1="942" y1="100" x2="918" y2="76" stroke="#fff" opacity=".6"/>
+          <text x="914" y="58" text-anchor="end" font-size="13" font-weight="700" fill="#fff">Canopus (East)</text>
+          <text x="914" y="74" text-anchor="end" font-size="11.5" fill="#bfeaf5">≈ 2 km offshore · 4–5 m</text>
+          <!-- Heracleion -->
+          <circle class="mk-ring" cx="1022" cy="60" r="8" fill="none" stroke="#b9a6ff" stroke-width="2"/><circle class="mk-ring b" cx="1022" cy="60" r="8" fill="none" stroke="#b9a6ff" stroke-width="2"/>
+          <circle cx="1022" cy="60" r="7" fill="#b9a6ff" stroke="#fff" stroke-width="2"/>
+          <text x="1038" y="56" font-size="13" font-weight="700" fill="#fff">Thonis-Heracleion</text>
+          <text x="1038" y="72" font-size="11.5" fill="#bfeaf5">≈ 7 km off Abu Qir · 5–7 m</text>
+        </g>
+        <!-- compass -->
+        <g transform="translate(44,222)"><circle r="20" fill="rgba(2,28,52,.7)" stroke="rgba(255,255,255,.6)"/><path d="M0 -14L5 4L0 1L-5 4Z" fill="#ffd27a"/><text class="maptxt" y="-26" text-anchor="middle" font-size="12" font-weight="700" fill="#3b2f1a">N</text></g>
+      </svg>
+      <div class="mapcap">Schematic map · not to scale</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3 · DEPTH & DISTANCE ===================== -->
+<section class="slide" data-hook="scene">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Depth &amp; distance from shore</span>
+    <h2 class="rise" style="--i:1">How deep, <span class="hl">how far?</span></h2>
+    <p class="sub rise" style="--i:2">All four sites sit in shallow water, within about 8 m of the surface. That is good news for divers and for cabled sensors, but it also means waves, currents and sediment reach them easily.</p>
+
+    <div class="depth-grid">
+      <div class="panel chips rise" style="--i:3" id="chips">
+        <h4>Select a site</h4>
+        <button class="chip" data-s="0" style="--c:#ffd27a"><i></i>Qaitbay · Pharos</button>
+        <button class="chip" data-s="1" style="--c:#ff9d7a"><i></i>Eastern Harbour</button>
+        <button class="chip" data-s="2" style="--c:#7dffb5"><i></i>Canopus</button>
+        <button class="chip" data-s="3" style="--c:#b9a6ff"><i></i>Thonis-Heracleion</button>
+        <div class="readout">
+          <div class="nm" id="rdName">–</div>
+          <div class="rd"><div><small>Depth</small><b id="rdDepth">–</b></div><div><small>From shore</small><b id="rdDist">–</b></div></div>
+          <p id="rdNote"></p>
+        </div>
+      </div>
+
+      <div class="panel scene rise" style="--i:4">
+        <svg id="scene" viewBox="0 0 760 430" role="img" aria-label="Cross-section showing depth and distance of a sunken statue">
+          <defs>
+            <linearGradient id="scSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a79a8"/><stop offset="1" stop-color="#7fd0e6"/></linearGradient>
+            <linearGradient id="scWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#18a9c4"/><stop offset=".5" stop-color="#0a6e98"/><stop offset="1" stop-color="#05345a"/></linearGradient>
+            <linearGradient id="scSand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d6bf8a"/><stop offset="1" stop-color="#7a6540"/></linearGradient>
+            <linearGradient id="stone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8f8467"/><stop offset=".5" stop-color="#cdbf9c"/><stop offset="1" stop-color="#7d7258"/></linearGradient>
+            <linearGradient id="scRay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+            <marker id="mkA" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#ffd27a"/></marker>
+          </defs>
+          <rect width="760" height="430" fill="url(#scSky)"/>
+          <circle cx="700" cy="22" r="40" fill="#fff3c4" opacity=".35"/>
+          <rect y="64" width="760" height="366" fill="url(#scWater)"/>
+          <!-- light rays -->
+          <g opacity=".5"><path d="M180 64L260 64L420 430L250 430Z" fill="url(#scRay)"/><path d="M420 64L470 64L640 430L540 430Z" fill="url(#scRay)"/></g>
+          <!-- sand / shore -->
+          <path id="sandPath" fill="url(#scSand)" d=""/>
+          <!-- palm on shore -->
+          <g transform="translate(46,40)"><path d="M0 24Q4 10 2 -8" stroke="#6b4f2a" stroke-width="4" fill="none"/>
+            <g fill="#3fa36b"><path d="M2 -8Q-14 -20 -26 -8Q-12 -12 2 -8Z"/><path d="M2 -8Q18 -22 30 -10Q14 -12 2 -8Z"/><path d="M2 -8Q-4 -26 -14 -28Q-4 -22 2 -8Z"/><path d="M2 -8Q10 -26 20 -26Q10 -20 2 -8Z"/></g></g>
+          <text x="46" y="82" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4a3a1c" letter-spacing="2">SHORE</text>
+          <!-- seabed decor -->
+          <g id="decor"></g>
+          <!-- statue -->
+          <g id="statue">
+            <g class="sbubs"></g>
+            <g transform="rotate(-4)">
+              <rect x="-46" y="-18" width="92" height="20" rx="3" fill="url(#stone)"/>
+              <path d="M-32 -18L-28 -100H28L32 -18Z" fill="url(#stone)"/>
+              <path d="M-28 -100Q-34 -112 -26 -148H26Q34 -112 28 -100Z" fill="url(#stone)"/>
+              <path d="M-12 -100L-14 -60M0 -100V-50M12 -100L14 -60" stroke="rgba(60,50,30,.35)" stroke-width="2"/>
+              <path d="M-26 -126Q0 -112 26 -126" stroke="#6b5f45" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path d="M-30 -124L30 -112" stroke="#6b5f45" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+              <path d="M-22 -186H22L34 -146H-34Z" fill="#8c7f5d"/>
+              <ellipse cx="0" cy="-166" rx="16" ry="20" fill="url(#stone)"/>
+              <path d="M-16 -178H16" stroke="#6b5f45" stroke-width="3"/>
+              <circle cx="-6" cy="-168" r="1.8" fill="#3f3626"/><circle cx="6" cy="-168" r="1.8" fill="#3f3626"/>
+              <path d="M-5 -156Q0 -152 5 -156" stroke="#3f3626" stroke-width="1.6" fill="none"/>
+              <path d="M0 -190Q4 -198 0 -202Q-4 -198 0 -190Z" fill="#c9983a"/>
+              <g fill="#3a9f6a" opacity=".75"><circle cx="-24" cy="-60" r="4"/><circle cx="22" cy="-40" r="3.5"/><circle cx="-34" cy="-12" r="3"/><circle cx="10" cy="-130" r="2.5"/></g>
+              <path d="M-36 -4Q-40 -30 -33 -52M-30 -2Q-27 -26 -21 -44" stroke="#2d8f55" stroke-width="3" fill="none" class="sw"/>
+            </g>
+            <path d="M-70 4Q-40 -14 -8 -4Q20 -16 74 4V10H-70Z" fill="#b99f68"/>
+          </g>
+          <!-- surface waves -->
+          <g id="waves" opacity=".8"></g>
+          <!-- distance arrow (sky) -->
+          <g id="distG">
+            <line id="gShore" x1="92" y1="40" x2="92" y2="64" stroke="#ffd27a" stroke-width="1.5" class="dash-flow"/>
+            <line id="gStat" x1="0" y1="40" x2="0" y2="200" stroke="#ffd27a" stroke-width="1.5" class="dash-flow"/>
+            <line id="distLine" x1="92" y1="40" x2="400" y2="40" stroke="#ffd27a" stroke-width="2.5" marker-start="url(#mkA)" marker-end="url(#mkA)"/>
+            <g id="distPill"><rect id="distRect" x="0" y="27" width="190" height="26" rx="13" fill="#04263f" stroke="#ffd27a"/><text id="distTxt" y="45" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffd27a"></text></g>
+          </g>
+          <!-- depth arrow (water) -->
+          <g id="depthG">
+            <line id="depthLine" x1="0" y1="64" x2="0" y2="300" stroke="#7dffe0" stroke-width="2.5" marker-start="url(#mkA)" marker-end="url(#mkA)"/>
+            <g id="depthPill"><rect id="depthRect" x="-52" y="-13" width="104" height="26" rx="13" fill="#04263f" stroke="#7dffe0"/><text id="depthTxt" y="5" text-anchor="middle" font-size="13.5" font-weight="700" fill="#7dffe0"></text></g>
+          </g>
+          <g font-size="10.5" fill="#fff" opacity=".85" font-weight="600" letter-spacing="1.5"><text x="752" y="58" text-anchor="end">SEA SURFACE · 0 m</text></g>
+        </svg>
+      </div>
+    </div>
+    <p class="fnote rise" style="--i:5">Depths and distances: Egyptian Ministry of Tourism &amp; Antiquities (Sunken Monuments). *Eastern Harbour distance is an approximate estimate. The scene is schematic: the horizontal distance axis is compressed so that all four sites fit.</p>
+  </div>
+</section>
+
+<!-- ===================== 4 · IMPORTANCE ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Why it matters</span>
+    <h2 class="rise" style="--i:1">A drowned legacy for <span class="hl">history &amp; tourism</span></h2>
+    <p class="sub rise" style="--i:2">These monuments tie Egypt's story to the wider Mediterranean world, and they are an asset that is still waiting to be shared with visitors.</p>
+
+    <div class="imp-grid">
+      <div class="panel imp rise" style="--i:3;--glow:rgba(255,210,122,.6);--glow2:#ffd27a">
+        <span class="ico">📜</span><h3>Egypt's history</h3>
+        <ul>
+          <li><b>The Pharos lighthouse,</b> one of the Seven Wonders, lies in fragments at Qaitbay (3rd c. BC to 7th c. AD).</li>
+          <li><b>Thonis-Heracleion</b> was Egypt's largest Mediterranean port before Alexandria was founded in 331 BC.</li>
+          <li><b>The Ptolemaic royal quarter</b> and Canopus preserve the world of the Ptolemies and Roman Egypt.</li>
+        </ul>
+      </div>
+      <div class="panel imp rise" style="--i:4;--glow:rgba(45,226,230,.55);--glow2:#2de2e6">
+        <span class="ico">🔬</span><h3>Science &amp; heritage</h3>
+        <ul>
+          <li><b>Time capsules:</b> temples, docks, statues, jewellery and shipwrecks, including Napoleon's 1798 fleet in Abu Qir Bay.</li>
+          <li><b>A natural lab:</b> earthquakes and liquefaction sank about 110 km² of the Nile Delta coast.</li>
+          <li><b>Links to Greece and Rome</b> are documented in the objects found on the seabed.</li>
+        </ul>
+      </div>
+      <div class="panel imp rise" style="--i:5;--glow:rgba(125,255,181,.5);--glow2:#7dffb5">
+        <span class="ico">🤿</span><h3>Tourism &amp; economy</h3>
+        <ul>
+          <li><b>Underwater museum:</b> in May 2025 the Prime Minister asked for a feasibility study for Abu Qir Bay.</li>
+          <li><b>Recovered pieces</b> are shown in the Antiquities Museum at the Bibliotheca Alexandrina.</li>
+          <li><b>Shallow dive sites</b> (mostly under 10 m) already draw divers, with strong potential for cultural tourism.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel threat rise" style="--i:6">
+      <span class="ico">⚠️</span>
+      <p><b>But they are at risk.</b> Currents, sediment and changing seawater keep reshaping the seabed, and reports citing UN projections say a third of Alexandria could be underwater or unusable by 2050, even in the best case. <em>Alex-Mon</em> exists to watch these sites continuously, without touching them.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5 · REFERENCE DESIGN: INSIDE & OUTSIDE ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">The overall idea · Reference design</span>
+    <h2 class="rise" style="--i:1">Inspired by the <span class="hl">T3chFlicks Smart Buoy</span></h2>
+    <p class="sub rise" style="--i:2">An open-source floating station that measures ocean conditions with an Arduino, powers itself from the sun and radios the data to a base station. Alex-Mon borrows its architecture and points it at the seabed instead of the waves.</p>
+
+    <div class="ref-grid">
+      <figure class="panel photo rise" style="--i:3">
+        <div class="ph"><span class="tag">Outside</span><img src="files/smart-buoy-master/teaser_2.png" alt="Smart Buoy floating on water with solar panels and antenna" onerror="missingAsset(this,'assets/teaser_2.png')"></div>
+        <figcaption><b>On the water.</b> A dome with two solar panels and a radio antenna sits on a wide foam float ring, keeping the electronics above the waterline.</figcaption>
+      </figure>
+      <figure class="panel photo rise" style="--i:4">
+        <div class="ph"><span class="tag">Inside</span><img src="files/smart-buoy-master/teaser.jpg" alt="Opened Smart Buoy showing the electronics inside the encapsulation" onerror="missingAsset(this,'assets/teaser.jpg')"></div>
+        <figcaption><b>Inside the encapsulation.</b> A two-part sealed shell holds the microcontroller, GPS, sensor boards, radio and wiring on a single mounting board.</figcaption>
+      </figure>
+    </div>
+
+    <div class="chiprow rise" style="--i:5">
+      <span class="pill"><i>●</i>Arduino Nano on board</span>
+      <span class="pill"><i>●</i>Solar panels + battery</span>
+      <span class="pill"><i>●</i>GPS + SD card logging</span>
+      <span class="pill"><i>●</i>Radio link ≈ 1 km</span>
+      <span class="pill"><i>●</i>Raspberry Pi base station</span>
+    </div>
+    <p class="fnote rise" style="--i:6">Source: github.com/sk-t3ch/smart-buoy (T3chFlicks). Photos from the project repository.</p>
+  </div>
+</section>
+
+<!-- ===================== 6 · VIDEO: STABILITY AT SEA ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Reference design · Stability</span>
+    <h2 class="rise" style="--i:1">How the buoy <span class="hl">stays upright</span></h2>
+    <p class="sub rise" style="--i:2">A monitoring buoy only works if it rides the waves without tipping over. Watch how the Smart Buoy settles and rights itself on the water.</p>
+
+    <div class="vid-grid">
+      <div class="panel vidbox rise" style="--i:3">
+        <div class="vf">
+          <video id="buoyVideo" controls muted loop playsinline preload="auto">
+            <source src="files/sea test.mp4" type="video/mp4" onerror="missingAsset(this.parentElement,'assets/smart-buoy.mp4')">
+          </video>
+        </div>
+      </div>
+      <div class="callouts">
+        <div class="panel callout rise" style="--i:4"><div class="n">1</div><div><h4>Wide float ring</h4><p>A broad ring of buoyant foam resists rolling, so the dome stays above the surface.</p></div></div>
+        <div class="panel callout rise" style="--i:5"><div class="n">2</div><div><h4>Weight kept low</h4><p>A low centre of gravity pulls the buoy back upright after each wave. Alex-Mon uses low-positioned ballast for the same reason.</p></div></div>
+        <div class="panel callout rise" style="--i:6"><div class="n">3</div><div><h4>Why Alex-Mon needs it</h4><p>A steady platform keeps the antenna and solar panels up, and limits the pull on the sensor cables below.</p></div></div>
+      </div>
+    </div>
+    <p class="fnote rise" style="--i:7">Alex-Mon adds an engineered anchor and mooring line: ballast alone does not stop a buoy from drifting off its monitoring area.</p>
+  </div>
+</section>
+
+<!-- ===================== 7 · DASHBOARD ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Reference design · Data</span>
+    <h2 class="rise" style="--i:1">From the sea to a <span class="hl">live dashboard</span></h2>
+    <p class="sub rise" style="--i:2">The buoy radios its readings to a Raspberry Pi base station, which stores them and serves a web dashboard with real-time values and historical graphs.</p>
+
+    <div class="dash-grid">
+      <div class="panel browser rise" style="--i:3">
+        <div class="bar"><i></i><i></i><i></i><span>Smart Buoy dashboard</span></div>
+        <div class="shot"><img src="files/smart-buoy-master/dashboard.png" alt="Smart Buoy web dashboard" onerror="missingAsset(this,'assets/dashboard.png')"></div>
+      </div>
+      <div>
+        <div class="panel listcard rise" style="--i:4">
+          <h4>Smart Buoy shows</h4>
+          <ul><li>Real-time view of the latest readings</li><li>Graphs of historical measurements</li><li>Waves, temperatures, pressure and GPS position</li><li>Battery voltage and current use</li></ul>
+        </div>
+        <div class="panel listcard alex rise" style="--i:5">
+          <h4>Alex-Mon will show</h4>
+          <ul><li>Salinity, current speed and current direction over time</li><li>Battery condition and device status</li><li>Sensor faults, communication failures and missing data</li><li>Alerts against a site-specific baseline</li></ul>
+        </div>
+      </div>
+    </div>
+    <p class="fnote rise" style="--i:6">Alex-Mon flags concerning environmental changes. It does not claim to diagnose monument damage directly from water measurements.</p>
+  </div>
+</section>
+
+<!-- ===================== 8 · SIMILARITIES ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Alex-Mon vs Smart Buoy</span>
+    <h2 class="rise" style="--i:1">How our design is <span class="hl">similar</span></h2>
+
+    <p class="sub rise" style="--i:2">Alex-Mon reuses the proven parts of the Smart Buoy, upgrades two of them, and adds what an archaeological site needs.</p>
+    <div class="sim-wrap">
+      <section class="lane same rise" style="--i:3">
+        <div class="lane-head"><span class="lane-dot"></span>Same idea · reused</div>
+        <div class="lane-tiles two">
+          <div class="tile" style="--t:0">
+            <svg viewBox="0 0 60 60" aria-hidden="true"><g class="ic-bob"><path d="M15 36 Q30 12 45 36Z" fill="#0b6688" stroke="#8cf8f5" stroke-width="2"/><rect x="12" y="35" width="36" height="7" rx="3" fill="#ffd27a"/></g><g class="ic-wave"><path d="M-15 48 q7.5-5 15 0 t15 0 t15 0 t15 0 t15 0 t15 0" stroke="#2de2e6" stroke-width="2.5" fill="none"/></g></svg>
+            <div><h4>Floating shell</h4><p>A sealed housing keeps all electronics dry, above the waves.</p></div>
+          </div>
+          <div class="tile" style="--t:1">
+            <svg viewBox="0 0 60 60" aria-hidden="true"><g class="ic-spin"><path d="M18 4v5M18 27v5M4 18h5M27 18h5M8 8l3.5 3.5M24.5 24.5L28 28M28 8l-3.5 3.5M11.5 24.5L8 28" stroke="#ffd27a" stroke-width="2.5" stroke-linecap="round"/></g><circle cx="18" cy="18" r="6" fill="#ffd27a"/><rect x="33" y="26" width="20" height="28" rx="3" fill="none" stroke="#8cf8f5" stroke-width="2"/><rect x="39" y="22" width="8" height="4" rx="1" fill="#8cf8f5"/><rect class="ic-charge" x="36" y="29" width="14" height="22" rx="1.5" fill="#37d399"/></svg>
+            <div><h4>Solar + battery</h4><p>The sun charges the battery; power use is scheduled to last.</p></div>
+          </div>
+          <div class="tile" style="--t:2">
+            <svg viewBox="0 0 60 60" aria-hidden="true"><g stroke="#8cf8f5" stroke-width="2.5" stroke-linecap="round"><path d="M22 10v8M30 10v8M38 10v8M22 42v8M30 42v8M38 42v8M10 22h8M10 30h8M10 38h8M42 22h8M42 30h8M42 38h8"/></g><rect x="17" y="17" width="26" height="26" rx="4" fill="#073653" stroke="#2de2e6" stroke-width="2"/><rect class="ic-core" x="24" y="24" width="12" height="12" rx="2" fill="#ffd27a"/><g fill="#ffd27a"><circle class="ic-blink" cx="22" cy="8" r="2"/><circle class="ic-blink b2" cx="52" cy="30" r="2"/><circle class="ic-blink b3" cx="38" cy="52" r="2"/><circle class="ic-blink b4" cx="8" cy="38" r="2"/></g></svg>
+            <div><h4>Small controller</h4><p>A low-power board reads the sensors and saves the data.</p></div>
+          </div>
+          <div class="tile" style="--t:3">
+            <svg viewBox="0 0 60 60" aria-hidden="true"><rect x="6" y="8" width="48" height="44" rx="5" fill="#073653" stroke="#8cf8f5" stroke-width="2"/><g fill="#2de2e6"><rect class="ic-bar" x="13" y="30" width="7" height="16" rx="1"/><rect class="ic-bar k2" x="23" y="22" width="7" height="24" rx="1" fill="#ffd27a"/><rect class="ic-bar k3" x="33" y="27" width="7" height="19" rx="1"/><rect class="ic-bar k4" x="43" y="16" width="7" height="30" rx="1" fill="#37d399"/></g></svg>
+            <div><h4>Logging &amp; dashboard</h4><p>Time-stamped records, a live view and history graphs.</p></div>
+          </div>
+        </div>
+      </section>
+      <section class="lane adapted rise" style="--i:4">
+        <div class="lane-head"><span class="lane-dot"></span>Adapted · upgraded</div>
+        <div class="lane-tiles">
+          <div class="tile" style="--t:0">
+            <svg viewBox="0 0 60 60" aria-hidden="true"><path d="M0 14 q7.5-4 15 0 t15 0 t15 0 t15 0" stroke="#2de2e6" stroke-width="2" fill="none"/><g class="ic-sway"><path d="M22 14 Q30 2 38 14Z" fill="#ffd27a"/><path d="M30 15 C25 25 35 33 30 44" stroke="#a9d8e4" stroke-width="2" stroke-dasharray="3 2" fill="none"/><g stroke="#8cf8f5" stroke-width="2.5" fill="none" stroke-linecap="round"><path d="M30 44v12M24 48h12M22 52q8 7 16 0"/></g></g></svg>
+            <div><h4>Stability &amp; mooring</h4><p>Float ring → ballast plus an anchored mooring that holds position.</p></div>
+          </div>
+          <div class="tile" style="--t:1">
+            <svg viewBox="0 0 60 60" aria-hidden="true"><path d="M30 56V24M22 56l8-20 8 20" stroke="#8cf8f5" stroke-width="2.5" fill="none" stroke-linejoin="round"/><circle cx="30" cy="22" r="4" fill="#ffd27a"/><g stroke="#2de2e6" stroke-width="2.5" fill="none" stroke-linecap="round"><path class="sw1" d="M21 14a12 12 0 0 1 18 0"/><path class="sw2" d="M16 9a19 19 0 0 1 28 0"/><path class="sw3" d="M11 4a26 26 0 0 1 38 0"/></g></svg>
+            <div><h4>Wireless link</h4><p>Radio or cellular to shore, storing data while offline.</p></div>
+          </div>
+        </div>
+      </section>
+      <section class="lane new rise" style="--i:5">
+        <div class="lane-head"><span class="lane-dot"></span>New for Alex-Mon</div>
+        <div class="lane-tiles">
+          <div class="tile" style="--t:0">
+            <svg viewBox="0 0 60 60" aria-hidden="true"><path d="M0 10 q7.5-4 15 0 t15 0 t15 0 t15 0" stroke="#2de2e6" stroke-width="2" fill="none"/><path d="M30 10V38" stroke="#8cf8f5" stroke-width="2.5"/><circle class="ic-drop" cx="30" cy="12" r="3" fill="#ffd27a"/><rect class="ic-glow" x="23" y="38" width="14" height="18" rx="4" fill="#155c7b" stroke="#bafaff" stroke-width="2"/><path d="M26 44h8" stroke="#ffd27a" stroke-width="2"/></svg>
+            <div><h4>Underwater sensors</h4><p>Salinity and current probes on a marine cable.</p></div>
+          </div>
+          <div class="tile" style="--t:1">
+            <svg viewBox="0 0 60 60" aria-hidden="true"><g fill="#c5b58f" stroke="#5f563f" stroke-width="1.5"><rect x="6" y="50" width="26" height="6" rx="1"/><rect x="10" y="20" width="18" height="30"/><rect x="7" y="15" width="24" height="6" rx="1"/></g><path d="M14 22v26M19 22v26M24 22v26" stroke="#918365" stroke-width="1"/><circle class="ic-ring" cx="44" cy="26" r="13" fill="none" stroke="#37d399" stroke-width="2"/><path d="M44 12l11 4v8c0 8-5 13-11 16c-6-3-11-8-11-16v-8z" fill="rgba(55,211,153,.2)" stroke="#37d399" stroke-width="2"/><path d="M38 25l4 4 8-8" stroke="#74e5bd" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div><h4>Heritage-safe</h4><p>Nothing touches the ruins; deployment approved by the authorities.</p></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <p class="cmp-note rise" style="--i:6"><b>Note:</b> Alex-Mon is an adaptation inspired by the public project. The original hardware has not been validated for underwater sensors or for archaeological-site deployment.</p>
+  </div>
+</section>
+
+<!-- ===================== 9 · SYSTEM OVERVIEW ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">System Overview</span>
+    <h2 class="rise" style="--i:1">How <span class="hl">Alex-Mon</span> Works</h2>
+    <p class="sub rise" style="--i:2">A solar-powered floating unit collects underwater sensor readings and sends them to a remote monitoring dashboard.</p>
+
+    <div class="system-overview" role="img" aria-label="Animated Alex-Mon concept: sunlight reaches a solar panel on a floating buoy, a cable connects the buoy to an underwater sensor beside a submerged statue, and wireless telemetry links the buoy to a network satellite illustration.">
+      <div class="sky-glow"></div>
+      <div class="sea-fill"></div>
+      <svg class="sea-line" viewBox="0 0 1200 30" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M-20 15 Q10 2 40 15 T100 15 T160 15 T220 15 T280 15 T340 15 T400 15 T460 15 T520 15 T580 15 T640 15 T700 15 T760 15 T820 15 T880 15 T940 15 T1000 15 T1060 15 T1120 15 T1180 15 T1240 15"/>
+        <path class="wave2" d="M-20 20 Q10 9 40 20 T100 20 T160 20 T220 20 T280 20 T340 20 T400 20 T460 20 T520 20 T580 20 T640 20 T700 20 T760 20 T820 20 T880 20 T940 20 T1000 20 T1060 20 T1120 20 T1180 20 T1240 20"/>
+      </svg>
+
+      <!-- STEP 1 · Sunlight charging the buoy's solar panel -->
+      <div class="sv-step rise" data-step="1">
+      <div class="sunray-beam"></div>
+      <svg class="sun-icon" viewBox="0 0 80 80" aria-hidden="true">
+        <g stroke="#ffd27a" stroke-width="3.5" stroke-linecap="round">
+          <path d="M40 2v10M40 68v10M2 40h10M68 40h10M13 13l8 8M59 59l8 8M67 13l-8 8M21 59l-8 8"/>
+        </g><circle cx="40" cy="40" r="23" fill="#ffd27a"/><circle cx="33" cy="32" r="7" fill="#fff2bd" opacity=".8"/>
+      </svg>
+      <svg class="sun-rays" viewBox="0 0 360 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 0 Q105 15 175 66 T325 90"/>
+        <path d="M0 12 Q100 25 170 75 T310 103" opacity=".55"/>
+      </svg>
+      <div class="solar-label"><b class="sn">1</b> Sunlight → solar charging</div>
+      </div>
+
+      <!-- STEP 2 · Floating enclosure -->
+      <div class="sv-step rise" data-step="2">
+      <div class="buoy-label"><b class="sn">2</b> Floating control unit</div>
+      <div class="buoy" aria-hidden="true">
+        <div class="buoy-panel"></div>
+        <div class="buoy-antenna"></div>
+        <div class="buoy-deck"></div>
+        <div class="buoy-hull"></div>
+      </div>
+      <div class="buoy-glow" aria-hidden="true"></div>
+      </div>
+
+      <!-- Cable and submerged sensor, positioned beside the monument -->
+      <div class="sv-step rise" data-step="3">
+      <div class="sensor-cable" aria-hidden="true"></div>
+      <div class="sensor-probe" aria-hidden="true"></div>
+      <div class="sensor-label"><b class="sn">3</b> Salinity + current sensors</div>
+      <div class="probe-ping" aria-hidden="true"></div><div class="probe-ping p2" aria-hidden="true"></div>
+      </div>
+      <div class="seabed" aria-hidden="true"></div>
+      <div class="statue" aria-hidden="true">
+        <svg viewBox="0 0 80 170">
+          <g stroke="#5f563f" stroke-width="2" stroke-linejoin="round">
+            <path d="M10 158L15 145H65L70 158Z" fill="#b7a681"/>
+            <path d="M20 145L25 128H55L60 145Z" fill="#d1c29d"/>
+            <path d="M27 128L25 91Q18 81 24 69L27 48Q28 38 40 36Q52 38 53 48L56 69Q62 81 55 91L53 128Z" fill="#c5b58f"/>
+            <circle cx="40" cy="25" r="15" fill="#d1c29d"/>
+            <path d="M25 23Q24 6 40 7Q56 8 55 23L50 16L31 17Z" fill="#9b8d6d"/>
+            <path d="M29 51L12 78L18 84L34 65M51 51L66 75L61 82L46 65" fill="#c5b58f"/>
+            <path d="M32 84L29 124M48 84L51 124" stroke="#918365" stroke-width="2" fill="none"/>
+            <path d="M15 158H65" stroke="#e4d6b1" stroke-width="2"/>
+          </g>
+        </svg>
+      </div>
+      <div class="statue-bubbles" aria-hidden="true">
+        <i style="--x:8px;--s:6px;--d:3.8s;--delay:-1s"></i>
+        <i style="--x:25px;--s:9px;--d:4.5s;--delay:-2.6s"></i>
+        <i style="--x:42px;--s:5px;--d:3.4s;--delay:-.5s"></i>
+        <i style="--x:18px;--s:4px;--d:5s;--delay:-3.1s"></i>
+        <i style="--x:51px;--s:7px;--d:4.1s;--delay:-1.8s"></i>
+      </div>
+      <div class="statue-label">Submerged monument</div>
+      <!-- STEP 4 · Wireless telemetry -->
+      <div class="sv-step rise" data-step="4">
+      <svg class="radio-link" viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 75 Q130 0 285 34"/>
+        <path d="M0 84 Q130 9 285 43" opacity=".45"/>
+      </svg>
+      <div class="satellite" aria-hidden="true">
+        <div class="satellite-wing left"></div><div class="satellite-wing right"></div>
+        <div class="satellite-core"></div><div class="satellite-antenna"></div>
+      </div>
+      <div class="network-label"><b class="sn">4</b> Wireless data to shore</div>
+      <div class="link-note">Concept illustration: the satellite stands for a generic wireless / cellular link.</div>
+      </div>
+
+    </div>
+
+    <div class="sv-legend">
+      <div data-step="1"><b>1</b><span><strong>Solar power</strong>The panel charges the buoy battery all day.</span></div>
+      <div data-step="2"><b>2</b><span><strong>Floating unit</strong>Controller, storage and radio stay dry above water, held by a mooring.</span></div>
+      <div data-step="3"><b>3</b><span><strong>Underwater sensors</strong>A marine cable brings salinity and current readings up to the buoy.</span></div>
+      <div data-step="4"><b>4</b><span><strong>Data to shore</strong>Readings are sent to the monitoring dashboard.</span></div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ===================== 10 · DATA WE NEED ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Monitoring goals · The essential measurements</span>
+    <h2 class="rise" style="--i:1">What data do we <span class="hl">need?</span></h2>
+    <p class="sub rise" style="--i:2">Three measurements help us describe the seawater conditions around submerged archaeological remains.</p>
+    <div class="data-grid">
+      <article class="data-card panel rise" style="--i:3">
+        <span class="index">01</span>
+        <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
+          <path d="M60 2 C60 2 39 28 39 42 a21 21 0 0 0 42 0 C81 28 60 2 60 2Z" fill="rgba(45,226,230,.18)" stroke="#2de2e6" stroke-width="2.5"/>
+          <g fill="#ffd27a"><circle class="ion" cx="51" cy="44" r="3"/><circle class="ion i2" cx="63" cy="36" r="2.5"/><circle class="ion i3" cx="69" cy="50" r="3"/><circle class="ion i4" cx="57" cy="55" r="2"/></g>
+          <text x="60" y="78" text-anchor="middle" font-size="8" fill="#a9d8e4" letter-spacing="1.5">SALT IONS</text>
+        </svg>
+        <h3>Salinity</h3>
+        <p>How salty is the seawater? Tracking changes helps us understand the local marine environment and possible long-term exposure conditions.</p>
+      </article>
+      <article class="data-card panel rise" style="--i:4">
+        <span class="index">02</span>
+        <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
+          <circle cx="60" cy="40" r="32" fill="rgba(4,38,68,.6)" stroke="#2de2e6" stroke-width="2"/>
+          <circle cx="60" cy="40" r="25" fill="none" stroke="rgba(160,235,255,.3)" stroke-dasharray="2 5"/>
+          <g font-size="8" font-weight="700" fill="#a9d8e4" text-anchor="middle"><text x="60" y="16">N</text><text x="60" y="70">S</text><text x="86" y="43">E</text><text x="34" y="43">W</text></g>
+          <g class="needle"><path d="M60 40 L56 40 L60 18 L64 40Z" fill="#ffd27a"/><path d="M60 40 L56 40 L60 60 L64 40Z" fill="#5f7f95"/></g>
+          <circle cx="60" cy="40" r="3" fill="#fff"/>
+        </svg>
+        <h3>Current direction</h3>
+        <p>Which way is the water moving? Direction shows how water—and suspended material—moves around the monitoring site.</p>
+      </article>
+      <article class="data-card panel rise" style="--i:5">
+        <span class="index">03</span>
+        <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
+          <g fill="none" stroke-linecap="round">
+            <path class="flowline" d="M8 24 H112" stroke="#2de2e6" stroke-width="3"/>
+            <path class="flowline f2" d="M8 40 H112" stroke="#8cf8f5" stroke-width="4"/>
+            <path class="flowline f3" d="M8 56 H112" stroke="#2de2e6" stroke-width="3"/>
+          </g>
+          <path d="M96 30 l14 10 -14 10" fill="none" stroke="#ffd27a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="60" y="76" text-anchor="middle" font-size="8" fill="#a9d8e4" letter-spacing="1.5">FAST · SLOW</text>
+        </svg>
+        <h3>Water speed</h3>
+        <p>How fast is the current? Speed helps identify calm periods and stronger flows that may affect sediment movement near the site.</p>
+      </article>
+    </div>
+    <p class="fnote rise" style="--i:6">The first deployment focuses on these three core variables. Additional measurements can be added if the site study requires them.</p>
+  </div>
+</section>
+
+
+<!-- ===================== 12 · HOW SALINITY SENSING WORKS ===================== -->
+<section class="slide salinity-slide">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Sensor technology · Salinity</span>
+    <h2 class="rise" style="--i:1">How does an underwater <span class="hl">salinity sensor</span> work?</h2>
+    <p class="sub rise" style="--i:2">A wired conductivity + temperature probe stays underwater while the processor and data logger can remain safely inside the floating buoy.</p>
+    <div class="salinity-layout">
+      <article class="salinity-panel panel rise" style="--i:3">
+        <div class="cell-demo" aria-label="Animated conductivity cell: two electrodes in water, salt ions carry current, a meter shows more current in salty water">
+          <svg viewBox="0 0 520 270" role="img">
+            <defs>
+              <linearGradient id="cellWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a9cc0" stop-opacity=".45"/><stop offset="1" stop-color="#05324f" stop-opacity=".85"/></linearGradient>
+            </defs>
+            <!-- wires + battery -->
+            <path d="M109 82 V40 H232 M288 40 H411 V82" stroke="#a9d8e4" stroke-width="3" fill="none"/>
+            <g stroke="#ffd27a" stroke-width="3"><path d="M160 28 V52"/><path d="M170 34 V46" stroke-width="5"/></g>
+            <text x="165" y="20" text-anchor="middle" font-size="10" fill="#ffd27a" letter-spacing="1">VOLTAGE</text>
+            <path class="e-flow e-slow" d="M109 82 V40 H232 M288 40 H411 V82" stroke="#8cf8f5" stroke-width="3" fill="none"/>
+            <path class="e-flow e-fast" d="M109 82 V40 H232 M288 40 H411 V82" stroke="#ffffff" stroke-width="3.5" fill="none"/>
+            <!-- meter -->
+            <circle cx="260" cy="44" r="30" fill="#062c46" stroke="#8cf8f5" stroke-width="2.5"/>
+            <path d="M240 54 A22 22 0 0 1 280 54" stroke="#37d399" stroke-width="3" fill="none" stroke-dasharray="3 3"/>
+            <g class="cell-needle"><path d="M260 52 L258 52 L260 24 L262 52Z" fill="#ffd27a"/></g>
+            <circle cx="260" cy="52" r="3.5" fill="#fff"/>
+            <text x="260" y="68" text-anchor="middle" font-size="8" fill="#a9d8e4" letter-spacing="1">CURRENT</text>
+            <!-- water tank -->
+            <rect x="70" y="92" width="380" height="166" rx="16" fill="url(#cellWater)" stroke="rgba(160,235,255,.45)" stroke-width="2"/>
+            <path class="cell-surface" d="M70 100 q20 -6 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" stroke="#aafcff" stroke-opacity=".7" stroke-width="2" fill="none"/>
+            <!-- electrodes -->
+            <rect x="100" y="80" width="18" height="160" rx="4" fill="#cfd8dc" stroke="#fff" stroke-width="1.5"/>
+            <rect x="402" y="80" width="18" height="160" rx="4" fill="#cfd8dc" stroke="#fff" stroke-width="1.5"/>
+            <text x="109" y="255" text-anchor="middle" font-size="16" font-weight="900" fill="#ffd27a">+</text>
+            <text x="411" y="255" text-anchor="middle" font-size="16" font-weight="900" fill="#2de2e6">−</text>
+            <!-- ions -->
+            <g transform="translate(170 140)"><g class="ip" style="animation-duration:3.0s;animation-delay:-0.3s"><circle r="10" fill="#ffd27a" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">+</text></g></g><g transform="translate(330 200)"><g class="ip" style="animation-duration:3.2s;animation-delay:-0.5s"><circle r="10" fill="#ffd27a" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">+</text></g></g><g transform="translate(250 170)"><g class="in" style="animation-duration:2.9s;animation-delay:-1.2s"><circle r="10" fill="#2de2e6" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">−</text></g></g><g transform="translate(360 130)"><g class="in" style="animation-duration:3.7s;animation-delay:-2.4s"><circle r="10" fill="#2de2e6" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">−</text></g></g><g transform="translate(345 122)" class="salt"><g class="ip" style="animation-duration:2.9s;animation-delay:-1.6s"><circle r="10" fill="#ffd27a" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">+</text></g></g><g transform="translate(220 214)" class="salt"><g class="in" style="animation-duration:2.8s;animation-delay:-0.3s"><circle r="10" fill="#2de2e6" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">−</text></g></g><g transform="translate(204 235)" class="salt"><g class="ip" style="animation-duration:3.7s;animation-delay:-2.5s"><circle r="10" fill="#ffd27a" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">+</text></g></g><g transform="translate(356 148)" class="salt"><g class="in" style="animation-duration:3.6s;animation-delay:-0.6s"><circle r="10" fill="#2de2e6" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">−</text></g></g><g transform="translate(229 152)" class="salt"><g class="ip" style="animation-duration:3.4s;animation-delay:-2.2s"><circle r="10" fill="#ffd27a" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">+</text></g></g><g transform="translate(368 223)" class="salt"><g class="in" style="animation-duration:3.7s;animation-delay:-0.3s"><circle r="10" fill="#2de2e6" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">−</text></g></g><g transform="translate(305 158)" class="salt"><g class="ip" style="animation-duration:3.4s;animation-delay:-1.5s"><circle r="10" fill="#ffd27a" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">+</text></g></g><g transform="translate(195 146)" class="salt"><g class="in" style="animation-duration:3.2s;animation-delay:-0.3s"><circle r="10" fill="#2de2e6" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">−</text></g></g><g transform="translate(359 225)" class="salt"><g class="ip" style="animation-duration:3.7s;animation-delay:-2.5s"><circle r="10" fill="#ffd27a" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">+</text></g></g><g transform="translate(151 231)" class="salt"><g class="in" style="animation-duration:3.0s;animation-delay:-2.1s"><circle r="10" fill="#2de2e6" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">−</text></g></g><g transform="translate(229 223)" class="salt"><g class="ip" style="animation-duration:3.5s;animation-delay:-0.6s"><circle r="10" fill="#ffd27a" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">+</text></g></g><g transform="translate(258 191)" class="salt"><g class="in" style="animation-duration:2.9s;animation-delay:-1.4s"><circle r="10" fill="#2de2e6" fill-opacity=".9" stroke="#fff" stroke-opacity=".6"/><text y="4" text-anchor="middle" font-size="10" font-weight="900" fill="#04263f">−</text></g></g>
+            <!-- state labels -->
+            <g class="lab-fresh"><rect x="128" y="226" width="264" height="26" rx="13" fill="#04263f" stroke="#a9d8e4"/><text x="260" y="243" text-anchor="middle" font-size="11.5" font-weight="700" fill="#eafcff">Fresh water · few ions → weak current</text></g>
+            <g class="lab-sea"><rect x="128" y="226" width="264" height="26" rx="13" fill="#04263f" stroke="#ffd27a"/><text x="260" y="243" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffe3a3">Seawater · many ions → strong current</text></g>
+            <g font-size="10" fill="#bfeaf5"><circle cx="470" cy="120" r="7" fill="#ffd27a"/><text x="470" y="123" text-anchor="middle" font-weight="900" fill="#04263f" font-size="9">+</text><text x="482" y="124">Na⁺</text>
+            <circle cx="470" cy="146" r="7" fill="#2de2e6"/><text x="470" y="149" text-anchor="middle" font-weight="900" fill="#04263f" font-size="9">−</text><text x="482" y="150">Cl⁻</text></g>
+          </svg>
+        </div>
+        <h3>How salt is measured</h3>
+        <ol class="cell-steps">
+          <li><b>1</b><span>Two metal electrodes put a small voltage across the water.</span></li>
+          <li><b>2</b><span>Dissolved salt splits into charged ions (Na⁺ and Cl⁻). They move to the opposite electrodes and carry the current.</span></li>
+          <li><b>3</b><span>More salt means more ions, so more current flows. That current (the conductivity) is converted into salinity.</span></li>
+        </ol>
+      </article>
+      <article class="salinity-panel panel rise" style="--i:4">
+        <h3>From water to recorded data</h3>
+        <p>The underwater probe sends measurements through a marine-rated cable. A controller in the buoy records the readings and can forward them to the monitoring dashboard.</p>
+        <div class="formula-flow" aria-label="Conductivity and temperature are used to calculate salinity">
+          <div class="formula-node">Conductivity<br><span style="color:var(--muted);font-weight:500">Electrical response</span></div><div class="formula-arrow">+</div><div class="formula-node">Temperature<br><span style="color:var(--muted);font-weight:500">Compensation</span></div><div class="formula-arrow">→</div><div class="formula-node">Salinity<br><span style="color:var(--muted);font-weight:500">Calculated value</span></div>
+        </div>
+        <h3 style="margin-top:.9rem">What to check for ALEX-MON</h3>
+        <ul>
+          <li>Waterproof probe and sealed cable/connector.</li>
+          <li>Specified deployment depth and pressure rating.</li>
+          <li>Corrosion-resistant materials suitable for continuous seawater immersion.</li>
+          <li>Documented interface such as RS-485/Modbus or 4–20 mA.</li>
+        </ul>
+      </article>
+    </div>
+    <p class="slide-footnote rise" style="--i:5"><b style="color:var(--gold)">Important:</b> conductivity is not itself a direct salinity reading. Confirm seawater-compatible calculations, temperature compensation and stated accuracy—especially if the project needs to detect small changes over time.</p>
+  </div>
+</section>
+
+<!-- ===================== 13 · FOUR SENSOR OPTIONS ===================== -->
+<section class="slide salinity-slide">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Market scan · Wired sensor candidates</span>
+    <h2 class="rise" style="--i:1">Four options for <span class="hl">ALEX-MON</span></h2>
+    <p class="sub rise" style="--i:2">Four wired probes that can sit on the seabed and report salinity up to the buoy. They differ mainly in what else they measure and how well they are proven for deep, salty water.</p>
+    <div class="sensor-options-grid rise" style="--i:3">
+      <article class="option-card" style="--i:0">
+        <div class="option-head">
+          <div class="option-title"><h3>WizSensor WS-OM-MUL-17A</h3><div class="option-type">All-in-one ocean probe (CTD)</div></div>
+          <div class="option-meta"><img class="option-photo" src="files/sensors/salenity/WizSensor WS-OM-MUL/image.webp" alt="WizSensor CTD probe" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="option-photo-placeholder" style="display:none">PHOTO</span></div>
+        </div>
+        <ul><li>Measures salinity, temperature <b>and depth</b> in one probe.</li><li>Rated to work down to <b>200 m</b>, far deeper than our sites.</li><li>Long 30 m cable reaches from seabed to buoy.</li></ul>
+        <div class="tags"><span class="tag-ok">Seawater range</span><span class="tag-ok">Depth rated</span><span class="tag-ok">3-in-1</span></div>
+      </article>
+      <article class="option-card" style="--i:1">
+        <div class="option-head">
+          <div class="option-title"><h3>Yosemitech Y523-A</h3><div class="option-type">Industrial conductivity probe</div></div>
+          <div class="option-meta"><img class="option-photo" src="files/sensors/salenity/Yosemitech Y523/image.png" alt="Yosemitech Y523-A probe" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="option-photo-placeholder" style="display:none">PHOTO</span></div>
+        </div>
+        <ul><li>Measures salinity and temperature.</li><li>Very wide salinity range, from fresh water up to brine.</li><li>Tough titanium / PEEK body; cable length made to order.</li></ul>
+        <div class="tags"><span class="tag-ok">Seawater range</span><span class="tag-ok">Rugged body</span><span class="tag-check">Depth rating to confirm</span></div>
+      </article>
+      <article class="option-card" style="--i:2">
+        <div class="option-head">
+          <div class="option-title"><h3>Yexsensor YEX-S2-EC-S</h3><div class="option-type">Probe built for seawater</div></div>
+          <div class="option-meta"><img class="option-photo" src="files/sensors/salenity/Yexsensor YEX-S2-EC/image.jpg" alt="Yexsensor YEX-S2-EC-S probe"></div>
+        </div>
+        <ul><li>Designed specifically for salty sea water.</li><li>Titanium body that resists corrosion.</li><li>Corrects its own reading for water temperature.</li></ul>
+        <div class="tags"><span class="tag-ok">Made for the sea</span><span class="tag-ok">Titanium</span><span class="tag-check">Depth rating to confirm</span></div>
+      </article>
+      <article class="option-card" style="--i:3">
+        <div class="option-head">
+          <div class="option-title"><h3>SensorsX SX-CCFNA-21222</h3><div class="option-type">General industrial probe</div></div>
+          <div class="option-meta"><img class="option-photo" src="files/sensors/salenity/SensorsX SX-CCFNA/image.webp" alt="SensorsX SX-CCFNA-21222 probe"></div>
+        </div>
+        <ul><li>Measures salinity and temperature.</li><li>Range covers normal Mediterranean seawater.</li><li>Built for tanks and plants rather than the open sea.</li></ul>
+        <div class="tags"><span class="tag-ok">Seawater range</span><span class="tag-check">Marine use to confirm</span><span class="tag-check">Depth rating to confirm</span></div>
+      </article>
+    </div>
+    <p class="slide-footnote rise" style="--i:4">All four send their readings digitally over the cable (RS-485 / Modbus), so any of them can plug into the same buoy electronics. Details are from manufacturer listings.</p>
+  </div>
+</section>
+
+<!-- ===================== 14 · EGYPTIAN MARKET OPTIONS ===================== -->
+<section class="slide salinity-slide">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Local market scan · Egypt</span>
+    <h2 class="rise" style="--i:1">Egyptian sensor <span class="hl">options</span></h2>
+    <p class="sub rise" style="--i:2">Locally listed sensors can help with prototyping, but the published ranges must match seawater before either is considered for deployment.</p>
+    <div class="local-sensor-grid rise" style="--i:3">
+      <article class="local-sensor-card" style="--i:0">
+        <img src="files/sensors/salenity/Water EC-TDS-Salinity/image.webp" alt="Future Electronics EC, TDS, salinity and temperature sensor probe">
+        <div>
+          <div class="option-type">Future Electronics Egypt · Industrial 4-in-1</div>
+          <h3>Water EC–TDS–Salinity–Temperature Sensor</h3>
+          <ul>
+            <li>EC, TDS, salinity and temperature.</li>
+            <li>RS-485 / Modbus; IP68; 2 m cable.</li>
+            <li>Listed EC range: 0–10 mS/cm.</li>
+            <li>Listed salinity range: 1–1,000 ppm.</li>
+          </ul>
+          <div class="local-warning"><b>Not suitable as listed for Mediterranean seawater.</b> Its published EC and salinity ranges are too low. Ask Future whether a seawater-range version is available before purchase.</div>
+          <a class="local-link" href="https://store.fut-electronics.com/products/tds-total-dissolved-particles-sensor-for-water-purity-measurements" target="_blank" rel="noopener">View product at Future Electronics ↗</a>
+        </div>
+      </article>
+      <article class="local-sensor-card" style="--i:1">
+        <img src="files/sensors/salenity/TDS Meter Analog Sensor/image.jpg" alt="RAM Electronics analog TDS meter sensor and probe">
+        <div>
+          <div class="option-type">RAM Electronics · Hobby / prototype module</div>
+          <h3>TDS Meter Analog Sensor V1.0</h3>
+          <ul>
+            <li>Waterproof probe with analog output.</li>
+            <li>Designed for general water-quality / TDS testing.</li>
+            <li>Hobby-level module, not a marine-rated salinity instrument.</li>
+            <li>No verified continuous marine depth rating.</li>
+          </ul>
+          <div class="local-warning"><b>Prototype only.</b> Not recommended for continuous Mediterranean seawater monitoring; use it for basic experiments, not final ALEX-MON measurements.</div>
+          <a class="local-link" href="https://www.ram-e-shop.com/ar/shop/kit-tds-meter-tds-meter-analog-sensor-v1-0-total-dissolved-solids-sensor-meter-9194" target="_blank" rel="noopener">View product at RAM Electronics ↗</a>
+        </div>
+      </article>
+    </div>
+    <p class="slide-footnote rise" style="--i:4">Both products are shown to map what is available locally, not as approved seawater sensors.</p>
+  </div>
+</section>
+
+<!-- ===================== 15 · ADVANTAGES & TRADE-OFFS ===================== -->
+<section class="slide salinity-slide">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Side by side · What really differs</span>
+    <h2 class="rise" style="--i:1">How the four <span class="hl">compare</span></h2>
+    <p class="sub rise" style="--i:2">All four can measure seawater salinity. The real differences are how deep they are proven to work, what else they measure, and how well their body survives salt water.</p>
+    <div class="matrix panel rise" style="--i:3">
+      <div class="mx-row mx-head"><span></span><span>WizSensor</span><span>Yosemitech</span><span>Yexsensor</span><span>SensorsX</span></div>
+      <div class="mx-row" style="--r:0"><span class="mx-k">🌊 Reads seawater salinity</span><i class="y"></i><i class="y"></i><i class="y"></i><i class="y"></i></div>
+      <div class="mx-row" style="--r:1"><span class="mx-k">⬇️ Proven depth rating</span><i class="y"></i><i class="m"></i><i class="m"></i><i class="m"></i></div>
+      <div class="mx-row" style="--r:2"><span class="mx-k">📏 Also measures depth</span><i class="y"></i><i class="n"></i><i class="n"></i><i class="n"></i></div>
+      <div class="mx-row" style="--r:3"><span class="mx-k">🌡️ Measures temperature</span><i class="y"></i><i class="y"></i><i class="y"></i><i class="y"></i></div>
+      <div class="mx-row" style="--r:4"><span class="mx-k">🛡️ Corrosion-proof body</span><i class="m"></i><i class="y"></i><i class="y"></i><i class="m"></i></div>
+      <div class="mx-row" style="--r:5"><span class="mx-k">⚓ Designed for the open sea</span><i class="y"></i><i class="m"></i><i class="y"></i><i class="n"></i></div>
+      <div class="mx-row mx-score" style="--r:6"><span class="mx-k">Overall fit<br><small style="font-weight:500;color:var(--faint);font-size:.7rem">✓ = 1 · ? = ½ · – = 0</small></span><b style="--w:92%"></b><b style="--w:67%"></b><b style="--w:75%"></b><b style="--w:50%"></b></div>
+    </div>
+    <div class="mx-legend rise" style="--i:4"><span><i class="y"></i> Yes</span><span><i class="m"></i> Needs confirming with supplier</span><span><i class="n"></i> No</span><span class="mx-pick">★ Leading candidate: <b>WizSensor</b>, one probe, proven depth, three readings</span></div>
+  </div>
+</section>
+
+
+<!-- ===================== 16 · HOW A CURRENT METER WORKS ===================== -->
+<section class="slide current-slide" data-current-demo="true">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Sensor technology · Water currents</span>
+    <h2 class="rise" style="--i:1">How does a <span class="hl">current sensor</span> work?</h2>
+    <p class="sub rise" style="--i:2">The sensor sits on the seabed and "listens" to the water. Tiny particles drift with the current and bounce its sound pings back, and the change in the echo's pitch tells it how fast and which way the water moves.</p>
+    <div class="current-explainer demo-stage">
+      <div>
+        <div class="current-scene panel rise" style="--i:4">
+          <svg viewBox="0 0 680 380" role="img" aria-label="An acoustic sensor on the seabed sends sound pings up two beams; particles carried by the current echo the sound back at a changed pitch, giving current speed and direction.">
+            <defs>
+              <linearGradient id="curSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#087ea0" stop-opacity=".48"/><stop offset="1" stop-color="#03172d" stop-opacity=".8"/></linearGradient>
+              <linearGradient id="beamG" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2de2e6" stop-opacity=".4"/><stop offset="1" stop-color="#2de2e6" stop-opacity=".04"/></linearGradient>
+              <marker id="curArrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ffd27a"/></marker>
+              <clipPath id="dopClip"><rect x="0" y="0" width="190" height="80"/></clipPath>
+            </defs>
+            <rect x="0" y="0" width="680" height="380" rx="14" fill="url(#curSea)"/>
+            <g class="cm-surface"><path d="M-70 40 Q-52 30 -35 40 T0 40 T35 40 T70 40 T105 40 T140 40 T175 40 T210 40 T245 40 T280 40 T315 40 T350 40 T385 40 T420 40 T455 40 T490 40 T525 40 T560 40 T595 40 T630 40 T665 40 T700 40 T735 40" stroke="#aafcff" stroke-opacity=".6" stroke-width="2" fill="none"/></g>
+            <text x="22" y="66" fill="#bceef6" font-size="13" font-weight="700" letter-spacing="2">WATER FLOW →</text>
+            <g stroke="#76dfe9" stroke-opacity=".3" stroke-width="2" fill="none"><path class="cm-stream" d="M0 95 H680"/><path class="cm-stream s2" d="M0 150 H680"/><path class="cm-stream" d="M0 205 H680"/><path class="cm-stream s2" d="M0 255 H680"/></g>
+            <g fill="#c9fbff"><circle class="cm-p" cx="0" cy="185" r="4" style="animation-duration:6.4s;animation-delay:-6.8s"/><circle class="cm-p" cx="0" cy="118" r="3" style="animation-duration:7.4s;animation-delay:-3.8s"/><circle class="cm-p" cx="0" cy="227" r="3" style="animation-duration:5.3s;animation-delay:-2.4s"/><circle class="cm-p" cx="0" cy="93" r="2.5" style="animation-duration:6.8s;animation-delay:-3.2s"/><circle class="cm-p" cx="0" cy="185" r="3" style="animation-duration:6.9s;animation-delay:-6.7s"/><circle class="cm-p" cx="0" cy="86" r="2.5" style="animation-duration:5.1s;animation-delay:-7.0s"/><circle class="cm-p" cx="0" cy="223" r="2.5" style="animation-duration:7.3s;animation-delay:-2.6s"/><circle class="cm-p" cx="0" cy="221" r="3" style="animation-duration:6.6s;animation-delay:-5.1s"/><circle class="cm-p" cx="0" cy="197" r="2.5" style="animation-duration:7.0s;animation-delay:-3.7s"/><circle class="cm-p" cx="0" cy="141" r="4" style="animation-duration:8.0s;animation-delay:-8.0s"/><circle class="cm-p" cx="0" cy="91" r="3.5" style="animation-duration:5.9s;animation-delay:-1.8s"/><circle class="cm-p" cx="0" cy="143" r="2.5" style="animation-duration:5.2s;animation-delay:-6.1s"/><circle class="cm-p" cx="0" cy="172" r="2.5" style="animation-duration:7.5s;animation-delay:-3.1s"/><circle class="cm-p" cx="0" cy="74" r="2.5" style="animation-duration:5.6s;animation-delay:-7.4s"/><circle class="cm-p" cx="0" cy="83" r="4" style="animation-duration:6.1s;animation-delay:-5.7s"/><circle class="cm-p" cx="0" cy="177" r="2.5" style="animation-duration:6.7s;animation-delay:-1.6s"/><circle class="cm-p" cx="0" cy="242" r="3.5" style="animation-duration:6.0s;animation-delay:-2.5s"/><circle class="cm-p" cx="0" cy="73" r="4" style="animation-duration:7.3s;animation-delay:-0.9s"/><circle class="cm-p" cx="0" cy="133" r="2.5" style="animation-duration:5.0s;animation-delay:-3.7s"/><circle class="cm-p" cx="0" cy="194" r="3" style="animation-duration:7.0s;animation-delay:-1.5s"/><circle class="cm-p" cx="0" cy="200" r="3" style="animation-duration:8.0s;animation-delay:-6.2s"/><circle class="cm-p" cx="0" cy="177" r="4" style="animation-duration:5.3s;animation-delay:-3.4s"/></g>
+            <path d="M334 318 L160 92 L196 80 L346 318Z" fill="url(#beamG)"/>
+            <path d="M334 318 L484 80 L520 92 L346 318Z" fill="url(#beamG)"/>
+            <circle r="6" fill="#2de2e6"><animateMotion path="M340 318 L178 86" dur="2.4s" begin="0s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.48;.5;1" dur="2.4s" begin="0s" repeatCount="indefinite"/></circle>
+            <circle r="6" fill="#ffd27a"><animateMotion path="M340 318 L178 86" dur="2.4s" begin="0s" repeatCount="indefinite" keyPoints="1;1;0" keyTimes="0;.5;1" calcMode="linear"/><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.5;.52;.97;1" dur="2.4s" begin="0s" repeatCount="indefinite"/></circle>
+            <circle cx="178" cy="86" r="4" fill="none" stroke="#fff" stroke-width="2"><animate attributeName="r" values="4;4;20;20" keyTimes="0;.5;.75;1" dur="2.4s" begin="0s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;.49;.5;.75;1" dur="2.4s" begin="0s" repeatCount="indefinite"/></circle>
+            <circle r="6" fill="#2de2e6"><animateMotion path="M340 318 L502 86" dur="2.4s" begin="1.2s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.48;.5;1" dur="2.4s" begin="1.2s" repeatCount="indefinite"/></circle>
+            <circle r="6" fill="#ffd27a"><animateMotion path="M340 318 L502 86" dur="2.4s" begin="1.2s" repeatCount="indefinite" keyPoints="1;1;0" keyTimes="0;.5;1" calcMode="linear"/><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.5;.52;.97;1" dur="2.4s" begin="1.2s" repeatCount="indefinite"/></circle>
+            <circle cx="502" cy="86" r="4" fill="none" stroke="#fff" stroke-width="2"><animate attributeName="r" values="4;4;20;20" keyTimes="0;.5;.75;1" dur="2.4s" begin="1.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;.49;.5;.75;1" dur="2.4s" begin="1.2s" repeatCount="indefinite"/></circle>
+            <text x="178" y="76" text-anchor="middle" fill="#e8fbff" font-size="11">echo spot</text>
+            <text x="502" y="76" text-anchor="middle" fill="#e8fbff" font-size="11">echo spot</text>
+            <path class="cm-vector" d="M230 178 L452 130" stroke="#ffd27a" stroke-width="5" stroke-linecap="round" fill="none" marker-end="url(#curArrow)"/>
+            <text x="340" y="146" text-anchor="middle" fill="#ffe3a3" font-size="13" font-weight="800" letter-spacing="1">CURRENT</text>
+            <path d="M0 345 Q120 330 240 342 T480 338 T680 344 V380 H0Z" fill="#7a6644" opacity=".85"/>
+            <g transform="translate(340 330)">
+              <rect x="-30" y="-6" width="60" height="22" rx="6" fill="#073653" stroke="#8cf8f5" stroke-width="2"/>
+              <path d="M-18 -6 Q0 -26 18 -6Z" fill="#1a8ba3" stroke="#a7fbff" stroke-width="2"/>
+              <circle class="cm-led" cx="0" cy="5" r="3" fill="#37d399"/>
+            </g>
+            <text x="340" y="372" text-anchor="middle" fill="#e8fbff" font-size="12" font-weight="700">Acoustic sensor</text>
+            <g transform="translate(18 262)">
+              <rect x="-6" y="-14" width="214" height="104" rx="10" fill="#04263f" fill-opacity=".85" stroke="rgba(160,235,255,.4)"/>
+              <text x="0" y="0" fill="#8cf8f5" font-size="10.5" font-weight="700">SENT PING</text>
+              <text x="0" y="46" fill="#ffd27a" font-size="10.5" font-weight="700">ECHO · HIGHER PITCH</text>
+              <g clip-path="url(#dopClip)" transform="translate(0 4)">
+                <g class="cm-w1"><path d="M0 18 q5 -10 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" stroke="#2de2e6" stroke-width="2" fill="none"/></g>
+                <g class="cm-w2"><path d="M0 64 q3.5 -10 7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0 t7 0" stroke="#ffd27a" stroke-width="2" fill="none"/></g>
+              </g>
+            </g>
+            <g transform="translate(486 262)">
+              <rect x="0" y="-14" width="178" height="104" rx="10" fill="#04263f" fill-opacity=".85" stroke="rgba(255,210,122,.5)"/>
+              <circle cx="40" cy="38" r="30" fill="none" stroke="#2de2e6" stroke-width="2"/>
+              <g font-size="8" fill="#a9d8e4" text-anchor="middle" font-weight="700"><text x="40" y="5">N</text><text x="40" y="78">S</text><text x="76" y="41">E</text><text x="4" y="41">W</text></g>
+              <g class="cm-compass"><path d="M40 38 L36 38 L40 14 L44 38Z" fill="#ffd27a"/></g>
+              <circle cx="40" cy="38" r="3" fill="#fff"/>
+              <text x="82" y="16" fill="#a9d8e4" font-size="10">SPEED</text>
+              <text x="82" y="34" fill="#eafcff" font-size="15" font-weight="800">0.3 m/s</text>
+              <text x="82" y="54" fill="#a9d8e4" font-size="10">DIRECTION</text>
+              <text x="82" y="72" fill="#ffd27a" font-size="15" font-weight="800">→ East-NE</text>
+              <text x="89" y="86" text-anchor="middle" fill="#9ecbd7" font-size="8">example values</text>
+            </g>
+          </svg>
+        </div>
+        <div class="current-legend">
+          <span><i></i> Blue dot = ping sent</span>
+          <span><i class="gold-dot"></i> Gold dot = echo returning</span>
+          <span><i style="background:#c9fbff"></i> Small dots = particles in the current</span>
+        </div>
+      </div>
+      <div class="current-steps">
+        <div class="current-step panel rise" style="--i:3">
+          <span class="step-no">1</span>
+          <div><h3>Send a sound ping</h3><p>The sensor sends short pings of sound up into the water along two or more beams.</p></div>
+        </div>
+        <div class="current-step panel rise" style="--i:4">
+          <span class="step-no">2</span>
+          <div><h3>Hear the pitch change</h3><p>Particles carried by the current bounce the ping back. Because they are moving, the echo returns at a slightly different pitch, like a passing ambulance siren (the Doppler effect).</p></div>
+        </div>
+        <div class="current-step panel rise" style="--i:5">
+          <span class="step-no">3</span>
+          <div><h3>Work out the current</h3><p>A bigger pitch change means faster water. Comparing the beams and a built-in compass gives the direction.</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="fnote rise" style="--i:6">Conceptual illustration of an acoustic Doppler current meter. A rotor-based meter such as EMCON's uses a different velocity-sensing method, paired with a separate direction sensor.</p>
+  </div>
+</section>
+
+<!-- ===================== 17 · CURRENT SENSOR OPTIONS ===================== -->
+<section class="slide current-slide">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Market scan · Current velocity + direction</span>
+    <h2 class="rise" style="--i:1">Two <span class="hl">current meter</span> options</h2>
+    <p class="sub rise" style="--i:2">Both measure current speed and direction, but their sensing technology and integration approach differ.</p>
+    <div class="current-sensor-grid">
+      <article class="current-sensor-card panel rise" style="--i:3">
+        <a href="https://oceanadcp.com/products/single-point-current-meter/" target="_blank" rel="noopener" aria-label="Open OCEAN-SPCM manufacturer page">
+          <img class="product-image" src="files/sensors/Current/SPCM/image.webp" alt="OCEAN-SPCM acoustic single-point current meter" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="missing" style="display:none;position:relative;min-height:205px"><span>OCEAN-SPCM product photo</span><code>Open manufacturer page</code></div>
+        </a>
+        <div>
+          <div class="vendor">Oceantek</div>
+          <h3>OCEAN-SPCM</h3>
+          <span class="fit-label">Best match for fixed-point monitoring</span>
+          <ul>
+            <li>Senses with <b>sound</b>, so nothing moves and nothing gets jammed.</li>
+            <li>Gives <b>speed and compass direction</b> from one unit.</li>
+            <li>Sends live readings up the cable to the buoy.</li>
+            <li>Available as a cabled or battery-powered version.</li>
+          </ul>
+          <a class="product-link" href="https://oceanadcp.com/products/single-point-current-meter/" target="_blank" rel="noopener">Manufacturer page ↗</a>
+        </div>
+      </article>
+      <article class="current-sensor-card panel rise" style="--i:4">
+        <a href="https://emconindia.com/products/water-current-meter-with-direction-for-river-oceans-or-estuaries/" target="_blank" rel="noopener" aria-label="Open EMCON current meter manufacturer page">
+          <img class="product-image" src="files/sensors/Current/EMCON/image.webp" alt="EMCON water current meter with direction probe" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="missing" style="display:none;position:relative;min-height:205px"><span>EMCON current meter photo</span><code>Open manufacturer page</code></div>
+        </a>
+        <div>
+          <div class="vendor">EMCON</div>
+          <h3>Water Current Meter with Direction</h3>
+          <ul>
+            <li>Senses with a <b>spinning rotor</b> plus a direction vane.</li>
+            <li>Gives <b>speed and compass direction</b>.</li>
+            <li>Handles currents far stronger than any in the harbour.</li>
+            <li>Comes with a 20 m cable and a handheld display.</li>
+          </ul>
+          <a class="product-link" href="https://emconindia.com/products/water-current-meter-with-direction-for-river-oceans-or-estuaries/" target="_blank" rel="noopener">Manufacturer page ↗</a>
+          <div class="current-caveat"><b>To check:</b> it is built for a person reading a handheld screen. We need to confirm it can send data to the buoy on its own, unattended.</div>
+        </div>
+      </article>
+    </div>
+    <div class="diff-strip panel rise" style="--i:5">
+      <div class="diff-side">
+        <svg viewBox="0 0 90 50" aria-hidden="true"><rect x="4" y="15" width="22" height="20" rx="5" fill="#073653" stroke="#8cf8f5" stroke-width="2"/><path class="sw1" d="M32 17 Q42 25 32 33" stroke="#2de2e6" stroke-width="2.5" fill="none"/><path class="sw2" d="M42 11 Q58 25 42 39" stroke="#2de2e6" stroke-width="2.5" fill="none"/><path class="sw3" d="M54 5 Q76 25 54 45" stroke="#2de2e6" stroke-width="2.5" fill="none"/></svg>
+        <div><b>Acoustic (OCEAN-SPCM)</b><span>Listens to echoes. No moving parts, so less cleaning and nothing for seaweed to jam.</span></div>
+      </div>
+      <div class="diff-vs">VS</div>
+      <div class="diff-side">
+        <svg viewBox="0 0 90 50" aria-hidden="true"><path d="M8 25 H34" stroke="#a9d8e4" stroke-width="3"/><g class="rotor"><ellipse cx="0" cy="-9" rx="4" ry="9" fill="#ffd27a"/><ellipse cx="0" cy="9" rx="4" ry="9" fill="#ffd27a"/><circle r="3.5" fill="#fff"/></g><path d="M54 25 H80 M72 17 L82 25 72 33" stroke="#2de2e6" stroke-width="2.5" fill="none" class="flow-arrow"/></svg>
+        <div><b>Rotor (EMCON)</b><span>Counts how fast a propeller spins. Simple and proven, but moving parts can foul over time.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ===================== 18 · EGYPTIAN CURRENT-SENSOR OPTION ===================== -->
+<section class="slide current-slide egypt-current-slide">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Local market scan · Egypt</span>
+    <h2 class="rise" style="--i:1">Egyptian current-sensor <span class="hl">option</span></h2>
+    <p class="sub rise" style="--i:2">A locally available flow sensor for basic prototyping, with an important limitation for ALEX-MON.</p>
+    <div class="egypt-flow-card panel rise" style="--i:3">
+      <div class="egypt-flow-visual" aria-label="Illustration of a water-flow sensor installed inline inside a pipe">
+        <svg viewBox="0 0 420 280" role="img" aria-label="Cutaway: water flows into the pipe, spins a turbine inside the sensor, and a magnet on the turbine triggers a hall sensor on top that sends one pulse per turn">
+          <defs>
+            <linearGradient id="pipeMetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7edf2"/><stop offset=".5" stop-color="#7fa8b8"/><stop offset="1" stop-color="#2b5870"/></linearGradient>
+            <linearGradient id="pipeWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2ab7d8"/><stop offset="1" stop-color="#0b4f7a"/></linearGradient>
+            <clipPath id="pipeInside"><path d="M14 147 H160 A50 50 0 0 1 260 147 H406 V183 H260 A50 50 0 0 1 160 183 H14Z"/></clipPath>
+          </defs>
+          <!-- pipe walls + housing -->
+          <rect x="8" y="140" width="404" height="50" rx="6" fill="url(#pipeMetal)" stroke="#c4f4fb" stroke-width="1.5"/>
+          <rect x="146" y="104" width="128" height="122" rx="20" fill="url(#pipeMetal)" stroke="#c4f4fb" stroke-width="1.5"/>
+          <!-- water inside (cutaway) -->
+          <path d="M14 147 H160 A50 50 0 0 1 260 147 H406 V183 H260 A50 50 0 0 1 160 183 H14Z" fill="url(#pipeWater)" stroke="#2de2e6" stroke-opacity=".6"/>
+          <g clip-path="url(#pipeInside)" fill="#d8fbff"><circle class="pf-drop" cx="0" cy="178" r="3" style="animation-duration:2.65s;animation-delay:-2.23s"/><circle class="pf-drop" cx="0" cy="178" r="2.5" style="animation-duration:2.70s;animation-delay:-2.17s"/><circle class="pf-drop" cx="0" cy="158" r="3.5" style="animation-duration:2.23s;animation-delay:-0.44s"/><circle class="pf-drop" cx="0" cy="165" r="3" style="animation-duration:2.72s;animation-delay:-1.07s"/><circle class="pf-drop" cx="0" cy="152" r="3.5" style="animation-duration:2.35s;animation-delay:-2.05s"/><circle class="pf-drop" cx="0" cy="172" r="3" style="animation-duration:2.31s;animation-delay:-2.43s"/><circle class="pf-drop" cx="0" cy="172" r="2.5" style="animation-duration:2.66s;animation-delay:-0.20s"/><circle class="pf-drop" cx="0" cy="178" r="3.5" style="animation-duration:2.47s;animation-delay:-0.37s"/><circle class="pf-drop" cx="0" cy="152" r="2.5" style="animation-duration:2.66s;animation-delay:-2.69s"/><circle class="pf-drop" cx="0" cy="158" r="2.5" style="animation-duration:2.37s;animation-delay:-2.69s"/><circle class="pf-drop" cx="0" cy="178" r="3.5" style="animation-duration:2.58s;animation-delay:-0.51s"/><circle class="pf-drop" cx="0" cy="158" r="3" style="animation-duration:2.38s;animation-delay:-1.01s"/><circle class="pf-drop" cx="0" cy="158" r="2.5" style="animation-duration:2.36s;animation-delay:-0.93s"/><circle class="pf-drop" cx="0" cy="178" r="3.5" style="animation-duration:2.20s;animation-delay:-1.90s"/><circle class="pf-drop" cx="0" cy="165" r="2.5" style="animation-duration:2.39s;animation-delay:-2.29s"/><circle class="pf-drop" cx="0" cy="172" r="3.5" style="animation-duration:2.39s;animation-delay:-1.35s"/><circle class="pf-drop" cx="0" cy="158" r="2.5" style="animation-duration:2.35s;animation-delay:-2.63s"/><circle class="pf-drop" cx="0" cy="165" r="3" style="animation-duration:2.21s;animation-delay:-2.21s"/><circle class="pf-drop" cx="0" cy="165" r="3" style="animation-duration:2.55s;animation-delay:-0.03s"/><circle class="pf-drop" cx="0" cy="152" r="3.5" style="animation-duration:2.31s;animation-delay:-2.67s"/></g>
+          <g clip-path="url(#pipeInside)" stroke="#aafcff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7">
+            <path class="pf-swirl" d="M178 140 A36 36 0 0 1 244 140"/>
+            <path class="pf-swirl" d="M244 190 A36 36 0 0 1 178 190"/>
+          </g>
+          <!-- turbine -->
+          <g class="pf-rotor"><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(0)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(60)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(120)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(180)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(240)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(300)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><circle r="7" fill="#fff4cf" stroke="#c9983a" stroke-width="1.5"/><circle cx="0" cy="-30" r="4.5" fill="#ff7a5c" stroke="#fff" stroke-width="1"/></g>
+          <!-- hall sensor + signal -->
+          <rect x="196" y="90" width="28" height="14" rx="3" fill="#073653" stroke="#8cf8f5" stroke-width="1.5"/>
+          <circle class="pf-led" cx="232" cy="97" r="4" fill="#37d399"/>
+          <path d="M210 90 V46 H300" stroke="#a9d8e4" stroke-width="2" fill="none"/>
+          <circle r="4" fill="#ffd27a"><animateMotion path="M210 90 V46 H300" dur="1s" repeatCount="indefinite"/></circle>
+          <rect x="300" y="22" width="112" height="46" rx="8" fill="#04263f" stroke="rgba(255,210,122,.6)"/>
+          <svg x="306" y="26" width="100" height="38" viewBox="0 0 100 38"><g class="pf-square"><path d="M0 30 H10 V10 H20 V30 H30 V10 H40 V30 H50 V10 H60 V30 H70 V10 H80 V30 H90 V10 H100 V30 H110 V10 H120 V30 H130 V10 H140 V30 H150 V10 H160 V30 H170 V10 H180 V30 H190 V10 H200 V30 H210 V10 H220 V30 H230 V10 H240 V30" stroke="#ffd27a" stroke-width="2" fill="none"/></g></svg>
+          <!-- labels -->
+          <text x="18" y="132" fill="#eafcff" font-size="12" font-weight="800">WATER IN →</text>
+          <text x="402" y="132" text-anchor="end" fill="#eafcff" font-size="12" font-weight="800">WATER OUT →</text>
+          <text x="140" y="96" text-anchor="end" fill="#bceef6" font-size="11">Magnet sensor</text>
+          <path d="M144 93 H194" stroke="#a9d8e4" stroke-width="1" stroke-dasharray="3 3"/>
+          <text x="356" y="84" text-anchor="middle" fill="#ffd27a" font-size="11" font-weight="700">1 pulse per turn</text>
+          <text x="210" y="246" text-anchor="middle" fill="#eafcff" font-size="12.5" font-weight="700">Water pushes the turbine → it spins → pulses = flow rate</text>
+          <text x="210" y="268" text-anchor="middle" fill="#ffd27a" font-size="11" letter-spacing="1.2">ONLY WORKS INSIDE A PIPE · NOT AN OPEN-SEA CURRENT METER</text>
+        </svg>
+      </div>
+      <div class="egypt-flow-details">
+        <div class="vendor">RAM Electronics · Egypt</div>
+        <h3>YF-S201F-S201 G1/2&quot; Water Flow Meter Sensor</h3>
+        <p class="egypt-flow-subtitle">Flowmeter G1/2 · 1–30 L/min · 5–15 V</p>
+        <div class="egypt-flow-specs">
+          <span><b>Flow range</b>1–30 L/min</span>
+          <span><b>Supply</b>5–15 V</span>
+          <span><b>Connection</b>G1/2&quot; pipe fitting</span>
+        </div>
+        <a class="product-link" href="https://www.ram-e-shop.com/ar/shop/sen-yfs201-water-flow-yf-s201-g1-2-water-flow-meter-sensor-9231" target="_blank" rel="noopener">View product at RAM Electronics ↗</a>
+      </div>
+    </div>
+    <div class="egypt-flow-warning rise" style="--i:4"><span class="warning-icon">!</span><div><b>Important limitation</b><p>This sensor measures water flowing <strong>inside a pipe</strong>. It does not measure open-water underwater current speed or compass direction, so it is suitable for a simple flow demonstration or pipe-flow prototype — <strong>not direct deployment at the archaeological site</strong>.</p></div></div>
+    <p class="current-source rise" style="--i:5">Specifications are taken from the linked Egyptian retail listing.</p>
+  </div>
+</section>
+
+
+
+</div>
+
+<div class="dots" id="dots"></div>
+<div class="counter"><b id="cur">1</b> / <span id="total">11</span></div>
+<div class="nav-hint"><kbd>←</kbd> previous &nbsp;·&nbsp; <kbd>→</kbd> reveal / next &nbsp;·&nbsp; <kbd>F</kbd> fullscreen</div>
+
+<script>
+/* ============ deterministic random ============ */
+let _s=7; const rnd=()=>{_s=(_s*9301+49297)%233280;return _s/233280};
+const between=(a,b)=>a+rnd()*(b-a);
+
+/* ============ ocean life ============ */
+(function buildOcean(){
+  const rays=document.getElementById('rays');
+  [4,18,33,48,63,78].forEach((l,i)=>{const r=document.createElement('div');r.className='ray';r.style.left=l+'%';r.style.width=between(7,14)+'vw';r.style.animationDelay=(-i*1.7)+'s';r.style.animationDuration=between(8,14)+'s';rays.appendChild(r)});
+
+  const b=document.getElementById('bubbles');
+  for(let i=0;i<42;i++){const e=document.createElement('div');e.className='bubble';const s=between(4,18);
+    e.style.cssText=`left:${between(1,99)}%;width:${s}px;height:${s}px;animation-duration:${between(6,16)}s;animation-delay:${-between(0,16)}s`;b.appendChild(e)}
+
+  // Marine snow: tiny particles sinking slowly (counter-motion to the rising bubbles).
+  const sn=document.getElementById('snow');
+  for(let i=0;i<45;i++){const f=document.createElement('span');f.className='flake';
+    f.style.cssText=`left:${between(0,100)}%;--s:${between(1.5,3.5)}px;--d:${between(14,30)}s;--delay:${-between(0,30)}s;--dx:${between(-30,30)}px`;sn.appendChild(f)}
+
+  // Fish swimming across at different depths, both directions.
+  const fw=document.getElementById('fishes');
+  const fishCols=['#ffd27a','#8cf8f5','#ff9d7a','#b9e8ff','#7dffb5'];
+  for(let i=0;i<9;i++){
+    const f=document.createElement('div');f.className='fish'+(i%3===1?' rev':'');
+    const w=between(28,70),col=fishCols[i%fishCols.length];
+    f.style.cssText=`--y:${between(12,62)}%;--w:${w}px;--d:${between(22,45)}s;--delay:${-between(0,45)}s;--o:${between(.35,.7)}`;
+    f.innerHTML=`<svg viewBox="0 0 60 30"><path class="tail" d="M14 15 L0 4 L3 15 L0 26Z" fill="${col}" opacity=".85"/><ellipse cx="32" cy="15" rx="20" ry="10" fill="${col}"/><path d="M26 6 Q34 0 40 7" fill="${col}" opacity=".7"/><circle cx="44" cy="12" r="2.2" fill="#03213a"/></svg>`;
+    fw.appendChild(f);
+  }
+
+  const c=document.getElementById('ruins');
+  const ruinPositions=[3,14,26,39,54,68,81,92];
+  for(let i=0;i<ruinPositions.length;i++){
+    const m=document.createElement('div');m.className='monument';
+    const w=between(145,245),h=between(110,175);
+    m.style.cssText=`position:absolute;bottom:${between(17,27)}%;left:${ruinPositions[i]}%;width:${w}px;height:${h}px;transform:translateX(-50%) scaleX(${rnd()>.5?1:-1}) rotate(${between(-5,5)}deg);animation-delay:${-between(0,10)}s`;
+    m.innerHTML=`<svg viewBox="0 0 240 170" width="100%" height="100%" aria-hidden="true">
+      <defs>
+        <linearGradient id="stone${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9b4a7"/><stop offset=".55" stop-color="#657f83"/><stop offset="1" stop-color="#304f61"/></linearGradient>
+      </defs>
+      <g stroke="#294b5b" stroke-width="2" stroke-linejoin="round">
+        <path d="M12 151L22 143H218L231 153V164H12Z" fill="#3e5f68" opacity=".92"/>
+        <path d="M18 141L29 133H211L224 143H18Z" fill="#8d9e91"/>
+        <path d="M28 132V75L42 61L56 75V132Z" fill="url(#stone${i})"/>
+        <path d="M73 132V69L86 56L99 69V132Z" fill="url(#stone${i})"/>
+        <path d="M141 132V72L154 58L167 72V132Z" fill="url(#stone${i})"/>
+        <path d="M185 132V80L198 66L211 80V132Z" fill="url(#stone${i})"/>
+        <path d="M20 72L38 48L59 68L73 59L88 43L105 65L123 53L141 68L158 45L178 68L199 54L220 76L216 86L24 84Z" fill="#82958e"/>
+        <path d="M36 48L43 37L56 43L62 61M87 43L91 31L105 42L111 62M158 45L164 32L178 44L185 64" fill="none" stroke="#b0b7a1" stroke-width="4"/>
+        <path d="M40 83V128M48 83V128M84 77V128M92 77V128M152 80V128M160 80V128M196 88V128M204 88V128" stroke="#c1c3a8" stroke-opacity=".4" stroke-width="2"/>
+        <path d="M25 134H220M30 143H214" stroke="#c5c5a7" stroke-opacity=".55" stroke-width="2"/>
+        <path d="M15 155l22-5 18 6 22-4 18 4 20-5 23 6 21-4 22 5 25-5 18 5" fill="none" stroke="#c9b27c" stroke-width="3" opacity=".8"/>
+      </g>
+      <g fill="#2b7d70" opacity=".8">
+        <path d="M28 130q-10-13 0-20q12 10 3 20M166 131q-8-14 2-21q10 12 1 21M207 129q-8-12 1-18q9 9 2 18"/>
+      </g>
+      <path d="M18 99l13 4-5 13M105 76l-9 12 8 9M176 96l10-6" fill="none" stroke="#d4d0b5" stroke-opacity=".45" stroke-width="2"/>
+    </svg>`;
+    c.appendChild(m);
+  }
+  // Slow bubbles rise around the ancient masonry, making the background feel inhabited.
+  for(let i=0;i<30;i++){
+    const rb=document.createElement('span');rb.className='ruin-bubble';
+    rb.style.cssText=`--x:${between(2,98)}%;--base:${between(10,31)}%;--size:${between(4,9)}px;--duration:${between(4.2,8)}s;--delay:${-between(0,8)}s;--drift:${between(-18,22)}px`;
+    c.appendChild(rb);
+  }
+
+  // Kelp adds gentle movement and small streams of bubbles above the ruins.
+  const sb=document.getElementById('seabed');
+  const greens=['#2f9e63','#238a58','#46b97a','#1f7a55','#39a86f'];
+  for(let i=0;i<22;i++){
+    const h=between(130,360),left=i*4.7+between(-1.5,1.5);
+    const k=document.createElement('div');k.className='kelp';
+    k.style.cssText=`left:${left}%;height:${h}px;animation-duration:${between(4,7.5)}s;animation-delay:${-rnd()*5}s`;
+    k.innerHTML=kelpSVG(h,greens[i%greens.length],between(3.5,6.5));
+    if(i%1===0){
+      for(let j=0;j<4;j++){
+        const bubble=document.createElement('span');bubble.className='kelp-bubble';
+        bubble.style.cssText=`left:${between(20,80)}%;bottom:${between(25,85)}%;--rise:${between(2.8,5.4)}s;animation-delay:${-between(0,5)}s`;
+        k.appendChild(bubble);
+      }
+    }
+    sb.appendChild(k);
+  }
+})();
+
+// Kelp whose stalk and leaves really bend: each frame shifts the upper segments further than the base,
+// and SMIL morphs between frames so the frond waves like it is in a current.
+function kelpSVG(h,col,dur){
+  const seg=Math.max(3,Math.round(h/55)),step=h/seg,amp=Math.min(34,h*.11);
+  const frame=(a,ph)=>{
+    let d=`M30 ${h}`,leaves=[],y=h,px=30;
+    for(let i=1;i<=seg;i++){
+      const t=i/seg,ny=h-i*step,s=i%2?1:-1;
+      const nx=30+a*Math.pow(t,1.5)+Math.sin(t*4+ph)*amp*.22*t;
+      d+=` Q${((px+nx)/2+s*10).toFixed(1)} ${(y-step/2).toFixed(1)} ${nx.toFixed(1)} ${ny.toFixed(1)}`;
+      leaves.push(`M${nx.toFixed(1)} ${(ny+step*.2).toFixed(1)} q${(s*24+a*.25*t).toFixed(1)} ${(-step*.3).toFixed(1)} ${(s*12+a*.45*t).toFixed(1)} ${(-step*.75).toFixed(1)}`);
+      px=nx;y=ny;
+    }
+    return {d,leaves};
+  };
+  const A=frame(-amp,0),B=frame(amp*.9,1.6),C=frame(-amp*.3,3.2);
+  const anim=(a,b,c)=>`<animate attributeName="d" dur="${dur.toFixed(2)}s" repeatCount="indefinite" values="${a};${b};${c};${a}" calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" begin="${(-rnd()*dur).toFixed(2)}s"/>`;
+  const leaves=A.leaves.map((l,i)=>`<path d="${l}">${anim(l,B.leaves[i],C.leaves[i])}</path>`).join('');
+  return `<svg viewBox="-20 0 100 ${h}" preserveAspectRatio="xMidYMax meet" overflow="visible"><g fill="none" stroke="${col}" stroke-linecap="round"><path d="${A.d}" stroke-width="5">${anim(A.d,B.d,C.d)}</path><g stroke-width="8" opacity=".9">${leaves}</g></g></svg>`;
+}
+
+/* ============ motion helpers ============ */
+function bubbleBurst(){
+  for(let i=0;i<26;i++){
+    const e=document.createElement('span');e.className='burst-bubble';const s=between(6,26);
+    e.style.cssText=`left:${between(0,100)}vw;width:${s}px;height:${s}px;--d:${between(1.4,2.6)}s;--dx:${between(-40,40)}px;animation-delay:${between(0,.35)}s`;
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(),3200);
+  }
+}
+function panCamera(i){
+  // Shift the ruins and seabed slightly per slide so the scene feels like a camera drifting along the seabed.
+  const pan=Math.sin(i*1.3)*4;
+  document.getElementById('ruins').style.transform=`translateX(${pan}%)`;
+  document.getElementById('seabed').style.transform=`translateX(${pan*1.6}%)`;
+}
+
+/* ============ deck engine ============ */
+const slides=Array.from(document.querySelectorAll('.slide'));
+const total=slides.length;let idx=0;
+let renderedIdx=-1;
+const progress=document.getElementById('progress'),cur=document.getElementById('cur'),dotsWrap=document.getElementById('dots');
+document.getElementById('total').textContent=total;
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' on':'');d.onclick=()=>go(i);dotsWrap.appendChild(d)});
+const dots=Array.from(dotsWrap.children);
+
+let currentDemoExplained=false;
+function render(){
+  if(renderedIdx!==idx){
+    slides[idx].querySelectorAll('.rise').forEach(el=>el.classList.remove('revealed'));
+    slides[idx].querySelectorAll('.sv-legend .on').forEach(el=>el.classList.remove('on'));
+    slides[idx].classList.remove('demo-stage','explain-stage');
+    currentDemoExplained=false;
+    if(slides[idx].dataset.currentDemo==='true'){
+      slides[idx].classList.add('demo-stage');
+      slides[idx].querySelectorAll('.kicker,h2,.current-scene,.current-legend').forEach(el=>el.classList.add('revealed'));
+    }
+    if(renderedIdx!==-1)bubbleBurst();
+    panCamera(idx);
+    renderedIdx=idx;
+  }
+  slides.forEach((s,i)=>{s.classList.toggle('active',i===idx);s.classList.toggle('prev',i<idx)});
+  dots.forEach((d,i)=>d.classList.toggle('on',i===idx));
+  progress.style.width=(idx/(total-1)*100)+'%';cur.textContent=idx+1;
+  fitSlide(slides[idx]);
+  onEnter(slides[idx]);
+}
+function fitSlide(s){
+  const inner=s.querySelector('.slide-inner');if(!inner)return;
+  inner.style.transform='none';
+  const cs=getComputedStyle(s);
+  const availH=s.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  const availW=s.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+  const sc=Math.min(1,availH/inner.scrollHeight,availW/inner.scrollWidth);
+  if(sc<.999)inner.style.transform='scale('+sc.toFixed(4)+')';
+}
+function go(n){idx=Math.max(0,Math.min(total-1,n));render()}
+const next=()=>{
+  const activeSlide=slides[idx];
+  if(activeSlide.dataset.currentDemo==='true' && !currentDemoExplained){
+    currentDemoExplained=true;
+    activeSlide.classList.remove('demo-stage');
+    activeSlide.classList.add('explain-stage');
+    activeSlide.querySelectorAll('.sub,.current-step,.fnote').forEach(el=>el.classList.add('revealed'));
+    fitSlide(activeSlide);
+    return;
+  }
+  const pending=activeSlide.querySelector('.rise:not(.revealed)');
+  if(pending){pending.classList.add('revealed');playIn(pending);
+    if(pending.dataset.step){const l=activeSlide.querySelector(`.sv-legend [data-step="${pending.dataset.step}"]`);if(l)l.classList.add('on')}
+    return}
+  go(idx+1);
+};
+const prev=()=>go(idx-1);
+function playIn(el){const v=el.querySelector('video');if(v){v.currentTime=0;v.play().catch(()=>{})}}
+let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(()=>fitSlide(slides[idx]),120)});
+window.addEventListener('load',()=>fitSlide(slides[idx]));
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next()}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev()}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(total-1);
+  else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
+});
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)dx<0?next():prev()},{passive:true});
+document.getElementById('deck').addEventListener('click',e=>{
+  if(e.target.closest('button,.dot,video'))return;
+  const x=e.clientX/innerWidth;if(x>.65)next();else if(x<.2)prev();
+});
+const themeBtn=document.getElementById('themeToggle');
+themeBtn.addEventListener('click',e=>{e.stopPropagation();
+  const sh=document.body.classList.toggle('shallow');
+  document.getElementById('themeIcon').textContent=sh?'🌊':'🌤️';
+  document.getElementById('themeLabel').textContent=sh?'Deep':'Shallow';
+});
+
+/* ============ per-slide hooks ============ */
+let tourTimers=[];
+function missingAsset(el,path){
+  const box=el.closest('.ph,.shot,.vf');if(!box)return;
+  el.style.display='none';
+  const d=document.createElement('div');d.className='missing';
+  d.innerHTML='<span>File not found</span><code>'+path+'</code><span>Place it next to this HTML file.</span>';
+  box.appendChild(d);
+}
+function onEnter(s){
+  document.querySelectorAll('video').forEach(v=>v.pause());
+  tourTimers.forEach(clearTimeout);tourTimers=[];
+  // Auto-play the opening of each slide: the kicker line draws, then the title wipes in.
+  // On the title slide the whole intro plays as one sequence.
+  const auto=slides.indexOf(s)===0?[...s.querySelectorAll('.rise')]:[...s.querySelectorAll(s.dataset.currentDemo==='true'?'.kicker.rise,h2.rise':'.kicker.rise,h2.rise,.sub.rise')];
+  auto.forEach((el,k)=>tourTimers.push(setTimeout(()=>el.classList.add('revealed'),250+k*(slides.indexOf(s)===0?260:380))));
+  const hook=s.dataset.hook;
+  if(hook==='stats')countUp(s);
+  if(hook==='scene')startTour();
+}
+function countUp(s){
+  s.querySelectorAll('.count').forEach(el=>{
+    const to=+el.dataset.to,suf=el.dataset.suffix||'',t0=performance.now()+500,dur=1400;
+    el.textContent='0'+suf;
+    (function step(now){
+      const p=Math.max(0,Math.min(1,(now-t0)/dur)),e=1-Math.pow(1-p,3);
+      el.textContent=Math.round(to*e).toLocaleString('en-US')+suf;
+      if(p<1)requestAnimationFrame(step);
+    })(performance.now());
+  });
+}
+
+/* ============ depth / distance scene ============ */
+const SITES=[
+  {name:'Qaitbay · Pharos Lighthouse',depth:7,depthTxt:'6–8 m',km:.15,distTxt:'0–150 m',note:'Fallen blocks of the ancient lighthouse and its island, 3,000+ architectural pieces and three shipwrecks, starting right at the citadel edge.'},
+  {name:'Eastern Harbour · Antirhodos',depth:5,depthTxt:'2–8 m',km:.2,distTxt:'≈ 200 m*',note:'The Ptolemaic royal quarter, including the sunken island of Antirhodos, lies in the shallow harbour next to the Corniche.'},
+  {name:'Canopus (East)',depth:4.5,depthTxt:'4–5 m',km:2,distTxt:'≈ 2 km',note:'A temple city north of the Abu Qir shore: columns, limestone blocks, a dock, reservoirs and rock-cut ponds.'},
+  {name:'Thonis-Heracleion',depth:6,depthTxt:'5–7 m',km:7,distTxt:'≈ 6–7 km',note:'Egypt\'s main Mediterranean port before Alexandria: colossal statues, temples, coins and sunken boats.'}
+];
+const SC={surf:64,pm:38,shore:92,W:760,H:430};
+const $=id=>document.getElementById(id);
+const decorXs=[350,410,470,530,590,650,710];
+let decor=[],state={sx:690,depth:6},tweenId=0,curSite=3;
+
+function sx_of(km){return 250+440*Math.sqrt(km/7)}
+function cubic(p0,p1,p2,p3,t){const u=1-t;return u*u*u*p0+3*u*u*t*p1+3*u*t*t*p2+t*t*t*p3}
+function bedCurve(sx,base){
+  const x2=sx-70,P=[[SC.shore,SC.surf],[SC.shore+(x2-SC.shore)*.12,SC.surf+(base-SC.surf)*.85],[SC.shore+(x2-SC.shore)*.5,base],[x2,base]];
+  return {x2,P};
+}
+function bedY(x,sx,base){
+  const {x2,P}=bedCurve(sx,base);
+  if(x>=x2)return base;if(x<=SC.shore)return SC.surf;
+  let best=base,bd=1e9;
+  for(let t=0;t<=1.0001;t+=.02){const cx=cubic(P[0][0],P[1][0],P[2][0],P[3][0],t);const dd=Math.abs(cx-x);if(dd<bd){bd=dd;best=cubic(P[0][1],P[1][1],P[2][1],P[3][1],t)}}
+  return best;
+}
+
+function initScene(){
+  // surface waves
+  let wp='M-60 64';for(let i=0;i<30;i++)wp+=` q15 -7 30 0 t30 0`;
+  $('waves').innerHTML=`<path d="${wp} V0 H-60Z" fill="rgba(255,255,255,.0)" stroke="rgba(255,255,255,.75)" stroke-width="2.5" style="animation:waveX2 5s linear infinite"/>`;
+  const st=document.createElement('style');st.textContent='@keyframes waveX2{to{transform:translateX(-60px)}}';document.head.appendChild(st);
+
+  // decor along seabed
+  const dg=$('decor');
+  const items=[
+    kelpG(70,'#2f9e63'),amphoraG(),columnG(),kelpG(52,'#46b97a'),amphoraG(),columnG(),fragmentG(),amphoraG(true),kelpG(80,'#238a58'),fragmentG()
+  ];
+  const pos=[352,392,430,470,512,552,590,630,672,720];
+  items.forEach((html,i)=>{const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.innerHTML=html;dg.appendChild(g);decor.push({g,x:pos[i]})});
+
+  // statue bubbles
+  const bg=document.querySelector('#statue .sbubs');
+  for(let i=0;i<4;i++)bg.innerHTML+=`<circle class="sbub" cx="${-8+i*6}" cy="-190" r="${3+i%2*2}" fill="rgba(255,255,255,.7)" style="animation-delay:${-i}s"/>`;
+
+  draw(state);
+}
+function kelpG(h,c){let d=`M0 0`,l='';const seg=3,st=h/seg;let y=0;for(let i=1;i<=seg;i++){const s=i%2?1:-1,ny=-i*st;d+=` Q${s*9} ${y-st/2} 0 ${ny}`;l+=`<path d="M0 ${ny+st*.2} q${s*16} ${-st*.3} ${s*8} ${-st*.7}"/>`;y=ny}
+  return `<g class="sw" style="animation-delay:${-rnd()*3}s" fill="none" stroke="${c}" stroke-linecap="round"><path d="${d}" stroke-width="4"/><g stroke-width="6.5">${l}</g></g>`}
+function amphoraG(t){return `<g transform="rotate(${t?-72:-12}) translate(0,${t?-4:0})"><path d="M-9 0Q-14 -14 -8 -26L-5 -34H5L8 -26Q14 -14 9 0Z" fill="#c78a4c" stroke="#8a5a2a" stroke-width="1.2"/><path d="M-8 -30Q-17 -28 -13 -18M8 -30Q17 -28 13 -18" stroke="#8a5a2a" stroke-width="2" fill="none"/><path d="M-9 -16H9" stroke="#8a5a2a" stroke-width="1"/></g>`}
+function columnG(){return `<g transform="rotate(-8)"><rect x="-8" y="-34" width="16" height="34" fill="#cdbf9c"/><path d="M-4 -34V0M0 -34V0M4 -34V0" stroke="#8f8467" stroke-width="1"/><path d="M-8 -34L-5 -38L2 -35L8 -38V-34Z" fill="#cdbf9c"/></g><rect x="14" y="-9" width="24" height="9" rx="1" fill="#b4a583" transform="rotate(6 26 -4)"/>`}
+function fragmentG(){return `<g fill="#b4a583" stroke="#75684e" stroke-width="1"><path d="M-29 -8l7-13 23 2 5 11z"/><path d="M7 -4l3-16 17-3 8 19z"/><path d="M-15 -24l4-5 17 1 3 6z" fill="#cdbf9c"/></g>`}
+
+function draw(s){
+  const base=SC.surf+s.depth*SC.pm,sx=s.sx,{x2,P}=bedCurve(sx,base);
+  const curve=`C${P[1][0]} ${P[1][1]} ${P[2][0]} ${P[2][1]} ${x2} ${base}`;
+  $('sandPath').setAttribute('d',`M0 34L70 34Q${SC.shore} 40 ${SC.shore} ${SC.surf} ${curve} L${SC.W} ${base} V${SC.H} H0Z`);
+  $('statue').setAttribute('transform',`translate(${sx},${base+2}) scale(.75)`);
+  decor.forEach(o=>{
+    const nearStatue=Math.abs(o.x-sx)<44;
+    o.g.setAttribute('transform',`translate(${o.x},${bedY(o.x,sx,base)+2})`);
+    o.g.style.opacity=nearStatue?0:1;
+  });
+  // distance arrow
+  $('distLine').setAttribute('x2',sx);
+  $('gStat').setAttribute('x1',sx);$('gStat').setAttribute('x2',sx);$('gStat').setAttribute('y2',base-150);
+  const mid=(SC.shore+sx)/2;
+  $('distRect').setAttribute('x',mid-95);$('distTxt').setAttribute('x',mid);
+  // depth arrow
+  const ax=Math.max(150,sx-92);
+  $('depthLine').setAttribute('x1',ax);$('depthLine').setAttribute('x2',ax);
+  $('depthLine').setAttribute('y1',SC.surf+3);$('depthLine').setAttribute('y2',base-3);
+  $('depthPill').setAttribute('transform',`translate(${ax},${(SC.surf+base)/2})`);
+}
+function selectSite(i,instant){
+  curSite=i;
+  const S=SITES[i];
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',+c.dataset.s===i));
+  $('rdName').textContent=S.name;$('rdDepth').textContent=S.depthTxt;$('rdDist').textContent=S.distTxt;$('rdNote').textContent=S.note;
+  $('distTxt').textContent='Distance  '+S.distTxt;$('depthTxt').textContent=S.depthTxt;
+  const to={sx:sx_of(S.km),depth:S.depth};
+  cancelAnimationFrame(tweenId);
+  if(instant){state=to;draw(state);return}
+  const from={...state},t0=performance.now(),dur=1100;
+  (function step(now){
+    const p=Math.min(1,(now-t0)/dur),e=p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+    state={sx:from.sx+(to.sx-from.sx)*e,depth:from.depth+(to.depth-from.depth)*e};
+    draw(state);
+    if(p<1)tweenId=requestAnimationFrame(step);
+  })(t0);
+}
+function startTour(){
+  selectSite(0,true);
+  [1,2,3].forEach((i,k)=>tourTimers.push(setTimeout(()=>selectSite(i),2600*(k+1))));
+}
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',e=>{
+  e.stopPropagation();tourTimers.forEach(clearTimeout);tourTimers=[];selectSite(+c.dataset.s);
+}));
+initScene();selectSite(3,true);
+
+render();
+</script>
+</body>
 </html>
