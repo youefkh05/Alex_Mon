@@ -1942,49 +1942,6 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
   </div>
 </section>
 
-<!-- ===================== 14 · EGYPTIAN MARKET OPTIONS ===================== -->
-<section class="slide salinity-slide">
-  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-  <div class="slide-inner">
-    <span class="kicker rise" style="--i:0">Local market scan · Egypt</span>
-    <h2 class="rise" style="--i:1">Egyptian sensor <span class="hl">options</span></h2>
-    <p class="sub rise" style="--i:2">Locally listed sensors can help with prototyping, but the published ranges must match seawater before either is considered for deployment.</p>
-    <div class="local-sensor-grid rise" style="--i:3">
-      <article class="local-sensor-card" style="--i:0">
-        <img src="files/sensors/salenity/Water EC-TDS-Salinity/image.webp" alt="Future Electronics EC, TDS, salinity and temperature sensor probe">
-        <div>
-          <div class="option-type">Future Electronics Egypt · Industrial 4-in-1</div>
-          <h3>Water EC–TDS–Salinity–Temperature Sensor</h3>
-          <ul>
-            <li>EC, TDS, salinity and temperature.</li>
-            <li>RS-485 / Modbus; IP68; 2 m cable.</li>
-            <li>Listed EC range: 0–10 mS/cm.</li>
-            <li>Listed salinity range: 1–1,000 ppm.</li>
-          </ul>
-          <div class="local-warning"><b>Not suitable as listed for Mediterranean seawater.</b> Its published EC and salinity ranges are too low. Ask Future whether a seawater-range version is available before purchase.</div>
-          <a class="local-link" href="https://store.fut-electronics.com/products/tds-total-dissolved-particles-sensor-for-water-purity-measurements" target="_blank" rel="noopener">View product at Future Electronics ↗</a>
-        </div>
-      </article>
-      <article class="local-sensor-card" style="--i:1">
-        <img src="files/sensors/salenity/TDS Meter Analog Sensor/image.jpg" alt="RAM Electronics analog TDS meter sensor and probe">
-        <div>
-          <div class="option-type">RAM Electronics · Hobby / prototype module</div>
-          <h3>TDS Meter Analog Sensor V1.0</h3>
-          <ul>
-            <li>Waterproof probe with analog output.</li>
-            <li>Designed for general water-quality / TDS testing.</li>
-            <li>Hobby-level module, not a marine-rated salinity instrument.</li>
-            <li>No verified continuous marine depth rating.</li>
-          </ul>
-          <div class="local-warning"><b>Prototype only.</b> Not recommended for continuous Mediterranean seawater monitoring; use it for basic experiments, not final ALEX-MON measurements.</div>
-          <a class="local-link" href="https://www.ram-e-shop.com/ar/shop/kit-tds-meter-tds-meter-analog-sensor-v1-0-total-dissolved-solids-sensor-meter-9194" target="_blank" rel="noopener">View product at RAM Electronics ↗</a>
-        </div>
-      </article>
-    </div>
-    <p class="slide-footnote rise" style="--i:4">Both products are shown to map what is available locally, not as approved seawater sensors.</p>
-  </div>
-</section>
-
 <!-- ===================== 15 · ADVANTAGES & TRADE-OFFS ===================== -->
 <section class="slide salinity-slide">
   <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
@@ -2152,69 +2109,6 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
         <div><b>Rotor (EMCON)</b><span>Counts how fast a propeller spins. Simple and proven, but moving parts can foul over time.</span></div>
       </div>
     </div>
-  </div>
-</section>
-
-
-
-<!-- ===================== 18 · EGYPTIAN CURRENT-SENSOR OPTION ===================== -->
-<section class="slide current-slide egypt-current-slide">
-  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-  <div class="slide-inner">
-    <span class="kicker rise" style="--i:0">Local market scan · Egypt</span>
-    <h2 class="rise" style="--i:1">Egyptian current-sensor <span class="hl">option</span></h2>
-    <p class="sub rise" style="--i:2">A locally available flow sensor for basic prototyping, with an important limitation for ALEX-MON.</p>
-    <div class="egypt-flow-card panel rise" style="--i:3">
-      <div class="egypt-flow-visual" aria-label="Illustration of a water-flow sensor installed inline inside a pipe">
-        <svg viewBox="0 0 420 280" role="img" aria-label="Cutaway: water flows into the pipe, spins a turbine inside the sensor, and a magnet on the turbine triggers a hall sensor on top that sends one pulse per turn">
-          <defs>
-            <linearGradient id="pipeMetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7edf2"/><stop offset=".5" stop-color="#7fa8b8"/><stop offset="1" stop-color="#2b5870"/></linearGradient>
-            <linearGradient id="pipeWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2ab7d8"/><stop offset="1" stop-color="#0b4f7a"/></linearGradient>
-            <clipPath id="pipeInside"><path d="M14 147 H160 A50 50 0 0 1 260 147 H406 V183 H260 A50 50 0 0 1 160 183 H14Z"/></clipPath>
-          </defs>
-          <!-- pipe walls + housing -->
-          <rect x="8" y="140" width="404" height="50" rx="6" fill="url(#pipeMetal)" stroke="#c4f4fb" stroke-width="1.5"/>
-          <rect x="146" y="104" width="128" height="122" rx="20" fill="url(#pipeMetal)" stroke="#c4f4fb" stroke-width="1.5"/>
-          <!-- water inside (cutaway) -->
-          <path d="M14 147 H160 A50 50 0 0 1 260 147 H406 V183 H260 A50 50 0 0 1 160 183 H14Z" fill="url(#pipeWater)" stroke="#2de2e6" stroke-opacity=".6"/>
-          <g clip-path="url(#pipeInside)" fill="#d8fbff"><circle class="pf-drop" cx="0" cy="178" r="3" style="animation-duration:2.65s;animation-delay:-2.23s"/><circle class="pf-drop" cx="0" cy="178" r="2.5" style="animation-duration:2.70s;animation-delay:-2.17s"/><circle class="pf-drop" cx="0" cy="158" r="3.5" style="animation-duration:2.23s;animation-delay:-0.44s"/><circle class="pf-drop" cx="0" cy="165" r="3" style="animation-duration:2.72s;animation-delay:-1.07s"/><circle class="pf-drop" cx="0" cy="152" r="3.5" style="animation-duration:2.35s;animation-delay:-2.05s"/><circle class="pf-drop" cx="0" cy="172" r="3" style="animation-duration:2.31s;animation-delay:-2.43s"/><circle class="pf-drop" cx="0" cy="172" r="2.5" style="animation-duration:2.66s;animation-delay:-0.20s"/><circle class="pf-drop" cx="0" cy="178" r="3.5" style="animation-duration:2.47s;animation-delay:-0.37s"/><circle class="pf-drop" cx="0" cy="152" r="2.5" style="animation-duration:2.66s;animation-delay:-2.69s"/><circle class="pf-drop" cx="0" cy="158" r="2.5" style="animation-duration:2.37s;animation-delay:-2.69s"/><circle class="pf-drop" cx="0" cy="178" r="3.5" style="animation-duration:2.58s;animation-delay:-0.51s"/><circle class="pf-drop" cx="0" cy="158" r="3" style="animation-duration:2.38s;animation-delay:-1.01s"/><circle class="pf-drop" cx="0" cy="158" r="2.5" style="animation-duration:2.36s;animation-delay:-0.93s"/><circle class="pf-drop" cx="0" cy="178" r="3.5" style="animation-duration:2.20s;animation-delay:-1.90s"/><circle class="pf-drop" cx="0" cy="165" r="2.5" style="animation-duration:2.39s;animation-delay:-2.29s"/><circle class="pf-drop" cx="0" cy="172" r="3.5" style="animation-duration:2.39s;animation-delay:-1.35s"/><circle class="pf-drop" cx="0" cy="158" r="2.5" style="animation-duration:2.35s;animation-delay:-2.63s"/><circle class="pf-drop" cx="0" cy="165" r="3" style="animation-duration:2.21s;animation-delay:-2.21s"/><circle class="pf-drop" cx="0" cy="165" r="3" style="animation-duration:2.55s;animation-delay:-0.03s"/><circle class="pf-drop" cx="0" cy="152" r="3.5" style="animation-duration:2.31s;animation-delay:-2.67s"/></g>
-          <g clip-path="url(#pipeInside)" stroke="#aafcff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7">
-            <path class="pf-swirl" d="M178 140 A36 36 0 0 1 244 140"/>
-            <path class="pf-swirl" d="M244 190 A36 36 0 0 1 178 190"/>
-          </g>
-          <!-- turbine -->
-          <g class="pf-rotor"><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(0)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(60)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(120)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(180)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(240)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><path d="M0 0 Q14 -12 6 -34 L-3 -34 Q6 -16 0 0Z" transform="rotate(300)" fill="#ffd27a" stroke="#c9983a" stroke-width="1"/><circle r="7" fill="#fff4cf" stroke="#c9983a" stroke-width="1.5"/><circle cx="0" cy="-30" r="4.5" fill="#ff7a5c" stroke="#fff" stroke-width="1"/></g>
-          <!-- hall sensor + signal -->
-          <rect x="196" y="90" width="28" height="14" rx="3" fill="#073653" stroke="#8cf8f5" stroke-width="1.5"/>
-          <circle class="pf-led" cx="232" cy="97" r="4" fill="#37d399"/>
-          <path d="M210 90 V46 H300" stroke="#a9d8e4" stroke-width="2" fill="none"/>
-          <circle r="4" fill="#ffd27a"><animateMotion path="M210 90 V46 H300" dur="1s" repeatCount="indefinite"/></circle>
-          <rect x="300" y="22" width="112" height="46" rx="8" fill="#04263f" stroke="rgba(255,210,122,.6)"/>
-          <svg x="306" y="26" width="100" height="38" viewBox="0 0 100 38"><g class="pf-square"><path d="M0 30 H10 V10 H20 V30 H30 V10 H40 V30 H50 V10 H60 V30 H70 V10 H80 V30 H90 V10 H100 V30 H110 V10 H120 V30 H130 V10 H140 V30 H150 V10 H160 V30 H170 V10 H180 V30 H190 V10 H200 V30 H210 V10 H220 V30 H230 V10 H240 V30" stroke="#ffd27a" stroke-width="2" fill="none"/></g></svg>
-          <!-- labels -->
-          <text x="18" y="132" fill="#eafcff" font-size="12" font-weight="800">WATER IN →</text>
-          <text x="402" y="132" text-anchor="end" fill="#eafcff" font-size="12" font-weight="800">WATER OUT →</text>
-          <text x="140" y="96" text-anchor="end" fill="#bceef6" font-size="11">Magnet sensor</text>
-          <path d="M144 93 H194" stroke="#a9d8e4" stroke-width="1" stroke-dasharray="3 3"/>
-          <text x="356" y="84" text-anchor="middle" fill="#ffd27a" font-size="11" font-weight="700">1 pulse per turn</text>
-          <text x="210" y="246" text-anchor="middle" fill="#eafcff" font-size="12.5" font-weight="700">Water pushes the turbine → it spins → pulses = flow rate</text>
-          <text x="210" y="268" text-anchor="middle" fill="#ffd27a" font-size="11" letter-spacing="1.2">ONLY WORKS INSIDE A PIPE · NOT AN OPEN-SEA CURRENT METER</text>
-        </svg>
-      </div>
-      <div class="egypt-flow-details">
-        <div class="vendor">RAM Electronics · Egypt</div>
-        <h3>YF-S201F-S201 G1/2&quot; Water Flow Meter Sensor</h3>
-        <p class="egypt-flow-subtitle">Flowmeter G1/2 · 1–30 L/min · 5–15 V</p>
-        <div class="egypt-flow-specs">
-          <span><b>Flow range</b>1–30 L/min</span>
-          <span><b>Supply</b>5–15 V</span>
-          <span><b>Connection</b>G1/2&quot; pipe fitting</span>
-        </div>
-        <a class="product-link" href="https://www.ram-e-shop.com/ar/shop/sen-yfs201-water-flow-yf-s201-g1-2-water-flow-meter-sensor-9231" target="_blank" rel="noopener">View product at RAM Electronics ↗</a>
-      </div>
-    </div>
-    <div class="egypt-flow-warning rise" style="--i:4"><span class="warning-icon">!</span><div><b>Important limitation</b><p>This sensor measures water flowing <strong>inside a pipe</strong>. It does not measure open-water underwater current speed or compass direction, so it is suitable for a simple flow demonstration or pipe-flow prototype — <strong>not direct deployment at the archaeological site</strong>.</p></div></div>
-    <p class="current-source rise" style="--i:5">Specifications are taken from the linked Egyptian retail listing.</p>
   </div>
 </section>
 
