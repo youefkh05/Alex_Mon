@@ -24,7 +24,7 @@ SX_PDF = "salenity/SensorsX SX-CCFNA/SensorsX_SX-CCFNA_Datasheet_RevA_ffed563b-7
 
 # Columns every item starts and ends with.
 HEAD = ["#", "Parameter", "Sensor (Part No.)", "Manufacturer", "Unit Price (USD)", "Include in Cost?", "Seawater OK?",
-        "Range Fit", "Fit basis"]
+        "Range Fit", "Fit basis", "Suitable? (team)", "Team notes", "Price source"]
 
 # Suggested ranges from files/site_water_data/Site_Water_Parameters.xlsx, per item number.
 # (low, high, unit, what is compared)
@@ -72,6 +72,50 @@ FIT = {
     "WTE-VP (2\")": "N/A — housing, not a sensor",
 }
 UNDER, OVER = 0.9, 2.5  # sensor max vs suggested max
+
+# ---------------------------------------------------------------- team review (Under_Water_BoM.xlsx)
+# The team's sheet holds supplier prices, a suitability verdict and notes per sensor.
+# Its product names are matched to our part numbers by these keywords.
+TEAM_FILE = "Under_Water_BoM.xlsx"
+TEAM_MAP = [("DIY tilt", "DIY tilt current meter"), ("OCEAN-SPCM", "OCEAN-SPCM"), ("TCM-1", "TCM-1"),
+            ("Marotte", "Marotte HS"), ("EMCON", "EMCON Current Meter"), ("WS-OM-MUL-17A", "WS-OM-MUL-17A"),
+            ("DR-EC200", "DR-EC200"), ("Y523-A", "Y523-A"), ("C4E", "C4E"), ("SX-CCFNA", "SX-CCFNA"),
+            ("K 10", "ENV-40-EC-K10 + EZO-EC"), ("YEX-S2-EC-S", "YEX-S2-EC-S"), ("SEN0707", "SEN0707"),
+            ("MX2202", "HOBO Pendant MX2202"), ("sediment traps", "DIY sediment traps"), ("SEN0710", "SEN0710"),
+            ("SEN0681", "SEN0681"), ("watertight enclosure", "WTE-VP (2\")")]
+# Keep our verified price here: the team's $200 is the K 10 probe only; ours adds the EZO-EC board ($67.99).
+KEEP_OUR_PRICE = {"ENV-40-EC-K10 + EZO-EC"}
+TEAM_COLS = ["Suitable? (team)", "Team notes", "Price source"]
+
+
+def load_team(path):
+    """Return {part: dict(cost, include, verdict, notes, price_src)} from the team's BOM, or {} if absent."""
+    if not path.exists():
+        return {}
+    from openpyxl import load_workbook
+    ws = load_workbook(path).active
+    team = {}
+    for r in range(1, ws.max_row + 1):
+        name, cost = ws.cell(r, 2).value, ws.cell(r, 3).value
+        if not name or cost is None or str(cost).startswith("="):
+            continue
+        part = next((p for key, p in TEAM_MAP if key in str(name)), None)
+        if part is None:
+            continue
+        try:
+            cost = float(cost)
+        except (TypeError, ValueError):
+            cost = str(cost)  # e.g. "On request"
+        notes = "\n".join(line.strip() for line in str(ws.cell(r, 10).value or "").strip().splitlines() if line.strip())
+        src = ws.cell(r, 11)
+        team[part] = {
+            "cost": cost,
+            "include": ws.cell(r, 5).value or "No",
+            "verdict": str(ws.cell(r, 7).value or "").strip(),
+            "notes": " ".join(notes.split("  ")),
+            "price_src": (src.value, src.hyperlink.target) if src.hyperlink else (src.value or "—", None),
+        }
+    return team
 
 
 def range_fit(item_no, part):
@@ -622,6 +666,9 @@ NOTES = [
     "(conductivity 30 – 63 mS/cm, current 0 – 1 m/s, temperature 10 – 35 °C, turbidity 0 – 1000 NTU, oxygen 0 – 20 mg/L):",
     "    Under-ranged = sensor max below 0.9× the suggested max (or its min starts too high) · OK range = 0.9× – 2.5× · Overpowered = above 2.5×.",
     "• Current meters added from Water_Current_Sensors_Guide.pdf; their specs were re-read from each maker's datasheet linked in the row.",
+    "• \"Suitable? (team)\", \"Team notes\", \"Price source\", prices and \"Include in Cost?\" are read from Under_Water_BoM.xlsx (team review: "
+    "temp 16–29 °C, salinity 38–39.5 PSU, conductivity 50–60 mS/cm, depth ≥ 10 m, current 0–1 m/s, continuous wired output). "
+    "Atlas K10 keeps $267.98 (probe + EZO-EC); the team's $200 is the probe only.",
 ]
 
 # ---------------------------------------------------------------- styles
@@ -639,15 +686,17 @@ USD = '"$"#,##0.00'
 
 # Preferred width per column name; a sheet column gets the widest preference among items.
 PREF = {"#": 5, "Parameter": 24, "Sensor (Part No.)": 18, "Manufacturer": 17, "Unit Price (USD)": 12,
-        "Include in Cost?": 11, "Seawater OK?": 11, "Range Fit": 13, "Fit basis": 30, "Buy Link": 17, "Datasheet": 20,
+        "Include in Cost?": 11, "Seawater OK?": 11, "Range Fit": 13, "Fit basis": 30, "Suitable? (team)": 14, "Team notes": 55, "Price source": 18, "Buy Link": 17, "Datasheet": 20,
         "Factory Calibrated?": 13, "How to Calibrate": 46, "Notes": 46}
 LEFT_COLS = {"Parameter", "Sensor (Part No.)", "Manufacturer", "How to Calibrate", "Wiring", "Other Sensors", "Notes", "Fit basis",
+             "Team notes",
              "What's Included"}
 NCOL = max(len(i["columns"]) for i in ITEMS)
 WIDTHS = [max(PREF.get(item["columns"][c], 24) for item in ITEMS if c < len(item["columns"])) for c in range(NCOL)]
 VERDICT = {"Yes": "1E7B34", "No": "C0392B", "Check": "B26A00"}
 FIT_STYLE = {"OK range": ("1E7B34", "E2F0D9"), "Overpowered": ("B26A00", "FFF2CC"),
              "Under-ranged": ("C0392B", "FADBD8"), "Unknown": ("7F7F7F", "F2F2F2"), "N/A": ("7F7F7F", "F2F2F2")}
+TEAM_STYLE = {"✔": ("1E7B34", "E2F0D9"), "▲": ("B26A00", "FFF2CC"), "✖": ("C0392B", "FADBD8")}
 
 
 def main():
@@ -669,6 +718,7 @@ def main():
                         errorTitle="Include in Cost?", error="Choose Yes or No")
     ws.add_data_validation(dv)
     subtotals, csv_rows = [], [["Alex-Mon — Sensors BOM"], []]
+    team = load_team(HERE / TEAM_FILE)
     r, n = 6, 0
     for item in ITEMS:
         cols = item["columns"]
@@ -694,7 +744,16 @@ def main():
             n += 1
             bg = fill("FFFFFF" if k % 2 == 0 else ROWALT)
             row = {"#": n, "Include in Cost?": "No", **row}
-            row["Range Fit"], row["Fit basis"] = range_fit(item["title"].split()[0], row["Sensor (Part No.)"])
+            part = row["Sensor (Part No.)"]
+            row["Range Fit"], row["Fit basis"] = range_fit(item["title"].split()[0], part)
+            t = team.get(part)
+            if t:
+                row["Suitable? (team)"], row["Team notes"], row["Price source"] = t["verdict"], t["notes"], t["price_src"]
+                row["Include in Cost?"] = t["include"]
+                if part not in KEEP_OUR_PRICE:
+                    row["Unit Price (USD)"] = t["cost"]
+            else:
+                row["Suitable? (team)"], row["Team notes"], row["Price source"] = "Not reviewed", "—", ("—", None)
             csv_line, longest = [], 0
             for name, c in ci.items():
                 val = row.get(name, UNK)
@@ -715,6 +774,9 @@ def main():
                     cell.font = F(bold=True, color=VERDICT.get(val, TXT))
                 if name == "Range Fit" and val in FIT_STYLE:
                     fg, bgc = FIT_STYLE[val]
+                    cell.font, cell.fill = F(bold=True, color=fg), fill(bgc)
+                if name == "Suitable? (team)":
+                    fg, bgc = next((s for k, s in TEAM_STYLE.items() if str(val).startswith(k)), ("7F7F7F", "F2F2F2"))
                     cell.font, cell.fill = F(bold=True, color=fg), fill(bgc)
                 if name == "Unit Price (USD)" and isinstance(val, (int, float)):
                     cell.number_format = USD
