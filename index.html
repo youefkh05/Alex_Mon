@@ -851,7 +851,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 
 
 /* ================= SENSOR SLIDES ================= */
-.data-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1.1rem;margin-top:1.5rem}.data-grid .data-card{grid-column:span 2}.data-grid .data-card:nth-child(n+4){grid-column:span 3;min-height:0}
+.data-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1.1rem;margin-top:1.5rem}.data-grid .data-card{grid-column:span 2}
 .data-card{position:relative;overflow:hidden;padding:1.35rem 1.25rem 1.2rem;min-height:230px;transition:transform .3s,border-color .3s}
 .data-card:hover{transform:translateY(-5px);border-color:rgba(45,226,230,.65)}
 .data-card .symbol{font-size:2.2rem;display:block;margin-bottom:.65rem;filter:drop-shadow(0 0 12px rgba(45,226,230,.3));animation:bob 3.2s ease-in-out infinite alternate}
@@ -859,6 +859,8 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 .data-card .dviz{display:block;width:120px;height:80px;margin-bottom:.6rem;overflow:visible;filter:drop-shadow(0 0 10px rgba(45,226,230,.25))}
 .data-card h3{margin-bottom:.55rem}
 @keyframes cardFlip{from{opacity:0;transform:perspective(900px) rotateY(-55deg) translateX(-30px) scale(.9)}to{opacity:1;transform:none}}
+.dviz .merc{transform-box:fill-box;transform-origin:50% 100%;animation:mercRise 3.2s ease-in-out infinite alternate}
+@keyframes mercRise{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
 .dviz .ion{animation:ionFloat 2.4s ease-in-out infinite alternate}
 .dviz .i2{animation-delay:-.6s}.dviz .i3{animation-delay:-1.2s}.dviz .i4{animation-delay:-1.8s}
 @keyframes ionFloat{from{transform:translate(-3px,4px)}to{transform:translate(4px,-6px)}}
@@ -889,7 +891,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 .kelp-bubble{animation-name:kelpBubbleDrift}
 .ruin-bubble{position:absolute;bottom:var(--base,23%);left:var(--x);width:var(--size,7px);height:var(--size,7px);border:1px solid rgba(220,250,255,.88);border-radius:50%;background:rgba(210,250,255,.16);box-shadow:0 0 8px rgba(150,235,255,.22);animation:ruinBubbleRise var(--duration,5s) ease-out infinite;animation-delay:var(--delay,0s)}
 @keyframes ruinBubbleRise{0%{transform:translate(0,0) scale(.6);opacity:0}12%{opacity:.8}75%{opacity:.6}100%{transform:translate(var(--drift,12px),-150px) scale(1.1);opacity:0}}
-@media(max-width:900px){.data-grid,.sensor-grid{grid-template-columns:1fr}.data-grid .data-card,.data-grid .data-card:nth-child(n+4){grid-column:auto}.data-card,.sensor-card{min-height:0}.data-card{padding:1rem}.sensor-card{padding:.9rem}}
+@media(max-width:900px){.data-grid,.sensor-grid{grid-template-columns:1fr}.data-grid .data-card{grid-column:auto}.data-card,.sensor-card{min-height:0}.data-card{padding:1rem}.sensor-card{padding:.9rem}}
 
 
 /* ================= SALINITY SENSOR DEEP-DIVE SLIDES ================= */
@@ -1842,7 +1844,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
   <div class="slide-inner">
     <span class="kicker rise" style="--i:0">Monitoring goals · The essential measurements</span>
     <h2 class="rise" style="--i:1">What data do we <span class="hl">need?</span></h2>
-    <p class="sub rise" style="--i:2">Five measurements help us describe the seawater conditions around submerged archaeological remains, including how much sediment and pollution reach them.</p>
+    <p class="sub rise" style="--i:2">Six measurements help us describe the seawater conditions around submerged archaeological remains, including how much sediment and pollution reach them.</p>
     <div class="data-grid">
       <article class="data-card panel rise" style="--i:3">
         <span class="index">01</span>
@@ -1854,8 +1856,21 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
         <h3>Salinity</h3>
         <p>How salty is the seawater? Tracking changes helps us understand the local marine environment and possible long-term exposure conditions.</p>
       </article>
-      <article class="data-card panel rise" style="--i:4">
+            <article class="data-card panel rise" style="--i:4" data-fx="temp">
         <span class="index">02</span>
+        <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
+          <rect x="54" y="6" width="12" height="46" rx="6" fill="rgba(4,38,68,.6)" stroke="#2de2e6" stroke-width="2.5"/>
+          <circle cx="60" cy="58" r="12" fill="rgba(255,122,92,.25)" stroke="#2de2e6" stroke-width="2.5"/>
+          <circle cx="60" cy="58" r="7" fill="#ff7a5c"/>
+          <rect class="merc" x="57.5" y="14" width="5" height="42" rx="2.5" fill="#ff7a5c"/>
+          <g stroke="#a9d8e4" stroke-width="1.6" stroke-linecap="round"><path d="M72 14h8M72 24h5M72 34h8M72 44h5"/></g>
+          <text x="90" y="19" font-size="9" font-weight="700" fill="#ffd27a">°C</text>
+        </svg>
+        <h3>Temperature</h3>
+        <p>How warm is the water? Temperature changes through the seasons and affects how much oxygen and salt the water holds, so it is also needed to correct other sensor readings.</p>
+      </article>
+<article class="data-card panel rise" style="--i:5">
+        <span class="index">03</span>
         <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
           <circle cx="60" cy="40" r="32" fill="rgba(4,38,68,.6)" stroke="#2de2e6" stroke-width="2"/>
           <circle cx="60" cy="40" r="25" fill="none" stroke="rgba(160,235,255,.3)" stroke-dasharray="2 5"/>
@@ -1866,8 +1881,8 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
         <h3>Current direction</h3>
         <p>Which way is the water moving? Direction shows how water—and suspended material—moves around the monitoring site.</p>
       </article>
-      <article class="data-card panel rise" style="--i:5">
-        <span class="index">03</span>
+      <article class="data-card panel rise" style="--i:6">
+        <span class="index">04</span>
         <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
           <g fill="none" stroke-linecap="round">
             <path class="flowline" d="M8 24 H112" stroke="#2de2e6" stroke-width="3"/>
@@ -1880,8 +1895,8 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
         <h3>Water speed</h3>
         <p>How fast is the current? Speed helps identify calm periods and stronger flows that may affect sediment movement near the site.</p>
       </article>
-      <article class="data-card panel rise" style="--i:6" data-fx="sediment">
-        <span class="index">04</span>
+      <article class="data-card panel rise" style="--i:7" data-fx="sediment">
+        <span class="index">05</span>
         <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
           <rect x="6" y="58" width="108" height="16" rx="3" fill="#b79b6b" opacity=".75"/>
           <g fill="#d9c9a3"><circle class="ion" cx="30" cy="18" r="3"/><circle class="ion i2" cx="52" cy="28" r="2.5"/><circle class="ion i3" cx="74" cy="14" r="3"/><circle class="ion i4" cx="94" cy="30" r="2.5"/><circle class="ion i2" cx="40" cy="44" r="2"/><circle class="ion i3" cx="84" cy="46" r="2"/></g>
@@ -1890,8 +1905,8 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
         <h3>Sedimentation</h3>
         <p>How cloudy is the water? Suspended particles (turbidity, in NTU) show how much sediment is stirred up and may settle on or bury the remains.</p>
       </article>
-      <article class="data-card panel rise" style="--i:7" data-fx="pollution">
-        <span class="index">05</span>
+      <article class="data-card panel rise" style="--i:8" data-fx="pollution">
+        <span class="index">06</span>
         <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
           <path d="M60 6 C60 6 38 32 38 46 a22 22 0 0 0 44 0 C82 32 60 6 60 6Z" fill="rgba(255,122,92,.15)" stroke="#ff9d7a" stroke-width="2.5"/>
           <g fill="#8cf8f5"><circle class="ion" cx="52" cy="48" r="3.5"/><circle class="ion i2" cx="66" cy="42" r="3"/><circle class="ion i3" cx="60" cy="58" r="2.5"/></g>
@@ -1901,7 +1916,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
         <p>How clean is the water? Dissolved oxygen is an early warning: a drop below normal (about 3–15 mg/L here) points to organic pollution or sewage inflow.</p>
       </article>
     </div>
-    <p class="fnote rise" style="--i:8">The first deployment focuses on these five core variables: salinity, current direction, water speed, sedimentation (turbidity) and pollution (dissolved oxygen). Additional measurements can be added if the site study requires them.</p>
+    <p class="fnote rise" style="--i:9">The first deployment focuses on these six core variables: salinity, temperature, current direction, water speed, sedimentation (turbidity) and pollution (dissolved oxygen). Additional measurements can be added if the site study requires them.</p>
   </div>
 </section>
 
@@ -2569,6 +2584,7 @@ const sfx=(()=>{
     chip(d=0){if(!ready())return;[1200,1500,1200,1800].forEach((f,i)=>tone('square',f,f,d+i*.06,.05,.05))},                // data blips
     thud(d=0){if(!ready())return;tone('sine',150,55,d,.3,.3);burst(d,.06,.12,'lowpass',600)},                              // hull / mooring
     probe(d=0){if(!ready())return;tone('sine',1000,1000,d,.5,.12);tone('sine',1500,1500,d+.02,.4,.07)},                    // sensor ping
+    temp(d=0){if(!ready())return;tone('sine',380,980,d,.55,.14,.02);tone('triangle',990,990,d+.5,.25,.1)},   // thermometer rising
     bubbles(d=0){if(!ready())return;[0,.1,.19,.33,.41].forEach((x,i)=>bubble(d+x,420+i*90,.16))},
     shield(d=0){if(!ready())return;tone('triangle',440,660,d,.2,.14);tone('triangle',660,880,d+.12,.3,.14)},
     shutter(d=0){if(!ready())return;burst(d,.04,.3,'bandpass',2500,2);burst(d+.05,.05,.22,'bandpass',1500,2);tone('sine',1320,1320,d+.1,.35,.1)},
@@ -2578,7 +2594,7 @@ const sfx=(()=>{
     step(d=0,i=0){if(!ready())return;tone('sine',520*Math.pow(1.122,i*2),520*Math.pow(1.122,i*2),d,.25,.14)},
   };
   // Pick a voice from the icon's own heading ("Salinity", "Solar + battery", ...).
-  const KINDS=[[/salin|conductiv|ion/,'ion'],[/direction|compass/,'compass'],[/speed|flow|current/,'flow'],[/sediment|turbid/,'sediment'],[/pollut|oxygen/,'pollution'],
+  const KINDS=[[/temperat|thermo/,'temp'],[/salin|conductiv|ion/,'ion'],[/direction|compass/,'compass'],[/speed|flow|current/,'flow'],[/sediment|turbid/,'sediment'],[/pollut|oxygen/,'pollution'],
     [/solar|battery|power|charge/,'power'],[/wireless|radio|cellular|link|lora/,'radio'],[/controller|logging|dashboard|data/,'chip'],[/shell|float|stabil|mooring|ring|weight/,'thud'],
     [/sensor|probe|underwater/,'probe'],[/heritage|safe|protect/,'shield']];
   function kindOf(icon){
@@ -2746,7 +2762,7 @@ function countUp(s){
 
 /* ============ depth / distance scene ============ */
 const SITES=[
-  {name:'Qaitbay · Pharos Lighthouse',depth:7,depthTxt:'6–8 m',km:.15,distTxt:'0–150 m',note:'Fallen blocks of the ancient lighthouse and its island, 3,000+ architectural pieces and three shipwrecks, starting right at the citadel edge.'},
+  {name:'Qaitbay · Pharos Lighthouse',depth:7,depthTxt:'6–8 m',km:.15,distTxt:'0–6 m',note:'Fallen blocks of the ancient lighthouse and its island, 3,000+ architectural pieces and three shipwrecks, starting right at the citadel edge.'},
   {name:'Eastern Harbour · Antirhodos',depth:5,depthTxt:'2–8 m',km:.2,distTxt:'≈ 200 m*',note:'The Ptolemaic royal quarter, including the sunken island of Antirhodos, lies in the shallow harbour next to the Corniche.'},
   {name:'Canopus (East)',depth:4.5,depthTxt:'4–5 m',km:2,distTxt:'≈ 2 km',note:'A temple city north of the Abu Qir shore: columns, limestone blocks, a dock, reservoirs and rock-cut ponds.'},
   {name:'Thonis-Heracleion',depth:6,depthTxt:'5–7 m',km:7,distTxt:'≈ 6–7 km',note:'Egypt\'s main Mediterranean port before Alexandria: colossal statues, temples, coins and sunken boats.'}
