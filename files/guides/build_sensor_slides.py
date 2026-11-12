@@ -203,7 +203,7 @@ CSS = """
 
 
 def slide(n, total, s):
-    img = s["svg"] if "svg" in s else f'<img class="{s.get("img_class", "")}" src="{IMG}{s["img"]}" alt="{e(s["model"])}" loading="lazy">'
+    img = s["svg"] if "svg" in s else f'<img class="{s.get("img_class", "")}" src="{IMG}{s["img"]}" alt="{e(s["model"])}">'
     tags = "".join(f'<span class="gs-tag">{e(t)}</span>' for t in s["tags"])
     tiles = "".join(f'<div class="gs-tile"><b>{e(v)}</b><span>{e(k)}</span></div>' for v, k in s["tiles"])
     steps = "".join(f"<li><i>{k}</i><span>{e(t)}</span></li>" for k, t in enumerate(s["steps"], 1))
