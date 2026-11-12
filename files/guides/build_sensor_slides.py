@@ -13,15 +13,38 @@ INDEX = ROOT / "index.html"
 IMG = "files/guides/img/"
 e = html.escape
 
-DIY_SVG = """<svg viewBox="0 0 520 220" role="img" aria-label="Tilt current meter: a float tethered to the seabed leans with the current; the lean angle gives speed.">
-<defs><linearGradient id="diyw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4eef5"/><stop offset="1" stop-color="#a9dbe8"/></linearGradient></defs>
-<rect width="520" height="220" fill="url(#diyw)"/><rect y="190" width="520" height="30" fill="#d9c9a3"/><rect x="225" y="176" width="70" height="16" rx="3" fill="#9aa4ad"/>
-<path d="M260 176 L335 78" stroke="#4a5b6b" stroke-width="3"/><line x1="260" y1="176" x2="260" y2="30" stroke="#7f93ad" stroke-width="1.5" stroke-dasharray="4 4"/>
-<g transform="rotate(-37 335 78)"><rect x="315" y="30" width="40" height="96" rx="18" fill="#0b2a4a"/><rect x="322" y="56" width="26" height="28" rx="4" fill="#14b8a6"/><text x="335" y="75" text-anchor="middle" font-size="9" fill="#fff">IMU</text></g>
-<path d="M260 120 A56 56 0 0 1 290 128" stroke="#c0392b" stroke-width="2" fill="none" stroke-dasharray="3 3"/><text x="296" y="122" font-size="15" fill="#c0392b" font-weight="700">θ</text>
-<g fill="#0b6b7a"><path d="M30 80 h110 v-9 l24 18 -24 18 v-9 h-110z"/><path d="M30 140 h80 v-8 l20 15 -20 15 v-8 h-80z"/></g>
-<text x="85" y="62" text-anchor="middle" font-size="14" fill="#0b2a4a" font-weight="700">Current</text>
-<text x="420" y="36" text-anchor="middle" font-size="12" fill="#0b2a4a">Float + 2" housing</text><text x="420" y="54" text-anchor="middle" font-size="12" fill="#0b2a4a">tilt angle θ → speed</text></svg>"""
+DIY_SVG = """<svg viewBox="0 0 520 300" role="img" aria-label="How a tilt current meter works: a float on a tether leans further as the current gets faster; the lean angle gives the speed.">
+<defs><linearGradient id="diyw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9f1f7"/><stop offset="1" stop-color="#a5d9e6"/></linearGradient></defs>
+<rect width="520" height="300" fill="url(#diyw)"/><rect y="212" width="520" height="50" fill="#d9c9a3"/>
+<text x="85" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#0b2a4a">No current</text>
+<rect x="59" y="205" width="52" height="14" rx="3" fill="#8e99a3"/><text x="85" y="216" text-anchor="middle" font-size="8" fill="#fff">anchor</text>
+<line x1="85" y1="205" x2="85" y2="70" stroke="#7f93ad" stroke-width="1.3" stroke-dasharray="4 4"/>
+<line x1="85" y1="205" x2="85.0" y2="100.0" stroke="#46586a" stroke-width="3"/>
+<g transform="rotate(0 85.0 100.0)"><rect x="73.0" y="70.0" width="24" height="56" rx="11" fill="#0b2a4a"/><rect x="77.0" y="86.0" width="16" height="22" rx="3" fill="#14b8a6"/><text x="85.0" y="101.0" text-anchor="middle" font-size="7" font-weight="700" fill="#fff">IMU</text></g>
+<text x="85" y="241" text-anchor="middle" font-size="12" font-weight="700" fill="#0b2a4a">θ = 0° (upright)</text>
+<text x="85" y="257" text-anchor="middle" font-size="12" fill="#0b2a4a">v ≈ 0</text>
+<text x="255" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#0b2a4a">Slow current</text>
+<rect x="229" y="205" width="52" height="14" rx="3" fill="#8e99a3"/><text x="255" y="216" text-anchor="middle" font-size="8" fill="#fff">anchor</text>
+<line x1="255" y1="205" x2="255" y2="70" stroke="#7f93ad" stroke-width="1.3" stroke-dasharray="4 4"/>
+<line x1="255" y1="205" x2="299.4" y2="109.8" stroke="#46586a" stroke-width="3"/>
+<g transform="rotate(25 299.4 109.8)"><rect x="287.4" y="79.8" width="24" height="56" rx="11" fill="#0b2a4a"/><rect x="291.4" y="95.8" width="16" height="22" rx="3" fill="#14b8a6"/><text x="299.4" y="110.8" text-anchor="middle" font-size="7" font-weight="700" fill="#fff">IMU</text></g>
+<path d="M255 163 A42 42 0 0 1 272.7 166.9" stroke="#c0392b" stroke-width="2.2" fill="none"/>
+<text x="272.0" y="146.4" font-size="15" font-weight="800" fill="#c0392b">θ</text>
+<text x="255" y="241" text-anchor="middle" font-size="12" font-weight="700" fill="#7a2a1a">θ = small</text>
+<path d="M169 62 h60 v-6 l12 9 -12 9 v-6 h-60z" fill="#0b6b7a" opacity=".9"/>
+<text x="255" y="257" text-anchor="middle" font-size="12" fill="#0b2a4a">v small</text>
+<text x="410" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#0b2a4a">Fast current</text>
+<rect x="384" y="205" width="52" height="14" rx="3" fill="#8e99a3"/><text x="410" y="216" text-anchor="middle" font-size="8" fill="#fff">anchor</text>
+<line x1="410" y1="205" x2="410" y2="70" stroke="#7f93ad" stroke-width="1.3" stroke-dasharray="4 4"/>
+<line x1="410" y1="205" x2="496.0" y2="144.8" stroke="#46586a" stroke-width="3"/>
+<g transform="rotate(55 496.0 144.8)"><rect x="484.0" y="114.8" width="24" height="56" rx="11" fill="#0b2a4a"/><rect x="488.0" y="130.8" width="16" height="22" rx="3" fill="#14b8a6"/><text x="496.0" y="145.8" text-anchor="middle" font-size="7" font-weight="700" fill="#fff">IMU</text></g>
+<path d="M410 163 A42 42 0 0 1 444.4 180.9" stroke="#c0392b" stroke-width="2.2" fill="none"/>
+<text x="441.7" y="151.8" font-size="15" font-weight="800" fill="#c0392b">θ</text>
+<text x="410" y="241" text-anchor="middle" font-size="12" font-weight="700" fill="#7a2a1a">θ = large</text>
+<path d="M324 62 h86 v-6 l12 9 -12 9 v-6 h-86z" fill="#0b6b7a" opacity=".9"/>
+<path d="M324 88 h86 v-6 l12 9 -12 9 v-6 h-86z" fill="#0b6b7a" opacity=".9"/>
+<text x="410" y="257" text-anchor="middle" font-size="12" fill="#0b2a4a">v large</text>
+<rect x="10" y="266" width="500" height="28" rx="14" fill="#0b2a4a"/><text x="260" y="284" text-anchor="middle" font-size="12.5" font-weight="700" fill="#eafcff">Faster current → more drag → float leans further → bigger θ → IMU reads θ → speed</text></svg>"""
 
 SENSORS = [
     dict(group="Salinity & conductivity", brand="SensorsX", model="SX-CCFNA", sub="4-electrode conductivity / salinity probe",
@@ -65,13 +88,14 @@ SENSORS = [
          links=[("Product page", "https://www.antratek.com/dr-ec200-water-ec-sensor-for-wqs")]),
     dict(group="Water current", brand="DIY build", model="Tilt Current Meter", sub="Tilt-angle current meter (BNO085)",
          tags=["Current", "DIY"], svg=DIY_SVG,
-         desc="A float tethered to the seabed leans with the current. A motion sensor (IMU) in a watertight housing measures the lean angle and direction, and calibration converts the angle to speed.",
+         desc="A float on a tether, anchored to the seabed. Moving water pushes on it (drag), so it leans downstream: the faster the current, the further it leans. A motion sensor (IMU) inside measures the lean angle θ and direction, and calibration converts θ to speed.",
+         tall=True, steps_title="How a tilt measures current",
          tiles=[("By calibration", "Speed range (needed 0–1 m/s)"), ("0 – 360°", "Direction (tilt-compensated compass)"), ("BNO085", "Motion sensor (Adafruit)"),
                 ("18650", "Battery (≈ 1 month logging)"), ("60–70 ft", "Depth tested leak-free (≈ 20 m)"), ("SD card", "Logging (add RS-485 for live data)")],
-         steps=["Fit the IMU, processor and battery inside a 2-inch housing.",
-                "Tie the float by a line to a concrete base on the seabed.",
-                "Calibrate by towing at known speeds (GPS) to convert angle to speed.",
-                "Keep iron away from the compass; add RS-485 to stream live."],
+         steps=["The current pushes on the float (drag). The tether holds it, so it swings over and leans downstream.",
+                "More current means more drag and a bigger angle θ. Drag grows with speed², so tan θ ∝ v².",
+                "The IMU inside measures θ (how far) and the compass gives the lean direction (current direction).",
+                "Calibration by towing at known GPS speeds turns θ into m/s. Add RS-485 to stream live."],
          pros=["By far the cheapest option", "Parts easy to buy", "Adaptable to project needs", "No rotating parts"],
          cons=["Accuracy unknown before calibration", "No live data without modification", "Marine growth on the float changes readings", "Not yet tested on site"],
          fit=("Unknown", "unk"), team=("Conditional", "cond"),
@@ -143,6 +167,7 @@ CSS = """
 .gs-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);gap:1rem;margin-top:.9rem;align-items:start}
 .gs-left,.gs-right{display:grid;gap:.8rem}
 .gs-img{height:200px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--line2);position:relative}
+.gs-img.tall{height:265px}
 .gs-img img{max-width:100%;max-height:190px;object-fit:contain}
 .gs-img img.drawing{max-height:185px}
 .gs-img svg{width:100%;height:100%}
@@ -192,14 +217,14 @@ def slide(n, total, s):
     <p class="sub rise" style="--i:2">{e(s['sub'])}</p>
     <div class="gs-grid">
       <div class="gs-left">
-        <div class="gs-img panel rise" style="--i:3" data-fx="photo">{img}</div>
+        <div class="gs-img{" tall" if s.get("tall") else ""} panel rise" style="--i:3" data-fx="photo">{img}</div>
         <div class="gs-desc rise" style="--i:4">{e(s['desc'])}</div>
         <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill {fc}">{e(fit)}</span><span>Team review:</span><span class="gs-pill {tc}">{e(team)}</span></div>
         {note}
       </div>
       <div class="gs-right">
         <div class="gs-tiles rise" style="--i:5" data-fx="specs">{tiles}</div>
-        <div class="rise" style="--i:6" data-fx="steps"><div class="gs-h">How it works in the buoy</div><ol class="gs-steps">{steps}</ol></div>
+        <div class="rise" style="--i:6" data-fx="steps"><div class="gs-h">{e(s.get("steps_title","How it works in the buoy"))}</div><ol class="gs-steps">{steps}</ol></div>
         <div class="gs-pc rise" style="--i:7" data-fx="proscons"><div class="gs-box pros"><h4>Advantages</h4><ul>{pros}</ul></div><div class="gs-box cons"><h4>Limitations</h4><ul>{cons}</ul></div></div>
         <div class="rise" style="--i:8">{links}</div>
       </div>
@@ -210,8 +235,14 @@ def slide(n, total, s):
 
 def main():
     total = len(SENSORS)
-    block = "<!-- SENSOR-SLIDES:START (generated by files/guides/build_sensor_slides.py) -->\n" + "\n\n".join(
-        slide(i, total, s) for i, s in enumerate(SENSORS, 1)) + "\n<!-- SENSOR-SLIDES:END -->"
+    t0 = INDEX.read_text(encoding="utf-8")
+    m = re.search(r"<!-- CURRENT-EXPLAINER:START -->.*?<!-- CURRENT-EXPLAINER:END -->", t0, re.S)
+    explainer = m.group(0) if m else ""
+    parts = [slide(i, total, s) for i, s in enumerate(SENSORS, 1)]
+    if explainer:
+        k = next(i for i, s in enumerate(SENSORS) if s["model"] == "Tilt Current Meter")
+        parts.insert(k, explainer)
+    block = "<!-- SENSOR-SLIDES:START (generated by files/guides/build_sensor_slides.py) -->\n" + "\n\n".join(parts) + "\n<!-- SENSOR-SLIDES:END -->"
     css = "/* SENSOR-CSS:START */" + CSS + "/* SENSOR-CSS:END */"
     t = INDEX.read_text(encoding="utf-8")
     if "<!-- SENSOR-SLIDES:START" in t:
