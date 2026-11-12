@@ -90,20 +90,6 @@ SENSORS = [
          cons=["Range about 3× larger than needed (over-ranged)", "Cable only 5 m", "Needs calibration every 3 months", "Body dimensions not stated in text"],
          fit=("Over-ranged", "over"), team=("Suitable", "yes"),
          links=[("Product page", "https://www.antratek.com/dr-ec200-water-ec-sensor-for-wqs")]),
-    dict(group="Water current", brand="DIY build", model="Tilt Current Meter", sub="Tilt-angle current meter (BNO085)",
-         tags=["Current", "DIY"], svg=DIY_SVG,
-         desc="A float on a tether, anchored to the seabed. Moving water pushes on it (drag), so it leans downstream: the faster the current, the further it leans. A motion sensor (IMU) inside measures the lean angle θ and direction, and calibration converts θ to speed.",
-         tall=True, steps_title="How a tilt measures current",
-         tiles=[("By calibration", "Speed range (needed 0–1 m/s)"), ("0 – 360°", "Direction (tilt-compensated compass)"), ("BNO085", "Motion sensor (Adafruit)"),
-                ("18650", "Battery (≈ 1 month logging)"), ("60–70 ft", "Depth tested leak-free (≈ 20 m)"), ("SD card", "Logging (add RS-485 for live data)")],
-         steps=["The current pushes on the float (drag). The tether holds it, so it swings over and leans downstream.",
-                "More current means more drag and a bigger angle θ. Drag grows with speed², so tan θ ∝ v².",
-                "The IMU inside measures θ (how far) and the compass gives the lean direction (current direction).",
-                "Calibration by towing at known GPS speeds turns θ into m/s. Add RS-485 to stream live."],
-         pros=["By far the cheapest option", "Parts easy to buy", "Adaptable to project needs", "No rotating parts"],
-         cons=["Accuracy unknown before calibration", "No live data without modification", "Marine growth on the float changes readings", "Not yet tested on site"],
-         fit=("Unknown", "unk"), team=("Conditional", "cond"),
-         links=[("Project page", "https://hackaday.io/project/158083-cheap-underwater-tilt-current-sensor")]),
     dict(group="Water current", brand="Nortek", model="Signature 500", sub="5-beam ADCP profiler · 500 kHz",
          tags=["Current", "Profiler"], img="signature500.png",
          desc="A five-beam acoustic Doppler profiler that measures current in layers through the water column, with built-in temperature, pressure and compass; output over Ethernet or RS-232/422.",
@@ -132,6 +118,20 @@ SENSORS = [
          note="Better fit for 2–8 m depth: AWAC 1 MHz (range 30 m, cells from 0.25 m).",
          fit=("In range", "ok"), team=("Not reviewed", "unk"),
          links=[("Product page", "https://www.nortekgroup.com/products/awac2-600-khz")]),
+    dict(group="Water current", brand="DIY build", model="Tilt Current Meter", sub="Tilt-angle current meter (BNO085) · not Doppler: it measures drag on a float, not sound echoes",
+         tags=["Current", "DIY"], svg=DIY_SVG,
+         desc="A float on a tether, anchored to the seabed. Moving water pushes on it (drag), so it leans downstream: the faster the current, the further it leans. A motion sensor (IMU) inside measures the lean angle θ and direction, and calibration converts θ to speed.",
+         tall=True, steps_title="How a tilt measures current",
+         tiles=[("By calibration", "Speed range (needed 0–1 m/s)"), ("0 – 360°", "Direction (tilt-compensated compass)"), ("BNO085", "Motion sensor (Adafruit)"),
+                ("18650", "Battery (≈ 1 month logging)"), ("60–70 ft", "Depth tested leak-free (≈ 20 m)"), ("SD card", "Logging (add RS-485 for live data)")],
+         steps=["The current pushes on the float (drag). The tether holds it, so it swings over and leans downstream.",
+                "More current means more drag and a bigger angle θ. Drag grows with speed², so tan θ ∝ v².",
+                "The IMU inside measures θ (how far) and the compass gives the lean direction (current direction).",
+                "Calibration by towing at known GPS speeds turns θ into m/s. Add RS-485 to stream live."],
+         pros=["By far the cheapest option", "Parts easy to buy", "Adaptable to project needs", "No rotating parts"],
+         cons=["Accuracy unknown before calibration", "No live data without modification", "Marine growth on the float changes readings", "Not yet tested on site"],
+         fit=("Unknown", "unk"), team=("Conditional", "cond"),
+         links=[("Project page", "https://hackaday.io/project/158083-cheap-underwater-tilt-current-sensor")]),
     dict(group="Turbidity · Sedimentation", brand="DFRobot", model="SEN0710", sub="RS485 water-quality turbidity sensor",
          tags=["Turbidity", "Sediment"], img="sen0710.webp",
          desc="A digital sensor that measures how cloudy the water is (suspended particles and sediment) using 90° infrared light scattering, with a temperature reading and RS485 Modbus-RTU output.",
@@ -212,7 +212,6 @@ def slide(n, total, s):
     links = " · ".join(f'<a class="gs-link" href="{e(u)}" target="_blank" rel="noopener">{e(k)} ↗</a>' for k, u in s["links"])
     note = f'<div class="gs-note">{e(s["note"])}</div>' if s.get("note") else ""
     fit, fc = s["fit"]
-    team, tc = s["team"]
     return f"""<section class="slide gs-slide salinity-slide" data-sensor="{e(s['model'])}">
   <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
   <div class="slide-inner">
@@ -223,7 +222,7 @@ def slide(n, total, s):
       <div class="gs-left">
         <div class="gs-img{" tall" if s.get("tall") else ""} panel rise" style="--i:3" data-fx="photo">{img}</div>
         <div class="gs-desc rise" style="--i:4">{e(s['desc'])}</div>
-        <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill {fc}">{e(fit)}</span><span>Team review:</span><span class="gs-pill {tc}">{e(team)}</span></div>
+        <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill {fc}">{e(fit)}</span></div>
         {note}
       </div>
       <div class="gs-right">
@@ -244,7 +243,7 @@ def main():
     explainer = m.group(0) if m else ""
     parts = []
     for i, s in enumerate(SENSORS, 1):
-        if s["model"] == "Tilt Current Meter" and explainer:
+        if s["model"] == "Signature 500" and explainer:
             parts.append(explainer)
         if s["model"] in EXPLAINERS:
             parts.append(EXPLAINERS[s["model"]])
