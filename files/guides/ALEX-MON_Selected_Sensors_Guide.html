@@ -1,0 +1,190 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>ALEX-MON Selected Sensors Guide</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+@page { size: A4; margin: 0; }
+:root{--navy:#0b2a4a;--teal:#14a6a0;--teal2:#0e7c86;--ink:#1b2b4b;--muted:#5b6b82;--line:#dbe4ee;--pale:#f1f5f9;--green:#1e7b34;--red:#b03a2e;--amber:#b26a00}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo','Segoe UI',Tahoma,sans-serif;color:var(--ink);background:#fff}
+.ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.page{width:210mm;height:297mm;position:relative;overflow:hidden;page-break-after:always;padding:16mm 14mm 14mm}
+.page:last-child{page-break-after:auto}
+.run{position:absolute;top:7mm;left:14mm;right:14mm;display:flex;justify-content:space-between;font-size:9pt;color:var(--muted)}
+.foot{position:absolute;bottom:7mm;left:0;right:0;text-align:center;font-size:9pt;color:var(--muted)}
+.kicker{color:var(--teal);font-weight:700;font-size:10.5pt;margin-top:4mm}
+h1.title{font-size:22pt;font-weight:800;color:var(--navy);margin:1mm 0 4mm}
+p.lead{font-size:10.5pt;line-height:1.75;color:var(--ink);margin-bottom:5mm}
+/* cover */
+.cover{background:var(--navy);color:#fff;padding:0}
+.cover .inner{position:absolute;top:58mm;right:22mm;left:22mm;direction:ltr;text-align:left}
+.cover .k{color:#2ec4b6;font-weight:700;font-size:11pt;letter-spacing:.3px}
+.cover h1{font-size:38pt;font-weight:800;line-height:1.12;margin:7mm 0 6mm}
+.cover p{font-size:12.5pt;line-height:1.6;color:#d6e2ee;max-width:150mm}
+.cover .bar{width:30mm;height:2.2mm;background:#2ec4b6;margin:12mm 0 10mm}
+.chips{display:flex;flex-wrap:wrap;gap:3mm}
+.chip{border:1px solid #6b86a6;border-radius:20px;padding:1.4mm 4.5mm;font-size:10pt;color:#e6eef6}
+.waves{position:absolute;bottom:0;left:0;width:100%}
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:10pt}
+th{background:var(--navy);color:#fff;font-weight:700;padding:3mm 3mm;text-align:right}
+td{padding:2.6mm 3mm;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:nth-child(even) td{background:var(--pale)}
+td.num{color:var(--teal2);font-weight:800;text-align:center;width:10mm}
+td a{color:#1d4ed8;font-size:8.6pt;word-break:break-all;direction:ltr;unicode-bidi:isolate}
+.brand{color:var(--teal);font-weight:800}
+/* water page */
+.sites{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;margin-bottom:5mm}
+.site{background:var(--pale);border-radius:3mm;padding:3mm;border-top:1.2mm solid var(--teal)}
+.site b{display:block;font-size:10.5pt;color:var(--navy)}
+.site .en{font-size:8.5pt;color:var(--muted);direction:ltr}
+.site .d{font-size:9.5pt;margin-top:1.5mm}
+.wtable td{text-align:center;font-size:9.6pt}.wtable td:first-child{text-align:right;font-weight:700}
+.wtable th{text-align:center;font-size:9.4pt}
+.takeaways{margin:5mm 0 4mm;padding:0;list-style:none}
+.takeaways li{font-size:10pt;line-height:1.65;padding:1.2mm 6mm 1.2mm 0;position:relative}
+.takeaways li:before{content:'';position:absolute;right:0;top:3.6mm;width:2.4mm;height:2.4mm;border-radius:50%;background:var(--teal)}
+.req{background:#eaf6f5;border-right:1.5mm solid var(--teal);border-radius:2mm;padding:3.5mm 5mm}
+.req h3{font-size:11.5pt;color:var(--navy);margin-bottom:2mm}
+.req .g{display:grid;grid-template-columns:repeat(3,1fr);gap:2mm 5mm;font-size:10pt}
+.req .g b{color:var(--teal2)}
+.src{font-size:8.3pt;color:var(--muted);margin-top:4mm;line-height:1.6}
+/* sensor page */
+.head{display:flex;align-items:center;gap:4mm;margin-top:3mm}
+.numbox{width:15mm;height:15mm;border-radius:3mm;background:var(--navy);color:#fff;font-size:18pt;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.head .t{flex:1}
+.head .t .b{color:var(--teal);font-weight:800;font-size:11pt}
+.head .t h2{font-size:19pt;font-weight:800;color:var(--navy);line-height:1.2;direction:ltr;text-align:right}
+.head .t .s{font-size:9.6pt;color:var(--muted)}
+.tags{display:flex;flex-direction:column;gap:1.5mm;align-items:flex-start}
+.tag{border-radius:20px;padding:.8mm 4mm;font-size:9pt;font-weight:700;border:1.2px solid var(--teal2);color:var(--teal2)}
+.tag:first-child{background:var(--teal2);color:#fff}
+.imgbox{border:1px solid var(--line);border-radius:4mm;height:46mm;margin:3mm 0 2mm;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff;position:relative}
+.imgbox img{max-width:100%;max-height:44mm;object-fit:contain}
+.imgbox img.drawing{max-height:42mm}
+.imgbox svg{width:100%;height:100%}
+.imgbox .cap{position:absolute;bottom:1.5mm;left:3mm;font-size:8pt;color:var(--muted)}
+.desc{border-right:1.4mm solid var(--teal2);padding:1mm 4mm;font-size:10.6pt;line-height:1.7;margin-bottom:3mm}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:2.2mm}
+.tile{background:var(--pale);border-radius:2.5mm;padding:2mm 2mm;text-align:center}
+.tile b{display:block;font-size:11pt;font-weight:800;color:var(--navy);direction:ltr;unicode-bidi:isolate}
+.tile span{font-size:8.4pt;color:var(--muted)}
+.pricebar{display:flex;align-items:center;gap:4mm;margin:3mm 0 2mm;background:var(--navy);color:#fff;border-radius:3mm;padding:2.4mm 5mm}
+.pricebar .l{font-size:9.5pt;color:#9fb7d0}
+.pricebar .v{font-size:15pt;font-weight:800;color:#2ec4b6;direction:ltr;unicode-bidi:isolate}
+.pricebar .n{font-size:8.8pt;color:#d6e2ee;flex:1}
+.fitrow{display:flex;gap:3mm;margin-bottom:2mm;font-size:8.8pt}
+.pill{border-radius:20px;padding:.6mm 3.5mm;font-weight:700}
+.ok,.yes{background:#e2f0d9;color:var(--green)}.over,.cond{background:#fff2cc;color:var(--amber)}.no{background:#fadbd8;color:var(--red)}.unk{background:#eef1f4;color:#6b7280}
+h3.sec{font-size:12pt;color:var(--navy);border-right:1.2mm solid var(--teal);padding-right:2.5mm;margin:2mm 0 2mm}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:1.6mm 6mm;margin-bottom:3mm}
+.step{display:flex;gap:2mm;font-size:9.2pt;line-height:1.55;align-items:flex-start}
+.step i{font-style:normal;flex:none;width:5.6mm;height:5.6mm;border-radius:50%;background:var(--teal2);color:#fff;font-weight:800;font-size:8.6pt;display:flex;align-items:center;justify-content:center;margin-top:.4mm}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:3mm}
+.box{border-radius:3mm;padding:2.6mm 4mm;border-top:1.2mm solid}
+.box h4{font-size:11pt;margin-bottom:1mm}
+.box ul{list-style:none;font-size:9.2pt;line-height:1.6}
+.box li:before{content:'• '}
+.pros{background:#eef7ee;border-color:var(--green)}.pros h4{color:var(--green)}
+.cons{background:#fbeeee;border-color:var(--red)}.cons h4{color:var(--red)}
+.note{font-size:9pt;background:#fff8e6;border-radius:2mm;padding:1.8mm 3.5mm;margin-bottom:2.5mm;color:#6b4a00}
+.links td{font-size:8.6pt;padding:1.6mm 3mm;background:var(--pale)}
+.links td.k{background:var(--navy);color:#fff;font-weight:700;width:34mm;direction:ltr;text-align:left}
+.links{border-collapse:separate;border-spacing:0 1.2mm}
+</style></head><body><section class="page cover"><div class="inner"><div class="k">TECHNICAL REPORT · ALEX-MON UNDERWATER HERITAGE MONITORING</div>
+<h1>Selected Sensors<br>Guide</h1>
+<p>Water conditions at the four Alexandria underwater sites, and eight shortlisted sensors for salinity, temperature, water current, turbidity and dissolved oxygen: key specifications, price, advantages and limitations.</p>
+<div class="bar"></div><div class="chips"><span class="chip">SensorsX</span><span class="chip">WizSensor</span><span class="chip">Dragino</span><span class="chip">Nortek</span><span class="chip">DFRobot</span><span class="chip">DIY build</span><span class="chip">4 Alexandria sites</span></div></div><svg class="waves" viewBox="0 0 800 260" preserveAspectRatio="none"><path d="M0 60 C200 0 330 70 520 40 C650 20 740 30 800 50 V260 H0Z" fill="#0f3a63"/>
+<path d="M0 120 C180 70 320 140 520 105 C660 80 740 90 800 110 V260 H0Z" fill="#0f5a73"/>
+<path d="M0 175 C200 140 360 200 560 165 C680 145 750 150 800 165 V260 H0Z" fill="#0e7c86"/></svg></section><section class="page "><div class="run"><span>نوفمبر 2026</span><span>دليل الحساسات المختارة لمشروع ALEX-MON</span></div><div class="kicker">Contents</div><h1 class="title">المحتويات</h1>
+<table><tr><th>#</th><th>القسم</th><th></th><th style="text-align:center">صفحة</th></tr>
+<tr><td class="num">—</td><td><b>بيانات المياه في المواقع الأربعة</b></td><td>الخلفية</td><td style="text-align:center;font-weight:700">3</td></tr></table>
+<h3 class="sec" style="margin-top:7mm">قائمة الحساسات</h3>
+<table><tr><th>#</th><th>الحساس</th><th>القياس</th><th>السعر</th><th style="text-align:center">صفحة</th></tr><tr><td class="num">1</td><td><span class="brand">SensorsX</span> <b class="ltr">SX-CCFNA</b></td><td>ملوحة وموصلية</td><td><b class="ltr">$473</b></td><td style="text-align:center;font-weight:700">4</td></tr><tr><td class="num">2</td><td><span class="brand">WizSensor</span> <b class="ltr">WS-OM-MUL-17A</b></td><td>CTD</td><td>عند الطلب</td><td style="text-align:center;font-weight:700">5</td></tr><tr><td class="num">3</td><td><span class="brand">Dragino</span> <b class="ltr">DR-EC200</b></td><td>ملوحة وموصلية</td><td><b class="ltr">$375</b></td><td style="text-align:center;font-weight:700">6</td></tr><tr><td class="num">4</td><td><span class="brand">تصنيع ذاتي</span> <b class="ltr">DIY Tilt Current Meter</b></td><td>ميل (Tilt)</td><td><b class="ltr">$200 (تقديري)</b></td><td style="text-align:center;font-weight:700">7</td></tr><tr><td class="num">5</td><td><span class="brand">Nortek</span> <b class="ltr">Signature 500</b></td><td>دوبلر صوتي</td><td>غير معلن</td><td style="text-align:center;font-weight:700">8</td></tr><tr><td class="num">6</td><td><span class="brand">Nortek</span> <b class="ltr">AWAC 600 kHz</b></td><td>دوبلر صوتي</td><td>غير معلن</td><td style="text-align:center;font-weight:700">9</td></tr><tr><td class="num">7</td><td><span class="brand">DFRobot</span> <b class="ltr">SEN0710</b></td><td>عكارة وترسيب</td><td>غير معلن</td><td style="text-align:center;font-weight:700">10</td></tr><tr><td class="num">8</td><td><span class="brand">DFRobot</span> <b class="ltr">SEN0681</b></td><td>أكسجين مذاب</td><td>غير معلن</td><td style="text-align:center;font-weight:700">11</td></tr></table>
+<p class="src" style="margin-top:6mm">الأسعار من مراجعة الفريق للموردين (Under_Water_BoM.xlsx). "عند الطلب" و"غير معلن" تعني أن المورد لم ينشر سعراً بعد.
+المواصفات منقولة من الداتاشيت الرسمية لكل مصنّع، والمرجع الكامل في Sensors_BOM.xlsx.</p><div class="foot">2</div></section><section class="page "><div class="run"><span>نوفمبر 2026</span><span>دليل الحساسات المختارة لمشروع ALEX-MON</span></div><div class="kicker">الخلفية · بيانات المياه</div><h1 class="title">ظروف المياه في المواقع الأربعة</h1>
+<p class="lead">جمعنا القياسات المنشورة لمياه مواقع الآثار الغارقة الأربعة في الإسكندرية، لتحديد النطاق الذي يجب أن تغطيه الحساسات. الأرقام أدناه مختصرة؛ القيم التفصيلية ومصادرها في ملف <span class="ltr">Site_Water_Parameters.xlsx</span>.</p>
+<div class="sites"><div class="site"><b>قايتباي · فاروس</b><div class="en">Qaitbay · Pharos</div><div class="d">العمق: 6–8 م</div><div class="d">0–150 م من سور القلعة</div></div><div class="site"><b>الميناء الشرقي · أنتيرودوس</b><div class="en">Eastern Harbour</div><div class="d">العمق: 2–8 م</div><div class="d">≈ 200 م من الكورنيش</div></div><div class="site"><b>كانوب الشرقية</b><div class="en">Canopus East</div><div class="d">العمق: 4–5 م</div><div class="d">≈ 2 كم من شاطئ أبو قير</div></div><div class="site"><b>ثونيس-هيراكليون</b><div class="en">Thonis-Heracleion</div><div class="d">العمق: 5–7 م</div><div class="d">≈ 6–7 كم داخل خليج أبو قير</div></div></div>
+<table class="wtable"><tr><th>القياس</th><th>قايتباي · فاروس</th><th>الميناء الشرقي · أنتيرودوس</th><th>كانوب الشرقية</th><th>ثونيس-هيراكليون</th></tr><tr><td>درجة الحرارة <span class=ltr>(°C)</span></td><td><span class="ltr">17 – 31.5</span></td><td><span class="ltr">16 – 31.5</span></td><td><span class="ltr">15.5 – 29.5</span></td><td><span class="ltr">15.5 – 29.5</span></td></tr><tr><td>الملوحة <span class=ltr>(PSU)</span></td><td><span class="ltr">35 – 39</span></td><td><span class="ltr">35 – 39.5</span></td><td><span class="ltr">37 – 40.5</span></td><td><span class="ltr">37.5 – 40.5</span></td></tr><tr><td>سرعة التيار <span class=ltr>(m/s)</span></td><td>لم يُقَس بالموقع</td><td><span class="ltr">0 – 0.7</span></td><td>حتى 0.5</td><td><span class="ltr">0.05 – 0.17</span></td></tr><tr><td>الأكسجين المذاب <span class=ltr>(mg/L)</span></td><td><span class="ltr">3.5 – 10</span></td><td><span class="ltr">5 – 8 (متوسط)</span></td><td><span class="ltr">3 – 15</span></td><td><span class="ltr">3 – 15</span></td></tr><tr><td>الأس الهيدروجيني pH</td><td><span class="ltr">7.6 – 8.3</span></td><td><span class="ltr">7.0 – 8.6</span></td><td><span class="ltr">7.3 – 8.1</span></td><td><span class="ltr">7.3 – 8.1</span></td></tr></table>
+<ul class="takeaways"><li>الحرارة لا تقترب أبداً من الصفر: أقل قراءة مسجلة 15.5 °C (يناير) وأعلى قراءة 31.5 °C (أغسطس).</li><li>الملوحة عالية (37 – 40.5 PSU، أي موصلية حتى ≈ 60 mS/cm)، وتنخفض قرب مصبات الصرف وبحيرة إدكو في أبو قير.</li><li>التيارات هادئة: أعلى قياس 0.7 م/ث داخل الميناء الشرقي، والمد صغير جداً (6 – 23 سم).</li><li>لا توجد قياسات منشورة للعكارة (NTU) ولا لمعدل الترسيب في أي موقع — وهذا ما سيقيسه جهازنا لأول مرة.</li></ul>
+<div class="req"><h3>النطاقات المطلوبة للحساسات (مشتقة من القياسات + هامش أمان)</h3><div class="g"><div>الحرارة: <b class=ltr>10 – 35 °C</b></div><div>الموصلية: <b class=ltr>30 – 63 mS/cm</b></div><div>الملوحة: <b class=ltr>20 – 42 PSU</b></div><div>سرعة التيار: <b class=ltr>0 – 1 m/s</b></div><div>الاتجاه: <b class=ltr>0 – 360°</b></div><div>عمق التشغيل: <b class=ltr>≥ 10 م</b></div></div></div>
+<p class="src">المصادر الرئيسية: NIOF Bulletin، Egyptian Journal of Aquatic Research، Rev. Biol. Mar. Oceanogr. (2014)، SN Applied Sciences (2023)، seatemperature.org — القائمة الكاملة (24 مصدراً) في ملف الإكسل.
+كانوب وهيراكليون يتشاركان بيانات خليج أبو قير لأنه لا توجد قياسات منشورة عند الموقعين نفسيهما.</p><div class="foot">3</div></section><section class="page "><div class="run"><span>نوفمبر 2026</span><span>دليل الحساسات المختارة لمشروع ALEX-MON</span></div><div class="head"><div class="numbox">1</div><div class="t"><div class="b">SensorsX</div><h2>SX-CCFNA</h2><div class="s">حساس موصلية / ملوحة رباعي الأقطاب</div></div><div class="tags"><span class="tag">ملوحة وموصلية</span><span class="tag">4 أقطاب</span></div></div>
+<div class="imgbox"><img class="" src="img/sx-ccfna.webp" alt="SX-CCFNA"></div>
+<div class="desc">حساس رقمي يقيس الموصلية والملوحة والمواد الذائبة (TDS) ودرجة الحرارة معاً بتقنية الأقطاب الأربعة، ويرسل القراءات عبر RS-485 (Modbus).</div>
+<div class="tiles"><div class="tile"><b>0.001 – 100 mS/cm</b><span>مدى الموصلية (خيار المدى العالي)</span></div><div class="tile"><b>0 – 80 ppt</b><span>مدى الملوحة</span></div><div class="tile"><b>±1 %</b><span>الدقة (أو 0.01 mS/cm)</span></div><div class="tile"><b>RS-485</b><span>الاتصال (Modbus)</span></div><div class="tile"><b>9 – 24 V</b><span>التغذية (0.2 W)</span></div><div class="tile"><b>IP68</b><span>الحماية · Φ22 × 175.5 mm</span></div></div>
+<div class="pricebar"><span class="l">السعر</span><span class="v">$473</span><span class="n">سعر الموقع الرسمي sensorsx.com (من مراجعة الفريق)</span></div>
+<div class="fitrow"><span>ملاءمة مدى القياس:</span><span class="pill ok">مناسب (OK range)</span><span style="margin-right:4mm">مراجعة الفريق:</span><span class="pill cond">▲ مشروط</span></div>
+<h3 class="sec">طريقة التشغيل</h3><div class="steps"><div class="step"><i>1</i><div>اطلب خيار المدى العالي 0–100 mS/cm / 0–80 ppt (خيار 0–5 mS/cm لا يصلح لمياه البحر).</div></div><div class="step"><i>2</i><div>ثبّته على الإطار في القاع ووصّل كابل RS-485 بوحدة التجميع.</div></div><div class="step"><i>3</i><div>يقرأ الموصلية والملوحة والحرارة بشكل مستمر عبر Modbus.</div></div><div class="step"><i>4</i><div>نظّفه دورياً من الحشف الحيوي وأعد معايرته (نقطة أو نقطتين).</div></div></div>
+<div class="pc"><div class="box pros"><h4>المميزات</h4><ul><li>يقيس 4 قيم في جهاز واحد</li><li>جسم Ni + PEEK + تيتانيوم مناسب لمياه البحر</li><li>استهلاك منخفض 0.2 W</li><li>معاير من المصنع</li></ul></div><div class="box cons"><h4>العيوب</h4><ul><li>لازم طلب خيار المدى العالي</li><li>الكابل القياسي 10 م فقط</li><li>عمق التشغيل غير مذكور في الداتاشيت</li><li>طريقة المعايرة غير موضحة</li></ul></div></div>
+<table class="links"><tr><td class="k">Product Page</td><td><a href="https://sensorsx.com/products/sx-ccfna-series">sensorsx.com/products/sx-ccfna-series</a></td></tr><tr><td class="k">Datasheet (PDF)</td><td><span class="ltr">Rev A — files/sensors/salenity/SensorsX SX-CCFNA/</span></td></tr></table><div class="foot">4</div></section><section class="page "><div class="run"><span>نوفمبر 2026</span><span>دليل الحساسات المختارة لمشروع ALEX-MON</span></div><div class="head"><div class="numbox">2</div><div class="t"><div class="b">WizSensor</div><h2>WS-OM-MUL-17A</h2><div class="s">حساس CTD: موصلية · ملوحة · حرارة · عمق</div></div><div class="tags"><span class="tag">CTD</span><span class="tag">ملوحة وموصلية</span></div></div>
+<div class="imgbox"><img class="" src="img/ws-om-mul-17a.webp" alt="WS-OM-MUL-17A"></div>
+<div class="desc">حساس CTD يقيس الموصلية والحرارة والعمق ويحسب الملوحة، بمخرج RS-485 Modbus RTU، ويضيف قياس منسوب المياه فوق الموقع.</div>
+<div class="tiles"><div class="tile"><b>0 – 100 mS/cm</b><span>مدى الموصلية (±1 %)</span></div><div class="tile"><b>0 – 80 ppt</b><span>الملوحة (محسوبة، ±1 ppt)</span></div><div class="tile"><b>±0.05 °C</b><span>دقة الحرارة (−5 إلى 50 °C)</span></div><div class="tile"><b>0 – 200 m</b><span>مدى العمق (±0.1 % FS)</span></div><div class="tile"><b>RS-485</b><span>Modbus RTU · 9600 8N1</span></div><div class="tile"><b>6 – 36 V</b><span>التغذية (≈ 20 mA عند 12 V)</span></div></div>
+<div class="pricebar"><span class="l">السعر</span><span class="v">عند الطلب</span><span class="n">في انتظار عرض سعر من WizSensor (لم يرد على البريد بعد)</span></div>
+<div class="fitrow"><span>ملاءمة مدى القياس:</span><span class="pill ok">مناسب (OK range)</span><span style="margin-right:4mm">مراجعة الفريق:</span><span class="pill yes">✔ مناسب</span></div>
+<h3 class="sec">طريقة التشغيل</h3><div class="steps"><div class="step"><i>1</i><div>اطلب عرض السعر وأكّد طول الكابل (30 م قياسي) وتصنيف الضغط ≥ 10 م.</div></div><div class="step"><i>2</i><div>ثبّته على الإطار، ولا تستخدم كابل الإشارة لتعليق الجهاز.</div></div><div class="step"><i>3</i><div>يرسل الحرارة والموصلية والملوحة والعمق لحظياً عبر Modbus.</div></div><div class="step"><i>4</i><div>نظّفه كل 4–8 أسابيع وأعد المعايرة (الحرارة والموصلية بنقطة أو نقطتين).</div></div></div>
+<div class="pc"><div class="box pros"><h4>المميزات</h4><ul><li>أفضل توافق فني مع ملوحة وحرارة الموقع</li><li>يقيس العمق ومنسوب المياه أيضاً</li><li>استهلاك منخفض يناسب العوامة الشمسية</li><li>دقة حرارة عالية ±0.05 °C</li></ul></div><div class="box cons"><h4>العيوب</h4><ul><li>السعر غير معلن</li><li>جسم 316L — تأكد من ملاءمته للغمر الطويل</li><li>الداتاشيت يُرسل عند الطلب فقط</li><li>دقة الملوحة ±1 ppt</li></ul></div></div>
+<table class="links"><tr><td class="k">Product Page</td><td><a href="https://wizsensor.com/pro/ws-om-mul-17a-ctd-sensor/">wizsensor.com/pro/ws-om-mul-17a-ctd-sensor/</a></td></tr><tr><td class="k">Datasheet (PDF)</td><td><span class="ltr">On request from WizSensor</span></td></tr></table><div class="foot">5</div></section><section class="page "><div class="run"><span>نوفمبر 2026</span><span>دليل الحساسات المختارة لمشروع ALEX-MON</span></div><div class="head"><div class="numbox">3</div><div class="t"><div class="b">Dragino</div><h2>DR-EC200</h2><div class="s">حساس موصلية رباعي الأقطاب لمياه البحر</div></div><div class="tags"><span class="tag">ملوحة وموصلية</span><span class="tag">4 أقطاب</span></div></div>
+<div class="imgbox"><img class="drawing" src="img/dr-ec200-drawing.png" alt="DR-EC200"><span class="cap">رسم الأبعاد من مستندات Dragino (عائلة DR-EC)</span></div>
+<div class="desc">حساس موصلية رقمي بأربعة أقطاب مصمم للمياه عالية الموصلية مثل مياه البحر، يقيس الموصلية والملوحة والحرارة ويرسلها عبر RS-485.</div>
+<div class="tiles"><div class="tile"><b>1 – 200,000 µS/cm</b><span>مدى الموصلية (±1 % FS)</span></div><div class="tile"><b>0 – 70 PSU</b><span>مدى الملوحة (دقة 0.1)</span></div><div class="tile"><b>±0.5 °C</b><span>دقة الحرارة (−5 إلى 80 °C)</span></div><div class="tile"><b>RS-485</b><span>Modbus-RTU · 9600</span></div><div class="tile"><b>7 – 30 V</b><span>التغذية (&lt; 0.5 W)</span></div><div class="tile"><b>0.6 MPa</b><span>الضغط · IP68 (عدا الموصّل)</span></div></div>
+<div class="pricebar"><span class="l">السعر</span><span class="v">$375</span><span class="n">€325.61 لدى Antratek — القيمة بالدولار تقريبية</span></div>
+<div class="fitrow"><span>ملاءمة مدى القياس:</span><span class="pill over">أكبر من المطلوب (Overpowered)</span><span style="margin-right:4mm">مراجعة الفريق:</span><span class="pill yes">✔ مناسب</span></div>
+<h3 class="sec">طريقة التشغيل</h3><div class="steps"><div class="step"><i>1</i><div>مدّد الكابل (5 م قياسي) ليصل إلى السطح.</div></div><div class="step"><i>2</i><div>عاير بنقطتين عبر Modbus: محلول 1,413 µS/cm ثم 111,310 µS/cm.</div></div><div class="step"><i>3</i><div>يقرأ الموصلية والملوحة والحرارة بشكل مستمر.</div></div><div class="step"><i>4</i><div>أعد المعايرة كل 3 شهور ونظّفه من الحشف الحيوي.</div></div></div>
+<div class="pc"><div class="box pros"><h4>المميزات</h4><ul><li>أرخص حساس ملوحة مناسب للموقع</li><li>مصمم لمياه البحر</li><li>خطوات المعايرة موضحة بالتفصيل</li><li>مدخل تغذية مرن 7–30 V</li></ul></div><div class="box cons"><h4>العيوب</h4><ul><li>المدى أكبر من المطلوب بثلاث مرات (Overpowered)</li><li>الكابل 5 م فقط</li><li>يحتاج معايرة كل 3 شهور</li><li>أبعاد الجسم غير مذكورة نصياً</li></ul></div></div>
+<table class="links"><tr><td class="k">Product Page</td><td><a href="https://www.antratek.com/dr-ec200-water-ec-sensor-for-wqs">www.antratek.com/dr-ec200-water-ec-sensor-for-wqs</a></td></tr><tr><td class="k">Datasheet</td><td><a href="https://docs.dragino.com/docs/Non-Wireless-Sensors/water-quality/dr-eck1.0-dr-eck10.0-ec200-ec-digital-electrode-sensor">docs.dragino.com/docs/Non-Wireless-Sensors/water-quality/dr-eck1.0-dr-eck10.0-ec200-ec-digital-electrode-sensor</a></td></tr></table><div class="foot">6</div></section><section class="page "><div class="run"><span>نوفمبر 2026</span><span>دليل الحساسات المختارة لمشروع ALEX-MON</span></div><div class="head"><div class="numbox">4</div><div class="t"><div class="b">تصنيع ذاتي</div><h2>DIY Tilt Current Meter</h2><div class="s">مقياس تيار بزاوية الميل (BNO085)</div></div><div class="tags"><span class="tag">ميل (Tilt)</span><span class="tag">تصنيع ذاتي</span></div></div>
+<div class="imgbox"><svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" font-family="Cairo, sans-serif">
+<defs><linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6f4f7"/><stop offset="1" stop-color="#bfe3ea"/></linearGradient></defs>
+<rect x="0" y="0" width="520" height="300" fill="url(#w)"/>
+<rect x="0" y="262" width="520" height="38" fill="#d9c9a3"/>
+<rect x="225" y="244" width="70" height="20" rx="3" fill="#9aa4ad"/>
+<text x="260" y="290" text-anchor="middle" font-size="13" fill="#5b4a2a">قاعدة خرسانية</text>
+<line x1="260" y1="246" x2="330" y2="120" stroke="#3b3b3b" stroke-width="3"/>
+<g transform="rotate(-29 335 92)"><rect x="315" y="40" width="40" height="110" rx="18" fill="#0b2a4a"/>
+<rect x="322" y="70" width="26" height="30" rx="4" fill="#14b8a6"/><text x="335" y="90" text-anchor="middle" font-size="9" fill="#fff">IMU</text></g>
+<path d="M300 92 A70 70 0 0 1 260 175" fill="none" stroke="#c0392b" stroke-width="2" stroke-dasharray="5 4"/>
+<line x1="260" y1="246" x2="260" y2="60" stroke="#7f93ad" stroke-width="1.5" stroke-dasharray="4 4"/>
+<text x="290" y="158" font-size="15" fill="#c0392b" font-weight="700">θ</text>
+<g fill="#0b6b7a"><path d="M40 120 h120 v-10 l26 20 -26 20 v-10 h-120z"/><path d="M40 190 h90 v-8 l22 16 -22 16 v-8 h-90z"/></g>
+<text x="95" y="100" text-anchor="middle" font-size="15" fill="#0b2a4a" font-weight="700">اتجاه التيار</text>
+<text x="420" y="40" text-anchor="middle" font-size="13" fill="#0b2a4a">عوامة + غلاف 2"</text>
+<text x="420" y="58" text-anchor="middle" font-size="12" fill="#0b2a4a">زاوية الميل θ ← السرعة</text>
+</svg></div>
+<div class="desc">عوامة مربوطة بالقاع تميل مع التيار؛ حساس حركة (IMU) داخل غلاف مقاوم للماء يقيس زاوية الميل واتجاهها، ثم تُحوَّل الزاوية إلى سرعة بالمعايرة.</div>
+<div class="tiles"><div class="tile"><b>حسب المعايرة</b><span>مدى السرعة (المطلوب 0–1 م/ث)</span></div><div class="tile"><b>0 – 360°</b><span>الاتجاه (بوصلة معوّضة للميل)</span></div><div class="tile"><b>BNO085</b><span>حساس الحركة (Adafruit)</span></div><div class="tile"><b>18650</b><span>البطارية (≈ شهر تسجيل)</span></div><div class="tile"><b>60–70 ft</b><span>عمق مجرّب بدون تسرب (≈ 20 م)</span></div><div class="tile"><b>SD</b><span>التسجيل (أضف RS-485 للبث اللحظي)</span></div></div>
+<div class="pricebar"><span class="l">السعر</span><span class="v">$200 (تقديري)</span><span class="n">BNO085 ‏$29.50 + غلاف Blue Robotics من $61 + معالج وبطارية وعوامة وحبل</span></div>
+<div class="fitrow"><span>ملاءمة مدى القياس:</span><span class="pill unk">غير معروف (Unknown)</span><span style="margin-right:4mm">مراجعة الفريق:</span><span class="pill cond">▲ مشروط</span></div>
+<h3 class="sec">طريقة التشغيل</h3><div class="steps"><div class="step"><i>1</i><div>ركّب الـIMU والمعالج والبطارية داخل غلاف 2 بوصة.</div></div><div class="step"><i>2</i><div>اربط العوامة بحبل إلى القاعدة الخرسانية في القاع.</div></div><div class="step"><i>3</i><div>عاير الجهاز بسحبه بسرعات معروفة (GPS) لتحويل الزاوية إلى سرعة.</div></div><div class="step"><i>4</i><div>أبعد الحديد عن البوصلة، وأضف RS-485 لإرسال البيانات لحظياً.</div></div></div>
+<div class="pc"><div class="box pros"><h4>المميزات</h4><ul><li>أرخص خيار بفارق كبير</li><li>قطع متوفرة وسهلة الشراء</li><li>يمكن تعديله حسب احتياج المشروع</li><li>لا يحتوي أجزاء دوّارة</li></ul></div><div class="box cons"><h4>العيوب</h4><ul><li>الدقة غير معروفة قبل المعايرة</li><li>لا يرسل بيانات لحظية بدون تعديل</li><li>نمو الكائنات على العوامة يغيّر القراءة</li><li>لم يُختبر في الموقع بعد</li></ul></div></div>
+<table class="links"><tr><td class="k">Project Page</td><td><a href="https://hackaday.io/project/158083-cheap-underwater-tilt-current-sensor">hackaday.io/project/158083-cheap-underwater-tilt-current-sensor</a></td></tr><tr><td class="k">Enclosure</td><td><a href="https://bluerobotics.com/store/watertight-enclosures/wte-vp/">bluerobotics.com/store/watertight-enclosures/wte-vp/</a></td></tr></table><div class="foot">7</div></section><section class="page "><div class="run"><span>نوفمبر 2026</span><span>دليل الحساسات المختارة لمشروع ALEX-MON</span></div><div class="head"><div class="numbox">5</div><div class="t"><div class="b">Nortek</div><h2>Signature 500</h2><div class="s">بروفايلر ADCP خماسي الأشعة · 500 kHz</div></div><div class="tags"><span class="tag">دوبلر صوتي</span><span class="tag">بروفايلر</span></div></div>
+<div class="imgbox"><img class="" src="img/signature500.png" alt="Signature 500"></div>
+<div class="desc">بروفايلر دوبلر صوتي بخمس أشعة يقيس التيار في طبقات عمود الماء، مع حساسات حرارة وضغط وبوصلة، ويرسل عبر Ethernet أو RS-232/422.</div>
+<div class="tiles"><div class="tile"><b>1 – 5 m/s</b><span>مدى السرعة (قابل للضبط)</span></div><div class="tile"><b>0.3 % ±0.3 cm/s</b><span>الدقة</span></div><div class="tile"><b>60 – 70 m</b><span>مدى البروفايل (خلايا 0.5–4 م)</span></div><div class="tile"><b>300 m</b><span>أقصى عمق</span></div><div class="tile"><b>16 – 128 GB</b><span>الذاكرة</span></div><div class="tile"><b>12 – 48 V</b><span>التغذية (8 W عند 1 Hz)</span></div></div>
+<div class="pricebar"><span class="l">السعر</span><span class="v">غير معلن</span><span class="n">السعر عند الطلب من Nortek</span></div>
+<div class="fitrow"><span>ملاءمة مدى القياس:</span><span class="pill ok">مناسب (OK range)</span><span style="margin-right:4mm">مراجعة الفريق:</span><span class="pill unk">لم تتم مراجعته</span></div>
+<div class="note">بديل أنسب للعمق 2–8 م: Signature 1000 (مدى 25–30 م، خلايا من 0.2 م، وضع HR من 0.1 م).</div><h3 class="sec">طريقة التشغيل</h3><div class="steps"><div class="step"><i>1</i><div>اضبط مدى السرعة على 1 م/ث وحجم الخلية 0.5 م.</div></div><div class="step"><i>2</i><div>ثبّته على إطار في القاع متجهاً لأعلى.</div></div><div class="step"><i>3</i><div>يسجل ذاتياً، أو يوصل بكابل للقراءة اللحظية (Ethernet / RS-422).</div></div><div class="step"><i>4</i><div>حلل البيانات ببرنامج Nortek بعد الرفع أو لحظياً.</div></div></div>
+<div class="pc"><div class="box pros"><h4>المميزات</h4><ul><li>دقة عالية جداً</li><li>يقيس كل طبقات عمود الماء</li><li>حرارة وضغط وبوصلة مدمجة</li><li>ذاكرة كبيرة حتى 128 GB</li></ul></div><div class="box cons"><h4>العيوب</h4><ul><li>مصمم للمياه العميقة (مدى 60–70 م)</li><li>منطقة ميتة 0.5 م أمام الحساس</li><li>كبير وثقيل (Ø228 مم، 6.4 كجم)</li><li>سعر مرتفع غير معلن</li></ul></div></div>
+<table class="links"><tr><td class="k">Product Page</td><td><a href="https://www.nortekgroup.com/products/signature-500">www.nortekgroup.com/products/signature-500</a></td></tr><tr><td class="k">Datasheet (PDF)</td><td><a href="https://www.nortekgroup.com/products/signature-500/pdf">www.nortekgroup.com/products/signature-500/pdf</a></td></tr></table><div class="foot">8</div></section><section class="page "><div class="run"><span>نوفمبر 2026</span><span>دليل الحساسات المختارة لمشروع ALEX-MON</span></div><div class="head"><div class="numbox">6</div><div class="t"><div class="b">Nortek</div><h2>AWAC 600 kHz</h2><div class="s">بروفايلر تيار وأمواج · الجيل الثاني</div></div><div class="tags"><span class="tag">دوبلر صوتي</span><span class="tag">تيار + أمواج</span></div></div>
+<div class="imgbox"><img class="" src="img/awac600.png" alt="AWAC 600 kHz"></div>
+<div class="desc">بروفايلر دوبلر صوتي يقيس التيار على طبقات، ويقيس الأمواج أيضاً بتقنية AST، مع حساسات حرارة وضغط.</div>
+<div class="tiles"><div class="tile"><b>1 – 5 m/s</b><span>مدى السرعة (قابل للضبط)</span></div><div class="tile"><b>±1 % ±0.5 cm/s</b><span>الدقة</span></div><div class="tile"><b>50 m</b><span>مدى البروفايل (خلايا 0.5–8 م)</span></div><div class="tile"><b>300 m</b><span>أقصى عمق</span></div><div class="tile"><b>حتى 60 م</b><span>قياس الأمواج</span></div><div class="tile"><b>12 – 48 V</b><span>التغذية (بطاريات خارجية)</span></div></div>
+<div class="pricebar"><span class="l">السعر</span><span class="v">غير معلن</span><span class="n">السعر عند الطلب من Nortek</span></div>
+<div class="fitrow"><span>ملاءمة مدى القياس:</span><span class="pill ok">مناسب (OK range)</span><span style="margin-right:4mm">مراجعة الفريق:</span><span class="pill unk">لم تتم مراجعته</span></div>
+<div class="note">بديل أنسب للعمق 2–8 م: AWAC 1 MHz (مدى 30 م، خلايا من 0.25 م).</div><h3 class="sec">طريقة التشغيل</h3><div class="steps"><div class="step"><i>1</i><div>اضبط مدى السرعة على 1 م/ث واختر أصغر خلية (0.5 م).</div></div><div class="step"><i>2</i><div>ثبّته على إطار في القاع مع علبة البطارية الخارجية (540 / 1800 Wh).</div></div><div class="step"><i>3</i><div>يسجل التيار والأمواج، أو يوصل بكابل Ethernet / RS-422 للقراءة اللحظية.</div></div><div class="step"><i>4</i><div>حلل بيانات التيار والأمواج ببرنامج Nortek.</div></div></div>
+<div class="pc"><div class="box pros"><h4>المميزات</h4><ul><li>يقيس التيار والأمواج معاً</li><li>جهاز قوي ومجرب في السواحل</li><li>حرارة وضغط مدمجة</li><li>اتصال Ethernet</li></ul></div><div class="box cons"><h4>العيوب</h4><ul><li>مدى 50 م أكبر بكثير من عمق الموقع</li><li>خلايا 0.5–8 م خشنة لعمق 2–8 م</li><li>يحتاج علبة بطاريات خارجية</li><li>سعر مرتفع غير معلن</li></ul></div></div>
+<table class="links"><tr><td class="k">Product Page</td><td><a href="https://www.nortekgroup.com/products/awac2-600-khz">www.nortekgroup.com/products/awac2-600-khz</a></td></tr><tr><td class="k">Datasheet (PDF)</td><td><a href="https://www.nortekgroup.com/products/awac2-600-khz/pdf">www.nortekgroup.com/products/awac2-600-khz/pdf</a></td></tr></table><div class="foot">9</div></section><section class="page "><div class="run"><span>نوفمبر 2026</span><span>دليل الحساسات المختارة لمشروع ALEX-MON</span></div><div class="head"><div class="numbox">7</div><div class="t"><div class="b">DFRobot</div><h2>SEN0710</h2><div class="s">حساس العكارة (Turbidity) RS485 لجودة المياه</div></div><div class="tags"><span class="tag">عكارة وترسيب</span><span class="tag">تشتت 90°</span></div></div>
+<div class="imgbox"><img class="" src="img/sen0710.webp" alt="SEN0710"></div>
+<div class="desc">حساس رقمي يقيس عكارة المياه (الجسيمات العالقة والرواسب) بطريقة تشتت الضوء بزاوية 90° بالأشعة تحت الحمراء، مع قياس درجة الحرارة، ويرسل القراءات عبر RS485 Modbus-RTU.</div>
+<div class="tiles"><div class="tile"><b>0 – 1000 NTU</b><span>مدى العكارة (دقة 0.1 NTU)</span></div><div class="tile"><b>±5 % FS</b><span>الدقة (عند 25 °C)</span></div><div class="tile"><b>0 – 60 °C</b><span>قياس الحرارة (±0.5 °C)</span></div><div class="tile"><b>RS485</b><span>Modbus-RTU · 4800 افتراضياً</span></div><div class="tile"><b>10 – 30 V</b><span>التغذية (0.2 W)</span></div><div class="tile"><b>IP68</b><span>0.6 MPa · كابل 5 م</span></div></div>
+<div class="pricebar"><span class="l">السعر</span><span class="v">غير معلن</span><span class="n">لم يُنشر سعر على صفحة DFRobot الرسمية (wiki)</span></div>
+<div class="fitrow"><span>ملاءمة مدى القياس:</span><span class="pill unk">غير معروف (Unknown)</span><span style="margin-right:4mm">مراجعة الفريق:</span><span class="pill unk">لم تتم مراجعته</span></div>
+<div class="note">تحقق من DFRobot من ملاءمة الجسم البلاستيكي للغمر الطويل في مياه البحر قبل الشراء.</div><h3 class="sec">طريقة التشغيل</h3><div class="steps"><div class="step"><i>1</i><div>ثبّته على الإطار بحيث يكون رأس القياس بعيداً عن القاع وعن الجدران القريبة.</div></div><div class="step"><i>2</i><div>وصّل الأسلاك: بني VCC، أسود GND، أصفر 485-A، أزرق 485-B بوحدة التجميع.</div></div><div class="step"><i>3</i><div>يقرأ العكارة والحرارة بشكل مستمر عبر Modbus-RTU (زمن الاستجابة ≤ 30 ث).</div></div><div class="step"><i>4</i><div>نظّف النافذة البصرية من الحشف الحيوي وأعد المعايرة بنقطتين عند الحاجة.</div></div></div>
+<div class="pc"><div class="box pros"><h4>المميزات</h4><ul><li>يقيس الرواسب العالقة (العكارة) مباشرة</li><li>معاير من المصنع وبالإمكان معايرة نقطتين</li><li>نفس واجهة RS485 للحساسات الأخرى</li><li>استهلاك منخفض 0.2 W</li></ul></div><div class="box cons"><h4>العيوب</h4><ul><li>التوافق مع مياه البحر غير مذكور (الجسم بلاستيك)</li><li>لا يوجد عمق تشغيل أقصى (0.6 MPa فقط)</li><li>الحرارة التشغيلية 0–40 °C</li><li>لا توجد قياسات عكارة منشورة للمواقع للمقارنة</li></ul></div></div>
+<table class="links"><tr><td class="k">Wiki</td><td><a href="https://wiki.dfrobot.com/sen0710/">wiki.dfrobot.com/sen0710/</a></td></tr><tr><td class="k">Modbus Reference</td><td><a href="https://wiki.dfrobot.com/sen0710/docs/23385">wiki.dfrobot.com/sen0710/docs/23385</a></td></tr></table><div class="foot">10</div></section><section class="page "><div class="run"><span>نوفمبر 2026</span><span>دليل الحساسات المختارة لمشروع ALEX-MON</span></div><div class="head"><div class="numbox">8</div><div class="t"><div class="b">DFRobot</div><h2>SEN0681</h2><div class="s">حساس الأكسجين المذاب الفلورسنتي RS485 (مياه البحر)</div></div><div class="tags"><span class="tag">أكسجين مذاب</span><span class="tag">فلورسنت</span></div></div>
+<div class="imgbox"><img class="" src="img/sen0681.webp" alt="SEN0681"></div>
+<div class="desc">حساس أكسجين مذاب بتقنية الفلورسنت (بدون تحريك أو استهلاك أكسجين)، نسخة مخصصة لمياه البحر بضبط ملوحة افتراضي 30‰، مع قياس الحرارة وإخراج RS485 Modbus-RTU.</div>
+<div class="tiles"><div class="tile"><b>0 – 20 mg/L</b><span>الأكسجين المذاب (0–200 % تشبع)</span></div><div class="tile"><b>±3 % FS</b><span>الدقة (±0.5 °C عند 25 °C)</span></div><div class="tile"><b>0.01 mg/L</b><span>الدقة الرقمية (Resolution)</span></div><div class="tile"><b>RS485</b><span>Modbus-RTU</span></div><div class="tile"><b>10 – 30 V</b><span>التغذية (0.2 W)</span></div><div class="tile"><b>IP68</b><span>0.6 MPa · كابل 5 م</span></div></div>
+<div class="pricebar"><span class="l">السعر</span><span class="v">غير معلن</span><span class="n">لم يُنشر سعر (صفحة المتجر الرسمية لم تُفتح)</span></div>
+<div class="fitrow"><span>ملاءمة مدى القياس:</span><span class="pill ok">مناسب (OK range)</span><span style="margin-right:4mm">مراجعة الفريق:</span><span class="pill unk">لم تتم مراجعته</span></div>
+<h3 class="sec">طريقة التشغيل</h3><div class="steps"><div class="step"><i>1</i><div>اضبط الملوحة على قيمة الموقع (36–40 ‰ تقريباً) بدل الافتراضي 30‰.</div></div><div class="step"><i>2</i><div>ثبّته على الإطار والغشاء الفلورسنتي مواجه للماء الحر دون فقاعات.</div></div><div class="step"><i>3</i><div>يقرأ الأكسجين (mg/L و% تشبع) والحرارة عبر Modbus-RTU (زمن الاستجابة ≤ 60 ث).</div></div><div class="step"><i>4</i><div>بدّل غشاء الفلورسنت سنوياً ونظّفه من الحشف الحيوي وعاير حسب دليل DFRobot.</div></div></div>
+<div class="pc"><div class="box pros"><h4>المميزات</h4><ul><li>نسخة مخصصة لمياه البحر</li><li>تقنية فلورسنت: لا يستهلك أكسجين ولا يحتاج تحريكاً</li><li>المدى 0–20 mg/L يغطي 3–15 mg/L في المواقع</li><li>نفس واجهة RS485 للحساسات الأخرى</li></ul></div><div class="box cons"><h4>العيوب</h4><ul><li>عمر الغشاء الفلورسنتي سنة واحدة</li><li>الدقة ±3 % FS</li><li>الجسم بلاستيك — تأكد من الغمر الطويل</li><li>لا يوجد عمق تشغيل أقصى (0.6 MPa فقط)</li></ul></div></div>
+<table class="links"><tr><td class="k">Wiki</td><td><a href="https://wiki.dfrobot.com/SEN0681">wiki.dfrobot.com/SEN0681</a></td></tr><tr><td class="k">Dimension Drawing</td><td><a href="https://dfimg.dfrobot.com/wiki/21095/SEN0681_seawater-dissolved-oxygen-sensor_dimension_V1.0.jpg">dfimg.dfrobot.com/wiki/21095/SEN0681_seawater-dissolved-oxygen-sensor_dimension_V1.0.jpg</a></td></tr></table><div class="foot">11</div></section></body></html>

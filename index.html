@@ -851,7 +851,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 
 
 /* ================= SENSOR SLIDES ================= */
-.data-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.1rem;margin-top:1.5rem}
+.data-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1.1rem;margin-top:1.5rem}.data-grid .data-card{grid-column:span 2}.data-grid .data-card:nth-child(n+4){grid-column:span 3;min-height:0}
 .data-card{position:relative;overflow:hidden;padding:1.35rem 1.25rem 1.2rem;min-height:230px;transition:transform .3s,border-color .3s}
 .data-card:hover{transform:translateY(-5px);border-color:rgba(45,226,230,.65)}
 .data-card .symbol{font-size:2.2rem;display:block;margin-bottom:.65rem;filter:drop-shadow(0 0 12px rgba(45,226,230,.3));animation:bob 3.2s ease-in-out infinite alternate}
@@ -889,7 +889,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 .kelp-bubble{animation-name:kelpBubbleDrift}
 .ruin-bubble{position:absolute;bottom:var(--base,23%);left:var(--x);width:var(--size,7px);height:var(--size,7px);border:1px solid rgba(220,250,255,.88);border-radius:50%;background:rgba(210,250,255,.16);box-shadow:0 0 8px rgba(150,235,255,.22);animation:ruinBubbleRise var(--duration,5s) ease-out infinite;animation-delay:var(--delay,0s)}
 @keyframes ruinBubbleRise{0%{transform:translate(0,0) scale(.6);opacity:0}12%{opacity:.8}75%{opacity:.6}100%{transform:translate(var(--drift,12px),-150px) scale(1.1);opacity:0}}
-@media(max-width:900px){.data-grid,.sensor-grid{grid-template-columns:1fr}.data-card,.sensor-card{min-height:0}.data-card{padding:1rem}.sensor-card{padding:.9rem}}
+@media(max-width:900px){.data-grid,.sensor-grid{grid-template-columns:1fr}.data-grid .data-card,.data-grid .data-card:nth-child(n+4){grid-column:auto}.data-card,.sensor-card{min-height:0}.data-card{padding:1rem}.sensor-card{padding:.9rem}}
 
 
 /* ================= SALINITY SENSOR DEEP-DIVE SLIDES ================= */
@@ -1256,6 +1256,44 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 @media(max-width:900px){.egypt-current-slide .egypt-flow-card{grid-template-columns:1fr}.egypt-flow-visual svg{max-height:260px}.egypt-flow-specs{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.egypt-flow-specs{grid-template-columns:1fr}.egypt-flow-specs span{flex-direction:row;justify-content:space-between}.egypt-flow-warning p{font-size:.72rem}}
 
+/* SENSOR-CSS:START */
+/* sensor slides (guide layout, no price) */
+.gs-slide .slide-inner{max-width:1180px}
+.gs-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.gs-brand{font-size:.8rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.gs-tags{display:flex;gap:.45rem;flex-wrap:wrap}
+.gs-tag{font-size:.72rem;font-weight:700;padding:.25em .8em;border-radius:999px;border:1px solid var(--line2);color:var(--aqua);background:rgba(4,38,68,.45)}
+.gs-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);gap:1rem;margin-top:.9rem;align-items:start}
+.gs-left,.gs-right{display:grid;gap:.8rem}
+.gs-img{height:200px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--line2);position:relative}
+.gs-img img{max-width:100%;max-height:190px;object-fit:contain}
+.gs-img img.drawing{max-height:185px}
+.gs-img svg{width:100%;height:100%}
+.gs-desc{font-size:.88rem;line-height:1.55;color:var(--muted);border-left:3px solid var(--aqua);padding:.2rem .8rem}
+.gs-fit{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;font-size:.76rem;color:var(--faint)}
+.gs-pill{font-weight:800;padding:.2em .75em;border-radius:999px;font-size:.74rem}
+.gs-pill.ok,.gs-pill.yes{background:rgba(55,211,153,.18);color:#7af0c0;border:1px solid rgba(55,211,153,.5)}
+.gs-pill.over,.gs-pill.cond{background:rgba(255,210,122,.16);color:var(--gold);border:1px solid rgba(255,210,122,.5)}
+.gs-pill.unk{background:rgba(160,235,255,.1);color:var(--muted);border:1px solid var(--line2)}
+.gs-note{font-size:.76rem;color:#ffe3a3;background:rgba(255,210,122,.1);border:1px solid rgba(255,210,122,.3);border-radius:10px;padding:.45rem .7rem;line-height:1.4}
+.gs-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}
+.gs-tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:.55rem .6rem;text-align:center}
+.gs-tile b{display:block;font-size:.98rem;color:var(--ink);font-family:Georgia,serif}
+.gs-tile span{display:block;font-size:.68rem;color:var(--muted);margin-top:.15rem;line-height:1.3}
+.gs-steps{display:grid;grid-template-columns:1fr 1fr;gap:.45rem .8rem;margin:0;padding:0;list-style:none}
+.gs-steps li{display:flex;gap:.5rem;font-size:.76rem;line-height:1.4;color:var(--muted);align-items:flex-start}
+.gs-steps li i{font-style:normal;flex:none;width:1.3rem;height:1.3rem;border-radius:50%;background:var(--teal);color:#012a3a;font-weight:800;font-size:.72rem;display:flex;align-items:center;justify-content:center}
+.gs-h{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--aqua);margin-bottom:.4rem}
+.gs-pc{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.gs-box{border-radius:12px;padding:.6rem .8rem;border-top:3px solid}
+.gs-box.pros{background:rgba(55,211,153,.1);border-color:var(--kelp)}
+.gs-box.cons{background:rgba(255,122,92,.1);border-color:var(--coral)}
+.gs-box h4{font-size:.78rem;margin-bottom:.3rem}
+.gs-box.pros h4{color:#7af0c0}.gs-box.cons h4{color:#ff9d7a}
+.gs-box ul{margin:0;padding-left:1.1rem;font-size:.74rem;line-height:1.45;color:var(--muted)}
+.gs-link{font-size:.74rem;color:var(--aqua)}
+@media(max-width:900px){.gs-grid,.gs-pc,.gs-steps{grid-template-columns:1fr}.gs-tiles{grid-template-columns:1fr 1fr}}
+/* SENSOR-CSS:END */
 </style>
 </head>
 <body>
@@ -1787,7 +1825,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
   <div class="slide-inner">
     <span class="kicker rise" style="--i:0">Monitoring goals · The essential measurements</span>
     <h2 class="rise" style="--i:1">What data do we <span class="hl">need?</span></h2>
-    <p class="sub rise" style="--i:2">Three measurements help us describe the seawater conditions around submerged archaeological remains.</p>
+    <p class="sub rise" style="--i:2">Five measurements help us describe the seawater conditions around submerged archaeological remains, including how much sediment and pollution reach them.</p>
     <div class="data-grid">
       <article class="data-card panel rise" style="--i:3">
         <span class="index">01</span>
@@ -1825,8 +1863,28 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
         <h3>Water speed</h3>
         <p>How fast is the current? Speed helps identify calm periods and stronger flows that may affect sediment movement near the site.</p>
       </article>
+      <article class="data-card panel rise" style="--i:6" data-fx="sediment">
+        <span class="index">04</span>
+        <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
+          <rect x="6" y="58" width="108" height="16" rx="3" fill="#b79b6b" opacity=".75"/>
+          <g fill="#d9c9a3"><circle class="ion" cx="30" cy="18" r="3"/><circle class="ion i2" cx="52" cy="28" r="2.5"/><circle class="ion i3" cx="74" cy="14" r="3"/><circle class="ion i4" cx="94" cy="30" r="2.5"/><circle class="ion i2" cx="40" cy="44" r="2"/><circle class="ion i3" cx="84" cy="46" r="2"/></g>
+          <text x="60" y="78" text-anchor="middle" font-size="8" fill="#a9d8e4" letter-spacing="1.5">SEDIMENT</text>
+        </svg>
+        <h3>Sedimentation</h3>
+        <p>How cloudy is the water? Suspended particles (turbidity, in NTU) show how much sediment is stirred up and may settle on or bury the remains.</p>
+      </article>
+      <article class="data-card panel rise" style="--i:7" data-fx="pollution">
+        <span class="index">05</span>
+        <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
+          <path d="M60 6 C60 6 38 32 38 46 a22 22 0 0 0 44 0 C82 32 60 6 60 6Z" fill="rgba(255,122,92,.15)" stroke="#ff9d7a" stroke-width="2.5"/>
+          <g fill="#8cf8f5"><circle class="ion" cx="52" cy="48" r="3.5"/><circle class="ion i2" cx="66" cy="42" r="3"/><circle class="ion i3" cx="60" cy="58" r="2.5"/></g>
+          <text x="60" y="52" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">O₂</text>
+        </svg>
+        <h3>Pollution</h3>
+        <p>How clean is the water? Dissolved oxygen is an early warning: a drop below normal (about 3–15 mg/L here) points to organic pollution or sewage inflow.</p>
+      </article>
     </div>
-    <p class="fnote rise" style="--i:6">The first deployment focuses on these three core variables. Additional measurements can be added if the site study requires them.</p>
+    <p class="fnote rise" style="--i:8">The first deployment focuses on these five core variables: salinity, current direction, water speed, sedimentation (turbidity) and pollution (dissolved oxygen). Additional measurements can be added if the site study requires them.</p>
   </div>
 </section>
 
@@ -2117,10 +2175,204 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 
 
 
+<!-- SENSOR-SLIDES:START (generated by files/guides/build_sensor_slides.py) -->
+<section class="slide gs-slide salinity-slide" data-sensor="SX-CCFNA">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Selected sensor 1 of 8 · Salinity &amp; conductivity</span>
+    <div class="gs-head"><h2 class="rise" style="--i:1"><span class="gs-brand">SensorsX</span><br><span class="hl">SX-CCFNA</span></h2><div class="gs-tags rise" style="--i:1"><span class="gs-tag">Salinity</span><span class="gs-tag">4 electrodes</span></div></div>
+    <p class="sub rise" style="--i:2">4-electrode conductivity / salinity probe</p>
+    <div class="gs-grid">
+      <div class="gs-left">
+        <div class="gs-img panel rise" style="--i:3" data-fx="photo"><img class="" src="files/guides/img/sx-ccfna.webp" alt="SX-CCFNA" loading="lazy"></div>
+        <div class="gs-desc rise" style="--i:4">A digital probe that measures conductivity, salinity, TDS and temperature together with four electrodes, and sends readings over RS-485 (Modbus).</div>
+        <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill ok">In range</span><span>Team review:</span><span class="gs-pill cond">Conditional</span></div>
+        
+      </div>
+      <div class="gs-right">
+        <div class="gs-tiles rise" style="--i:5" data-fx="specs"><div class="gs-tile"><b>0.001 – 100 mS/cm</b><span>Conductivity (high-range option)</span></div><div class="gs-tile"><b>0 – 80 ppt</b><span>Salinity range</span></div><div class="gs-tile"><b>±1 %</b><span>Accuracy (or 0.01 mS/cm)</span></div><div class="gs-tile"><b>RS-485</b><span>Modbus interface</span></div><div class="gs-tile"><b>9 – 24 V</b><span>Supply · 0.2 W</span></div><div class="gs-tile"><b>IP68</b><span>Φ22 × 175.5 mm</span></div></div>
+        <div class="rise" style="--i:6" data-fx="steps"><div class="gs-h">How it works in the buoy</div><ol class="gs-steps"><li><i>1</i><span>Order the high-range option: 0–100 mS/cm / 0–80 ppt (the 0–5 mS/cm option is not for seawater).</span></li><li><i>2</i><span>Mount on the seabed frame and wire the RS-485 cable to the collector.</span></li><li><i>3</i><span>Reads conductivity, salinity and temperature continuously over Modbus.</span></li><li><i>4</i><span>Clean off biofouling regularly and recalibrate (one or two points).</span></li></ol></div>
+        <div class="gs-pc rise" style="--i:7" data-fx="proscons"><div class="gs-box pros"><h4>Advantages</h4><ul><li>4 readings in one probe</li><li>Ni + PEEK + titanium body suits seawater</li><li>Low power: 0.2 W</li><li>Factory calibrated</li></ul></div><div class="gs-box cons"><h4>Limitations</h4><ul><li>High-range option must be requested</li><li>Standard cable only 10 m</li><li>Operating depth not in the datasheet</li><li>Calibration method not described</li></ul></div></div>
+        <div class="rise" style="--i:8"><a class="gs-link" href="https://sensorsx.com/products/sx-ccfna-series" target="_blank" rel="noopener">Product page ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide gs-slide salinity-slide" data-sensor="WS-OM-MUL-17A">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Selected sensor 2 of 8 · Salinity &amp; conductivity</span>
+    <div class="gs-head"><h2 class="rise" style="--i:1"><span class="gs-brand">WizSensor</span><br><span class="hl">WS-OM-MUL-17A</span></h2><div class="gs-tags rise" style="--i:1"><span class="gs-tag">CTD</span><span class="gs-tag">Salinity</span></div></div>
+    <p class="sub rise" style="--i:2">CTD probe: conductivity · salinity · temperature · depth</p>
+    <div class="gs-grid">
+      <div class="gs-left">
+        <div class="gs-img panel rise" style="--i:3" data-fx="photo"><img class="" src="files/guides/img/ws-om-mul-17a.webp" alt="WS-OM-MUL-17A" loading="lazy"></div>
+        <div class="gs-desc rise" style="--i:4">A CTD that measures conductivity, temperature and depth and calculates salinity, with RS-485 Modbus RTU output. The depth reading also tracks water level above the site.</div>
+        <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill ok">In range</span><span>Team review:</span><span class="gs-pill yes">Suitable</span></div>
+        
+      </div>
+      <div class="gs-right">
+        <div class="gs-tiles rise" style="--i:5" data-fx="specs"><div class="gs-tile"><b>0 – 100 mS/cm</b><span>Conductivity (±1 %)</span></div><div class="gs-tile"><b>0 – 80 ppt</b><span>Salinity (calculated, ±1 ppt)</span></div><div class="gs-tile"><b>±0.05 °C</b><span>Temperature (−5 to 50 °C)</span></div><div class="gs-tile"><b>0 – 200 m</b><span>Depth (±0.1 % FS)</span></div><div class="gs-tile"><b>RS-485</b><span>Modbus RTU · 9600 8N1</span></div><div class="gs-tile"><b>6 – 36 V</b><span>Supply (≈ 20 mA at 12 V)</span></div></div>
+        <div class="rise" style="--i:6" data-fx="steps"><div class="gs-h">How it works in the buoy</div><ol class="gs-steps"><li><i>1</i><span>Request a quote; confirm cable length (30 m standard) and pressure rating ≥ 10 m.</span></li><li><i>2</i><span>Mount on the frame; never hang the unit from the signal cable.</span></li><li><i>3</i><span>Sends temperature, conductivity, salinity and depth live over Modbus.</span></li><li><i>4</i><span>Clean every 4–8 weeks and recalibrate (temperature and conductivity, 1–2 points).</span></li></ol></div>
+        <div class="gs-pc rise" style="--i:7" data-fx="proscons"><div class="gs-box pros"><h4>Advantages</h4><ul><li>Best technical match for site salinity and temperature</li><li>Also measures depth / water level</li><li>Low power suits the solar buoy</li><li>High temperature accuracy ±0.05 °C</li></ul></div><div class="gs-box cons"><h4>Limitations</h4><ul><li>Price not published</li><li>316L body: confirm long-term seawater immersion</li><li>Datasheet sent on request only</li><li>Salinity accuracy ±1 ppt</li></ul></div></div>
+        <div class="rise" style="--i:8"><a class="gs-link" href="https://wizsensor.com/pro/ws-om-mul-17a-ctd-sensor/" target="_blank" rel="noopener">Product page ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide gs-slide salinity-slide" data-sensor="DR-EC200">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Selected sensor 3 of 8 · Salinity &amp; conductivity</span>
+    <div class="gs-head"><h2 class="rise" style="--i:1"><span class="gs-brand">Dragino</span><br><span class="hl">DR-EC200</span></h2><div class="gs-tags rise" style="--i:1"><span class="gs-tag">Salinity</span><span class="gs-tag">4 electrodes</span></div></div>
+    <p class="sub rise" style="--i:2">4-electrode conductivity probe for seawater</p>
+    <div class="gs-grid">
+      <div class="gs-left">
+        <div class="gs-img panel rise" style="--i:3" data-fx="photo"><img class="drawing" src="files/guides/img/dr-ec200-drawing.png" alt="DR-EC200" loading="lazy"></div>
+        <div class="gs-desc rise" style="--i:4">A digital four-electrode probe for high-conductivity water such as seawater. It measures conductivity, salinity and temperature and sends them over RS-485.</div>
+        <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill over">Over-ranged</span><span>Team review:</span><span class="gs-pill yes">Suitable</span></div>
+        
+      </div>
+      <div class="gs-right">
+        <div class="gs-tiles rise" style="--i:5" data-fx="specs"><div class="gs-tile"><b>1 – 200,000 µS/cm</b><span>Conductivity (±1 % FS)</span></div><div class="gs-tile"><b>0 – 70 PSU</b><span>Salinity (0.1 resolution)</span></div><div class="gs-tile"><b>±0.5 °C</b><span>Temperature (−5 to 80 °C)</span></div><div class="gs-tile"><b>RS-485</b><span>Modbus-RTU · 9600</span></div><div class="gs-tile"><b>7 – 30 V</b><span>Supply (&lt; 0.5 W)</span></div><div class="gs-tile"><b>0.6 MPa</b><span>Pressure · IP68 (not connector)</span></div></div>
+        <div class="rise" style="--i:6" data-fx="steps"><div class="gs-h">How it works in the buoy</div><ol class="gs-steps"><li><i>1</i><span>Extend the cable (5 m standard) so it reaches the surface.</span></li><li><i>2</i><span>Two-point Modbus calibration: 1,413 µS/cm then 111,310 µS/cm.</span></li><li><i>3</i><span>Reads conductivity, salinity and temperature continuously.</span></li><li><i>4</i><span>Recalibrate every 3 months and clean off biofouling.</span></li></ol></div>
+        <div class="gs-pc rise" style="--i:7" data-fx="proscons"><div class="gs-box pros"><h4>Advantages</h4><ul><li>Cheapest salinity sensor that fits the sites</li><li>Designed for seawater</li><li>Calibration steps well documented</li><li>Flexible 7–30 V supply</li></ul></div><div class="gs-box cons"><h4>Limitations</h4><ul><li>Range about 3× larger than needed (over-ranged)</li><li>Cable only 5 m</li><li>Needs calibration every 3 months</li><li>Body dimensions not stated in text</li></ul></div></div>
+        <div class="rise" style="--i:8"><a class="gs-link" href="https://www.antratek.com/dr-ec200-water-ec-sensor-for-wqs" target="_blank" rel="noopener">Product page ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide gs-slide salinity-slide" data-sensor="Tilt Current Meter">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Selected sensor 4 of 8 · Water current</span>
+    <div class="gs-head"><h2 class="rise" style="--i:1"><span class="gs-brand">DIY build</span><br><span class="hl">Tilt Current Meter</span></h2><div class="gs-tags rise" style="--i:1"><span class="gs-tag">Current</span><span class="gs-tag">DIY</span></div></div>
+    <p class="sub rise" style="--i:2">Tilt-angle current meter (BNO085)</p>
+    <div class="gs-grid">
+      <div class="gs-left">
+        <div class="gs-img panel rise" style="--i:3" data-fx="photo"><svg viewBox="0 0 520 220" role="img" aria-label="Tilt current meter: a float tethered to the seabed leans with the current; the lean angle gives speed.">
+<defs><linearGradient id="diyw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4eef5"/><stop offset="1" stop-color="#a9dbe8"/></linearGradient></defs>
+<rect width="520" height="220" fill="url(#diyw)"/><rect y="190" width="520" height="30" fill="#d9c9a3"/><rect x="225" y="176" width="70" height="16" rx="3" fill="#9aa4ad"/>
+<path d="M260 176 L335 78" stroke="#4a5b6b" stroke-width="3"/><line x1="260" y1="176" x2="260" y2="30" stroke="#7f93ad" stroke-width="1.5" stroke-dasharray="4 4"/>
+<g transform="rotate(-37 335 78)"><rect x="315" y="30" width="40" height="96" rx="18" fill="#0b2a4a"/><rect x="322" y="56" width="26" height="28" rx="4" fill="#14b8a6"/><text x="335" y="75" text-anchor="middle" font-size="9" fill="#fff">IMU</text></g>
+<path d="M260 120 A56 56 0 0 1 290 128" stroke="#c0392b" stroke-width="2" fill="none" stroke-dasharray="3 3"/><text x="296" y="122" font-size="15" fill="#c0392b" font-weight="700">θ</text>
+<g fill="#0b6b7a"><path d="M30 80 h110 v-9 l24 18 -24 18 v-9 h-110z"/><path d="M30 140 h80 v-8 l20 15 -20 15 v-8 h-80z"/></g>
+<text x="85" y="62" text-anchor="middle" font-size="14" fill="#0b2a4a" font-weight="700">Current</text>
+<text x="420" y="36" text-anchor="middle" font-size="12" fill="#0b2a4a">Float + 2" housing</text><text x="420" y="54" text-anchor="middle" font-size="12" fill="#0b2a4a">tilt angle θ → speed</text></svg></div>
+        <div class="gs-desc rise" style="--i:4">A float tethered to the seabed leans with the current. A motion sensor (IMU) in a watertight housing measures the lean angle and direction, and calibration converts the angle to speed.</div>
+        <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill unk">Unknown</span><span>Team review:</span><span class="gs-pill cond">Conditional</span></div>
+        
+      </div>
+      <div class="gs-right">
+        <div class="gs-tiles rise" style="--i:5" data-fx="specs"><div class="gs-tile"><b>By calibration</b><span>Speed range (needed 0–1 m/s)</span></div><div class="gs-tile"><b>0 – 360°</b><span>Direction (tilt-compensated compass)</span></div><div class="gs-tile"><b>BNO085</b><span>Motion sensor (Adafruit)</span></div><div class="gs-tile"><b>18650</b><span>Battery (≈ 1 month logging)</span></div><div class="gs-tile"><b>60–70 ft</b><span>Depth tested leak-free (≈ 20 m)</span></div><div class="gs-tile"><b>SD card</b><span>Logging (add RS-485 for live data)</span></div></div>
+        <div class="rise" style="--i:6" data-fx="steps"><div class="gs-h">How it works in the buoy</div><ol class="gs-steps"><li><i>1</i><span>Fit the IMU, processor and battery inside a 2-inch housing.</span></li><li><i>2</i><span>Tie the float by a line to a concrete base on the seabed.</span></li><li><i>3</i><span>Calibrate by towing at known speeds (GPS) to convert angle to speed.</span></li><li><i>4</i><span>Keep iron away from the compass; add RS-485 to stream live.</span></li></ol></div>
+        <div class="gs-pc rise" style="--i:7" data-fx="proscons"><div class="gs-box pros"><h4>Advantages</h4><ul><li>By far the cheapest option</li><li>Parts easy to buy</li><li>Adaptable to project needs</li><li>No rotating parts</li></ul></div><div class="gs-box cons"><h4>Limitations</h4><ul><li>Accuracy unknown before calibration</li><li>No live data without modification</li><li>Marine growth on the float changes readings</li><li>Not yet tested on site</li></ul></div></div>
+        <div class="rise" style="--i:8"><a class="gs-link" href="https://hackaday.io/project/158083-cheap-underwater-tilt-current-sensor" target="_blank" rel="noopener">Project page ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide gs-slide salinity-slide" data-sensor="Signature 500">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Selected sensor 5 of 8 · Water current</span>
+    <div class="gs-head"><h2 class="rise" style="--i:1"><span class="gs-brand">Nortek</span><br><span class="hl">Signature 500</span></h2><div class="gs-tags rise" style="--i:1"><span class="gs-tag">Current</span><span class="gs-tag">Profiler</span></div></div>
+    <p class="sub rise" style="--i:2">5-beam ADCP profiler · 500 kHz</p>
+    <div class="gs-grid">
+      <div class="gs-left">
+        <div class="gs-img panel rise" style="--i:3" data-fx="photo"><img class="" src="files/guides/img/signature500.png" alt="Signature 500" loading="lazy"></div>
+        <div class="gs-desc rise" style="--i:4">A five-beam acoustic Doppler profiler that measures current in layers through the water column, with built-in temperature, pressure and compass; output over Ethernet or RS-232/422.</div>
+        <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill ok">In range</span><span>Team review:</span><span class="gs-pill unk">Not reviewed</span></div>
+        <div class="gs-note">Better fit for 2–8 m depth: Signature 1000 (range 25–30 m, cells from 0.2 m, HR mode from 0.1 m).</div>
+      </div>
+      <div class="gs-right">
+        <div class="gs-tiles rise" style="--i:5" data-fx="specs"><div class="gs-tile"><b>1 – 5 m/s</b><span>Velocity range (adjustable)</span></div><div class="gs-tile"><b>0.3 % ±0.3 cm/s</b><span>Accuracy</span></div><div class="gs-tile"><b>60 – 70 m</b><span>Profile range (cells 0.5–4 m)</span></div><div class="gs-tile"><b>300 m</b><span>Max depth rating</span></div><div class="gs-tile"><b>16 – 128 GB</b><span>Memory</span></div><div class="gs-tile"><b>12 – 48 V</b><span>Supply (8 W at 1 Hz)</span></div></div>
+        <div class="rise" style="--i:6" data-fx="steps"><div class="gs-h">How it works in the buoy</div><ol class="gs-steps"><li><i>1</i><span>Set velocity range to 1 m/s and cell size to 0.5 m.</span></li><li><i>2</i><span>Mount on a seabed frame facing up.</span></li><li><i>3</i><span>Records on its own, or connect a cable for live reading (Ethernet / RS-422).</span></li><li><i>4</i><span>Process the data with Nortek software after recovery or live.</span></li></ol></div>
+        <div class="gs-pc rise" style="--i:7" data-fx="proscons"><div class="gs-box pros"><h4>Advantages</h4><ul><li>Very high accuracy</li><li>Measures every layer of the water column</li><li>Temperature, pressure and compass built in</li><li>Up to 128 GB memory</li></ul></div><div class="gs-box cons"><h4>Limitations</h4><ul><li>Built for deep water (60–70 m range)</li><li>0.5 m blanking zone in front of the sensor</li><li>Large and heavy (Ø228 mm, 6.4 kg)</li><li>High price, on request</li></ul></div></div>
+        <div class="rise" style="--i:8"><a class="gs-link" href="https://www.nortekgroup.com/products/signature-500" target="_blank" rel="noopener">Product page ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide gs-slide salinity-slide" data-sensor="AWAC 600 kHz">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Selected sensor 6 of 8 · Water current &amp; waves</span>
+    <div class="gs-head"><h2 class="rise" style="--i:1"><span class="gs-brand">Nortek</span><br><span class="hl">AWAC 600 kHz</span></h2><div class="gs-tags rise" style="--i:1"><span class="gs-tag">Current</span><span class="gs-tag">Waves</span></div></div>
+    <p class="sub rise" style="--i:2">Current and wave profiler · 2nd generation</p>
+    <div class="gs-grid">
+      <div class="gs-left">
+        <div class="gs-img panel rise" style="--i:3" data-fx="photo"><img class="" src="files/guides/img/awac600.png" alt="AWAC 600 kHz" loading="lazy"></div>
+        <div class="gs-desc rise" style="--i:4">An acoustic Doppler profiler that measures current in layers and also measures waves with AST, with temperature and pressure sensors.</div>
+        <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill ok">In range</span><span>Team review:</span><span class="gs-pill unk">Not reviewed</span></div>
+        <div class="gs-note">Better fit for 2–8 m depth: AWAC 1 MHz (range 30 m, cells from 0.25 m).</div>
+      </div>
+      <div class="gs-right">
+        <div class="gs-tiles rise" style="--i:5" data-fx="specs"><div class="gs-tile"><b>1 – 5 m/s</b><span>Velocity range (adjustable)</span></div><div class="gs-tile"><b>±1 % ±0.5 cm/s</b><span>Accuracy</span></div><div class="gs-tile"><b>50 m</b><span>Profile range (cells 0.5–8 m)</span></div><div class="gs-tile"><b>300 m</b><span>Max depth rating</span></div><div class="gs-tile"><b>up to 60 m</b><span>Wave measurement</span></div><div class="gs-tile"><b>12 – 48 V</b><span>Supply (external batteries)</span></div></div>
+        <div class="rise" style="--i:6" data-fx="steps"><div class="gs-h">How it works in the buoy</div><ol class="gs-steps"><li><i>1</i><span>Set velocity range to 1 m/s and choose the smallest cell (0.5 m).</span></li><li><i>2</i><span>Mount on a seabed frame with the external battery case (540 / 1800 Wh).</span></li><li><i>3</i><span>Records current and waves, or connect Ethernet / RS-422 for live data.</span></li><li><i>4</i><span>Analyse current and wave data with Nortek software.</span></li></ol></div>
+        <div class="gs-pc rise" style="--i:7" data-fx="proscons"><div class="gs-box pros"><h4>Advantages</h4><ul><li>Current and waves in one instrument</li><li>Rugged and proven in coastal waters</li><li>Temperature and pressure built in</li><li>Ethernet connection</li></ul></div><div class="gs-box cons"><h4>Limitations</h4><ul><li>50 m range far above site depth</li><li>0.5–8 m cells too coarse for 2–8 m depth</li><li>Needs an external battery case</li><li>High price, on request</li></ul></div></div>
+        <div class="rise" style="--i:8"><a class="gs-link" href="https://www.nortekgroup.com/products/awac2-600-khz" target="_blank" rel="noopener">Product page ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide gs-slide salinity-slide" data-sensor="SEN0710">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Selected sensor 7 of 8 · Turbidity · Sedimentation</span>
+    <div class="gs-head"><h2 class="rise" style="--i:1"><span class="gs-brand">DFRobot</span><br><span class="hl">SEN0710</span></h2><div class="gs-tags rise" style="--i:1"><span class="gs-tag">Turbidity</span><span class="gs-tag">Sediment</span></div></div>
+    <p class="sub rise" style="--i:2">RS485 water-quality turbidity sensor</p>
+    <div class="gs-grid">
+      <div class="gs-left">
+        <div class="gs-img panel rise" style="--i:3" data-fx="photo"><img class="" src="files/guides/img/sen0710.webp" alt="SEN0710" loading="lazy"></div>
+        <div class="gs-desc rise" style="--i:4">A digital sensor that measures how cloudy the water is (suspended particles and sediment) using 90° infrared light scattering, with a temperature reading and RS485 Modbus-RTU output.</div>
+        <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill unk">Unknown</span><span>Team review:</span><span class="gs-pill unk">Not reviewed</span></div>
+        <div class="gs-note">Ask DFRobot to confirm the plastic body for long-term seawater immersion before buying.</div>
+      </div>
+      <div class="gs-right">
+        <div class="gs-tiles rise" style="--i:5" data-fx="specs"><div class="gs-tile"><b>0 – 1000 NTU</b><span>Turbidity (0.1 NTU resolution)</span></div><div class="gs-tile"><b>±5 % FS</b><span>Accuracy at 25 °C</span></div><div class="gs-tile"><b>0 – 60 °C</b><span>Temperature (±0.5 °C)</span></div><div class="gs-tile"><b>RS485</b><span>Modbus-RTU · 4800 default</span></div><div class="gs-tile"><b>10 – 30 V</b><span>Supply · 0.2 W</span></div><div class="gs-tile"><b>IP68</b><span>0.6 MPa · 5 m cable</span></div></div>
+        <div class="rise" style="--i:6" data-fx="steps"><div class="gs-h">How it works in the buoy</div><ol class="gs-steps"><li><i>1</i><span>Mount on the frame with the sensing head clear of the seabed and nearby walls.</span></li><li><i>2</i><span>Wire: brown VCC, black GND, yellow 485-A, blue 485-B to the collector.</span></li><li><i>3</i><span>Reads turbidity and temperature continuously (response ≤ 30 s).</span></li><li><i>4</i><span>Clean the optical window of biofouling; recalibrate with 2 points if needed.</span></li></ol></div>
+        <div class="gs-pc rise" style="--i:7" data-fx="proscons"><div class="gs-box pros"><h4>Advantages</h4><ul><li>Measures suspended sediment (turbidity) directly</li><li>Factory calibrated, 2-point recalibration</li><li>Same RS485 interface as the other sensors</li><li>Low power: 0.2 W</li></ul></div><div class="gs-box cons"><h4>Limitations</h4><ul><li>Seawater compatibility not stated (plastic body)</li><li>No maximum depth stated (0.6 MPa only)</li><li>Operating temperature 0–40 °C</li><li>No published site turbidity data to compare</li></ul></div></div>
+        <div class="rise" style="--i:8"><a class="gs-link" href="https://wiki.dfrobot.com/sen0710/" target="_blank" rel="noopener">Wiki ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide gs-slide salinity-slide" data-sensor="SEN0681">
+  <div class="water-ribbons" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Selected sensor 8 of 8 · Dissolved oxygen · Pollution</span>
+    <div class="gs-head"><h2 class="rise" style="--i:1"><span class="gs-brand">DFRobot</span><br><span class="hl">SEN0681</span></h2><div class="gs-tags rise" style="--i:1"><span class="gs-tag">Dissolved O₂</span><span class="gs-tag">Fluorescence</span></div></div>
+    <p class="sub rise" style="--i:2">RS485 fluorescence dissolved-oxygen sensor (seawater)</p>
+    <div class="gs-grid">
+      <div class="gs-left">
+        <div class="gs-img panel rise" style="--i:3" data-fx="photo"><img class="" src="files/guides/img/sen0681.webp" alt="SEN0681" loading="lazy"></div>
+        <div class="gs-desc rise" style="--i:4">A fluorescence dissolved-oxygen sensor (no stirring, consumes no oxygen), seawater version with default salinity 30‰, with a temperature reading and RS485 Modbus-RTU output.</div>
+        <div class="gs-fit rise" style="--i:4"><span>Range fit:</span><span class="gs-pill ok">In range</span><span>Team review:</span><span class="gs-pill unk">Not reviewed</span></div>
+        
+      </div>
+      <div class="gs-right">
+        <div class="gs-tiles rise" style="--i:5" data-fx="specs"><div class="gs-tile"><b>0 – 20 mg/L</b><span>Dissolved oxygen (0–200 % sat.)</span></div><div class="gs-tile"><b>±3 % FS</b><span>Accuracy (±0.5 °C at 25 °C)</span></div><div class="gs-tile"><b>0.01 mg/L</b><span>Resolution</span></div><div class="gs-tile"><b>RS485</b><span>Modbus-RTU</span></div><div class="gs-tile"><b>10 – 30 V</b><span>Supply · 0.2 W</span></div><div class="gs-tile"><b>IP68</b><span>0.6 MPa · 5 m cable</span></div></div>
+        <div class="rise" style="--i:6" data-fx="steps"><div class="gs-h">How it works in the buoy</div><ol class="gs-steps"><li><i>1</i><span>Set salinity to the site value (about 36–40 ‰) instead of the default 30‰.</span></li><li><i>2</i><span>Mount on the frame with the fluorescent film facing free water, no trapped bubbles.</span></li><li><i>3</i><span>Reads oxygen (mg/L and % saturation) and temperature over Modbus-RTU (response ≤ 60 s).</span></li><li><i>4</i><span>Replace the fluorescent film yearly; clean biofouling and calibrate per DFRobot guide.</span></li></ol></div>
+        <div class="gs-pc rise" style="--i:7" data-fx="proscons"><div class="gs-box pros"><h4>Advantages</h4><ul><li>Seawater version</li><li>Fluorescence: no oxygen use, no stirring</li><li>0–20 mg/L covers the 3–15 mg/L site range</li><li>Same RS485 interface as the other sensors</li></ul></div><div class="gs-box cons"><h4>Limitations</h4><ul><li>Fluorescent film lasts 1 year</li><li>Accuracy ±3 % FS</li><li>Plastic body: confirm long-term seawater use</li><li>No maximum depth stated (0.6 MPa only)</li></ul></div></div>
+        <div class="rise" style="--i:8"><a class="gs-link" href="https://wiki.dfrobot.com/SEN0681" target="_blank" rel="noopener">Wiki ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SENSOR-SLIDES:END -->
+
 </div>
 
 <div class="dots" id="dots"></div>
-<div class="counter"><b id="cur">1</b> / <span id="total">11</span></div>
+<div class="counter"><b id="cur">1</b> / <span id="total">23</span></div>
 <div class="nav-hint"><kbd>←</kbd> previous &nbsp;·&nbsp; <kbd>→</kbd> reveal / next &nbsp;·&nbsp; <kbd>F</kbd> fullscreen &nbsp;·&nbsp; <kbd>M</kbd> sound</div>
 
 <script>
@@ -2292,15 +2544,74 @@ const sfx=(()=>{
       o.connect(g);g.connect(master);o.start(t);o.stop(t+.8);
     });
   }
+  // ---- icon voices: each icon type gets its own sound, scheduled with a delay to match its pop-in ----
+  function tone(type,f0,f1,t0,dur,vol,attack=.006){
+    const t=ctx.currentTime+t0,o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type;o.frequency.setValueAtTime(f0,t);if(f1&&f1!==f0)o.frequency.exponentialRampToValueAtTime(f1,t+dur*.8);
+    env(g,t,vol,attack,dur);o.connect(g);g.connect(master);o.start(t);o.stop(t+attack+dur+.05);
+  }
+  function burst(t0,dur,vol,ftype,freq,q=1){
+    const t=ctx.currentTime+t0,s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();
+    s.buffer=noise;f.type=ftype;f.frequency.value=freq;f.Q.value=q;env(g,t,vol,.002,dur);
+    s.connect(f);f.connect(g);g.connect(master);s.start(t,Math.random()*.5);s.stop(t+dur+.03);
+  }
+  const V={
+    pop(d=0){if(!ready())return;tone('sine',900,420,d,.1,.2)},
+    ion(d=0){if(!ready())return;[0,.07,.15].forEach((x,i)=>tone('triangle',1500+i*420,2300+i*500,d+x,.16,.1))},      // salinity: ion sparkle
+    compass(d=0){if(!ready())return;[0,.09,.18].forEach(x=>burst(d+x,.03,.22,'highpass',3200));tone('sine',760,760,d+.3,.45,.13)}, // ticks then settle
+    flow(d=0){if(!ready())return;swoosh(1,.45,.22,d)},                                                                    // water speed
+    sediment(d=0){if(!ready())return;for(let i=0;i<9;i++)burst(d+i*.05+Math.random()*.03,.05,.16,'lowpass',500+Math.random()*500);tone('sine',140,70,d,.25,.2)}, // grains settling
+    pollution(d=0){if(!ready())return;tone('triangle',520,480,d,.22,.17);tone('triangle',390,340,d+.2,.4,.17)},            // low "uh-oh"
+    power(d=0){if(!ready())return;[520,660,880].forEach((f,i)=>tone('sine',f,f,d+i*.09,.3,.13))},                         // charge up
+    radio(d=0){if(!ready())return;[0,.12,.24].forEach((x,i)=>tone('sine',1100+i*300,1500+i*300,d+x,.14,.14-i*.03))},       // signal chirps
+    chip(d=0){if(!ready())return;[1200,1500,1200,1800].forEach((f,i)=>tone('square',f,f,d+i*.06,.05,.05))},                // data blips
+    thud(d=0){if(!ready())return;tone('sine',150,55,d,.3,.3);burst(d,.06,.12,'lowpass',600)},                              // hull / mooring
+    probe(d=0){if(!ready())return;tone('sine',1000,1000,d,.5,.12);tone('sine',1500,1500,d+.02,.4,.07)},                    // sensor ping
+    shield(d=0){if(!ready())return;tone('triangle',440,660,d,.2,.14);tone('triangle',660,880,d+.12,.3,.14)},
+    shutter(d=0){if(!ready())return;burst(d,.04,.3,'bandpass',2500,2);burst(d+.05,.05,.22,'bandpass',1500,2);tone('sine',1320,1320,d+.1,.35,.1)},
+    tick(d=0){if(!ready())return;burst(d,.03,.2,'highpass',2800);tone('sine',620,620,d,.07,.08)},
+    up(d=0){if(!ready())return;tone('triangle',660,660,d,.22,.15);tone('triangle',990,990,d+.1,.4,.15)},
+    down(d=0){if(!ready())return;tone('triangle',420,420,d,.22,.13);tone('triangle',290,290,d+.1,.4,.13)},
+    step(d=0,i=0){if(!ready())return;tone('sine',520*Math.pow(1.122,i*2),520*Math.pow(1.122,i*2),d,.25,.14)},
+  };
+  // Pick a voice from the icon's own heading ("Salinity", "Solar + battery", ...).
+  const KINDS=[[/salin|conductiv|ion/,'ion'],[/direction|compass/,'compass'],[/speed|flow|current/,'flow'],[/sediment|turbid/,'sediment'],[/pollut|oxygen/,'pollution'],
+    [/solar|battery|power|charge/,'power'],[/wireless|radio|cellular|link|lora/,'radio'],[/controller|logging|dashboard|data/,'chip'],[/shell|float|stabil|mooring|ring|weight/,'thud'],
+    [/sensor|probe|underwater/,'probe'],[/heritage|safe|protect/,'shield']];
+  function kindOf(icon){
+    const box=icon.closest('.data-card,.tile,.diff-side,.callout');
+    if(box&&box.dataset.fx&&V[box.dataset.fx])return box.dataset.fx;
+    const txt=((box&&box.querySelector('h3,h4,b'))||{textContent:''}).textContent.toLowerCase();
+    for(const [re,k] of KINDS)if(re.test(txt))return k;
+    return 'pop';
+  }
+  function iconDelay(icon){
+    const dc=icon.closest('.data-card');if(dc)return .35;
+    const tl=icon.closest('.tile');if(tl)return .5+(parseFloat(tl.style.getPropertyValue('--t'))||0)*.18;
+    return .1;
+  }
   const CARDS='.option-card,.pc-card,.local-sensor-card,.comparison-card,.sensor-card,.data-card,.stat,.row:not(.head),.cell-steps li';
+  const ICONS='svg.dviz,.tile svg,.diff-side svg';
   return{
     slide(dir){swoosh(dir,.5,.3);bubble(.12,420,.12);bubble(.24,620,.1);bubble(.33,520,.08)},
     reveal(el){
       if(el.matches('h2'))return swoosh(1,.28,.14);
+      const fx=el.dataset.fx;
+      if(fx==='photo'){return V.shutter()}
+      if(fx==='specs'){el.querySelectorAll('.gs-tile').forEach((_,i)=>V.tick(i*.07));return}
+      if(fx==='steps'){el.querySelectorAll('.gs-steps li').forEach((_,i)=>V.step(i*.13,i));return}
+      if(fx==='proscons'){V.up(0);V.down(.3);return}
+      const icons=el.querySelectorAll(ICONS);
+      if(icons.length){
+        if(el.matches('.data-card'))swoosh(1,.3,.1);
+        icons.forEach(ic=>V[kindOf(ic)](iconDelay(ic)));
+        return;
+      }
       const items=el.querySelectorAll(CARDS);
       if(items.length>1){items.forEach((c,i)=>bubble(i*.14,480+i*70,.17));return}
       bubble();
     },
+    icon(ic,d=0){V[kindOf(ic)](d)},
     chime,
     toggle(){muted=!muted;try{localStorage.setItem('alexmon-muted',muted?'1':'0')}catch(e){}if(!muted)bubble(0,600,.2);return muted},
     get muted(){return muted},
