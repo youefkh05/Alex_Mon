@@ -23,7 +23,73 @@ OPT = "Sensor Options sheet"  # the user's options workbook, used for estimates 
 SX_PDF = "salenity/SensorsX SX-CCFNA/SensorsX_SX-CCFNA_Datasheet_RevA_ffed563b-795e-462b-b9ea-870c98f6074c.pdf"
 
 # Columns every item starts and ends with.
-HEAD = ["#", "Parameter", "Sensor (Part No.)", "Manufacturer", "Unit Price (USD)", "Include in Cost?", "Seawater OK?"]
+HEAD = ["#", "Parameter", "Sensor (Part No.)", "Manufacturer", "Unit Price (USD)", "Include in Cost?", "Seawater OK?",
+        "Range Fit", "Fit basis"]
+
+# Suggested ranges from files/site_water_data/Site_Water_Parameters.xlsx, per item number.
+# (low, high, unit, what is compared)
+SUGGEST = {
+    "1": (30, 63, "mS/cm", "conductivity (salinity 20 – 42 PSU)"),
+    "2": (0, 1.0, "m/s", "current speed"),
+    "3": (10, 35, "°C", "temperature"),
+    "4": (0, 1000, "NTU", "turbidity"),
+    "5": (0, 20, "mg/L", "dissolved oxygen"),
+}
+# Sensor measuring range used for the fit: (min, max, note) in the item's unit, or a string for N/A.
+# Missing = range not stated by the maker -> "Unknown".
+FIT = {
+    "SX-CCFNA": (0.001, 100, "0.001 – 100 mS/cm option (the 0.001 – 5 mS/cm option is under-ranged)"),
+    "YEX-S2-EC-S": (0, 5, None),
+    "Y523-A": (0, 200, None),
+    "WS-OM-MUL-17A": (0, 100, None),
+    "SEN0707": (0.01, 20, None),
+    "DR-EC200": (0.001, 200, None),
+    "C4E": (0, 200, "top range 0 – 200 mS/cm; its 0 – 20 mS/cm range would be under-ranged"),
+    "ENV-40-EC-K10 + EZO-EC": (0.01, 1000, "probe 10 µS/cm – 1 S/cm"),
+    "OCEAN-SPCM": (0, 5.0, "±5 m/s default (±20 m/s max)"),
+    "EMCON Current Meter": (0, 5.0, None),
+    "TCM-1": (0, 0.8, "0 – 80 cm/s high range"),
+    "Aquadopp 500m": (0, 1.0, "range user-selectable 1 – 5 m/s; set to 1 m/s"),
+    "ZPulse DCS 4420/4520/4830/4930": (0, 3.0, None),
+    "SeaGuardII RCM": (0, 3.0, None),
+    "AEM-CAD": (0, 5.0, "but calibrated only over 0 – ±1 m/s"),
+    "MIDAS ECM": (0, 5.0, None),
+    "Model 106": (0.03, 5.0, None),
+    "Argonaut-XR": (0, 6.0, None),
+    "FlowQuest 2000": (0, 10.3, "20 knots ≈ 10.3 m/s (calculated)"),
+    "Signature 1000": (0, 1.0, "range user-selectable 1 – 5 m/s; set to 1 m/s"),
+    "Signature 500": (0, 1.0, "range user-selectable 1 – 5 m/s; set to 1 m/s"),
+    "AWAC 1 MHz": (0, 1.0, "range user-selectable 1 – 5 m/s; set to 1 m/s"),
+    "AWAC 600 kHz": (0, 1.0, "range user-selectable 1 – 5 m/s; set to 1 m/s"),
+    "DCPS 5400/5402/5403": (0, 4.0, "broadband 0 – 4 m/s (narrowband 5 m/s)"),
+    "SeaPROFILER (ADCP-4)": (0, 5.0, "±5 m/s typical (±20 m/s max)"),
+    "Workhorse II Sentinel": (0, 5.0, "±5 m/s default (±20 m/s max)"),
+    "Sentinel V": (0, 5.0, "±5 m/s default (±20 m/s max)"),
+    "HOBO Pendant MX2202": (-20, 50, "−20 to 50 °C in water"),
+    "SEN0710": (0, 1000, None),
+    "SEN0681": (0, 20, None),
+    "DIY sediment traps": "N/A — no sensor (weighed in lab)",
+    "WTE-VP (2\")": "N/A — housing, not a sensor",
+}
+UNDER, OVER = 0.9, 2.5  # sensor max vs suggested max
+
+
+def range_fit(item_no, part):
+    """Return (category, basis text) for one sensor."""
+    sug, fit = SUGGEST.get(item_no), FIT.get(part)
+    if isinstance(fit, str) or sug is None:
+        return "N/A", fit if isinstance(fit, str) else "No suggested range for this item"
+    lo, hi, unit, what = sug
+    if fit is None:
+        return "Unknown", f"Range not stated by the maker (suggested {lo:g} – {hi:g} {unit})"
+    smin, smax, note = fit
+    ratio = smax / hi
+    basis = f"Sensor {smin:g} – {smax:g} {unit} vs suggested {lo:g} – {hi:g} {unit} ({what}): max = {ratio:.1f}×"
+    if note:
+        basis += f". {note[0].upper() + note[1:]}"
+    if ratio < UNDER or smin > lo + 0.1 * (hi - lo):
+        return "Under-ranged", basis
+    return ("Overpowered" if ratio > OVER else "OK range"), basis
 TAIL = ["Buy Link", "Datasheet", "Factory Calibrated?", "How to Calibrate", "Notes"]
 
 # ---------------------------------------------------------------- data
@@ -224,6 +290,231 @@ ITEMS = [
              "Datasheet": ("Not available", None),
              "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
              "Notes": "JCU page could not be loaded to check specs; description from Sensor Options sheet. Price on request from JCU."},
+            # ---- from Water_Current_Sensors_Guide.pdf (specs read from each maker's datasheet / page) ----
+            {"Parameter": "Current Speed · Direction (acoustic Doppler point, 2 MHz)", "Sensor (Part No.)": "Aquadopp 500m",
+             "Manufacturer": ("Nortek ↗", "https://www.nortekgroup.com/products/aquadopp2-500m"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "User-selectable ±1.0 – ±5.0 m/s (along beam)",
+             "Speed Accuracy": "±1 % of measured value ±0.5 cm/s; precision typ. 1 cm/s",
+             "Direction Range / Accuracy": "Compass <2° (tilt <30°), resolution 0.01°; tilt 0.2°",
+             "Other Sensors": "Temp −4 to 40 °C (±0.1 °C); pressure 30 / 100 / 500 m (0.5 % FS)",
+             "Operating Voltage": "9 – 24 V DC; peak 4.5 A; sleep <40 µA",
+             "Comm. Protocol / Output": "RS-422 (RS-232 on request), 9600 baud – 1.2 Mbaud; 16 GB memory",
+             "Dimensions": "Ø75 × 359 / 597 mm; 1.88 – 2.48 kg in air; depth 500 m; POM, titanium",
+             "Buy Link": ("nortekgroup.com", "https://www.nortekgroup.com/products/aquadopp2-500m"),
+             "Datasheet": ("nortekgroup.com", "https://www.nortekgroup.com/products/aquadopp2-500m/pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "Single measuring cell 0.75 m; blanking 0.1 – 5 m. Battery packs 50 – 165 Wh. Price not published."},
+            {"Parameter": "Current Speed · Direction (acoustic Doppler point, 1.9 – 2.0 MHz)", "Sensor (Part No.)": "ZPulse DCS 4420/4520/4830/4930",
+             "Manufacturer": ("Aanderaa ↗", "https://www.aanderaa.com/stand-alone-current-sensor"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "0 – 300 cm/s (higher on request)",
+             "Speed Accuracy": "±0.15 cm/s or ±1 % of reading; resolution 0.1 mm/s",
+             "Direction Range / Accuracy": "0 – 360°, ±3° (tilt 0 – 15°), ±5° (15 – 35°); resolution 0.01°",
+             "Other Sensors": "Temp −5 to 40 °C (±0.1 °C) on 4830 / 4930 only; tilt 0 – 90° (±1.5°)",
+             "Operating Voltage": "6 – 14 V DC",
+             "Comm. Protocol / Output": "AiCaP + RS-232 (R versions RS-422, cable up to 1500 m); 9600 8N1",
+             "Dimensions": "108 / 120 mm (drawing); depth 300 m (4420/4830), 3000 / 6000 m versions",
+             "Buy Link": ("aanderaa.com", "https://www.aanderaa.com/stand-alone-current-sensor"),
+             "Datasheet": ("aanderaa.com", "https://www.aanderaa.com/media/pdfs/d367_aanderaa-zpulse_dcs.pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "Sensor only — needs a logger. Mount ≥0.75 m below surface and ≥0.5 m above bottom."},
+            {"Parameter": "Current Speed · Direction + logger (ZPulse Doppler)", "Sensor (Part No.)": "SeaGuardII RCM",
+             "Manufacturer": ("Aanderaa ↗", "https://www.aanderaa.com/single-point-current-meter"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "0 – 300 cm/s",
+             "Speed Accuracy": "±0.15 cm/s or ±1 % of reading; resolution 0.1 mm/s",
+             "Direction Range / Accuracy": "0 – 360°, ±3° (tilt 0 – 15°), ±5° (15 – 35°); resolution 0.01°",
+             "Other Sensors": "Optional: temp 4060 (−4 to 36 °C, ±0.03 °C), pressure, conductivity 5819, turbidity 4296, oxygen 4835 / 4330",
+             "Operating Voltage": "6 – 14 V DC; batteries 30 Ah alkaline / 70 Ah lithium",
+             "Comm. Protocol / Output": "USB / RS-232 / RS-422; 4 GB SD; up to 4 analog inputs",
+             "Dimensions": "SW: H 356 × Ø139 mm, 7.6 kg in air; depth 300 / 3000 / 6000 m",
+             "Buy Link": ("aanderaa.com", "https://www.aanderaa.com/single-point-current-meter"),
+             "Datasheet": ("aanderaa.com", "https://www.aanderaa.com/media/pdfs/d434_aanderaa_seaguardii_rcm_low_en.pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "Self-recording; ~3 years with several sensors at 20-min interval (datasheet). Can host the salinity, turbidity and oxygen sensors too."},
+            {"Parameter": "Current Speed · Direction · Temp (2-axis electromagnetic)", "Sensor (Part No.)": "AEM-CAD",
+             "Manufacturer": ("JFE Advantech ↗", "https://www.jfe-advantech.co.jp/eng/assets/img/products/ocean-index/AllproductsGuide_Vol.5.pdf"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "0 – ±500 cm/s",
+             "Speed Accuracy": "±1 cm/s or ±2 %; resolution 0.02 cm/s",
+             "Direction Range / Accuracy": "0 – 360°, ±2°; resolution 0.01° (Hall element)",
+             "Other Sensors": "Temp −3 to 45 °C (±0.02 °C at 3 – 31 °C)",
+             "Operating Voltage": "12 – 24 V DC; 50 mA (20 m cable at 12 V)",
+             "Comm. Protocol / Output": "RS-485 (RS-232C on request); interval ≥0.1 s",
+             "Dimensions": "Ø54 × 381 mm; depth rating not stated",
+             "Buy Link": ("Catalog p.23 (PDF)", "https://www.jfe-advantech.co.jp/eng/assets/img/products/ocean-index/AllproductsGuide_Vol.5.pdf"),
+             "Datasheet": ("Catalog p.23 (PDF)", "https://www.jfe-advantech.co.jp/eng/assets/img/products/ocean-index/AllproductsGuide_Vol.5.pdf"),
+             "Factory Calibrated?": "Yes (0 – ±100 cm/s)", "How to Calibrate": "Velocity calibration range 0 – ±100 cm/s (catalog). Procedure not given.",
+             "Notes": "Cable-type, real-time; no memory or battery. Its calibrated range (0 – 1 m/s) matches our need exactly."},
+            {"Parameter": "Current Speed · Direction (electromagnetic)", "Sensor (Part No.)": "MIDAS ECM",
+             "Manufacturer": ("Valeport ↗", "https://www.valeport.co.uk/products/midas-ecm/"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "0 – 5 m/s",
+             "Speed Accuracy": "±1 % of reading; resolution 0.001 m/s",
+             "Direction Range / Accuracy": "0 – 360°, ±<1°; resolution 0.001° (fluxgate)",
+             "Other Sensors": "Temp −5 to 35 °C (±0.005 °C, CTD option); optional pressure, conductivity 0 – 80 mS/cm, turbidity 0 – 2000 FTU",
+             "Operating Voltage": "9 – 30 V DC external or 8 × D cells; 1.7 W sampling",
+             "Comm. Protocol / Output": "RS-232 / RS-485 / FSK; 1 – 8 Hz; 16 Mb memory",
+             "Dimensions": "Ø150 × 700 mm; 20 kg in cage; titanium; depth 5000 m",
+             "Buy Link": ("valeport.co.uk", "https://www.valeport.co.uk/products/midas-ecm/"),
+             "Datasheet": ("valeport.co.uk", "https://www.valeport.co.uk/content/uploads/2022/05/Valeport-MIDAS-ECM-Datasheet.pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "Optional conductivity (0 – 80 mS/cm) would also cover our salinity range."},
+            {"Parameter": "Current Speed · Direction (impeller)", "Sensor (Part No.)": "Model 106",
+             "Manufacturer": ("Valeport ↗", "https://www.valeport.co.uk/products/model-106-current-meter/"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "0.03 – 5 m/s",
+             "Speed Accuracy": "±0.004 m/s (<0.15 m/s); ±1.5 % of reading (>0.15 m/s)",
+             "Direction Range / Accuracy": "0 – 360°, ±2.5°; resolution 0.5° (fluxgate)",
+             "Other Sensors": "Optional temp −5 to 35 °C (±0.2 °C); optional pressure 50 – 500 dBar",
+             "Operating Voltage": "1 × D cell (30 – 180 days) or 12 – 28 V DC",
+             "Comm. Protocol / Output": "RS-232 (≤19200 baud) up to 200 m; 512 KB memory",
+             "Dimensions": "\"Ø640 × 50 mm\" (as printed); 3 kg in air; titanium / acetal / ABS; depth 500 m",
+             "Buy Link": ("valeport.co.uk", "https://www.valeport.co.uk/products/model-106-current-meter/"),
+             "Datasheet": ("valeport.co.uk", "https://www.valeport.co.uk/content/uploads/2023/03/Valeport-Model-106-Datasheet-orange-impeller-1.pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "Moving impeller; cannot read flows below 0.03 m/s."},
+            {"Parameter": "Current profile (acoustic Doppler, 1.5 MHz)", "Sensor (Part No.)": "Argonaut-XR",
+             "Manufacturer": ("SonTek (Xylem) ↗", "https://www.ysi.com/File%20Library/Documents/Brochures%20and%20Catalogs/argonaut-xr-brochure.pdf"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "±6 m/s",
+             "Speed Accuracy": "±1 % of measured velocity ±0.5 cm/s; resolution 0.1 cm/s",
+             "Direction Range / Accuracy": "Heading ±2°; pitch / roll ±1°; resolution 0.1°",
+             "Other Sensors": "Temp (±0.1 °C); pressure (0.1 %)",
+             "Operating Voltage": "7 – 15 V DC; 0.2 – 0.5 W",
+             "Comm. Protocol / Output": "RS-232, SDI-12 (RS-422 option); 4 MB recorder",
+             "Dimensions": "15.2 × 18.0 cm; 2.5 kg in air; Delrin; depth 200 m",
+             "Buy Link": ("ysi.com", "https://www.ysi.com/File%20Library/Documents/Brochures%20and%20Catalogs/argonaut-xr-brochure.pdf"),
+             "Datasheet": ("Brochure (PDF)", "https://www.ysi.com/File%20Library/Documents/Brochures%20and%20Catalogs/argonaut-xr-brochure.pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": "Built-in compass calibration (compensates ambient magnetic fields).",
+             "Notes": "Profiles to 20 m, cells from 0.4 m, blanking 0.5 m — suits 2 – 8 m water. Lowest power of the profilers."},
+            {"Parameter": "Current profile (acoustic Doppler, 2 MHz)", "Sensor (Part No.)": "FlowQuest 2000",
+             "Manufacturer": ("LinkQuest ↗", "https://www.link-quest.com/html/models_fq.htm"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "Up to 20 knots (≈ 10.3 m/s, calculated)",
+             "Speed Accuracy": "0.25 % ±2.0 mm/s",
+             "Direction Range / Accuracy": "Compass ±2°; tilt ±0.5° up to ±15°",
+             "Other Sensors": "Temp −5 to 45 °C (±0.4 °C); logs up to 7 RS-232 + 4 analog extra sensors",
+             "Operating Voltage": "Supply not stated; transmit 6 – 20 W, sleep 2.5 mW",
+             "Comm. Protocol / Output": "RS-232 (RS-422 option); 1 GB Compact Flash",
+             "Dimensions": "Ø12.6 × 70 cm, 8.9 kg with battery; aluminium; depth 800 m (to 6000 m)",
+             "Buy Link": ("link-quest.com", "https://www.link-quest.com/html/models_fq.htm"),
+             "Datasheet": ("link-quest.com", "https://www.link-quest.com/html/FlowQuest2000.pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "Range to 20 m; cells 0.125 – 1 m; blanking 0.2 m (0.1 m option)."},
+            {"Parameter": "Current profile (5-beam ADCP, 1 MHz)", "Sensor (Part No.)": "Signature 1000",
+             "Manufacturer": ("Nortek ↗", "https://www.nortekgroup.com/products/signature-1000"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "User-selectable 1.0 – 5.0 m/s (HR mode 0.03 – 1.4 m/s)",
+             "Speed Accuracy": "0.3 % of measured value ±0.3 cm/s; resolution 0.1 cm/s",
+             "Direction Range / Accuracy": "Compass 2° (tilt <30°), resolution 0.01°; tilt 0.2°",
+             "Other Sensors": "Temp −4 to 40 °C (±0.1 °C); pressure 0 – 100 m (0.1 % FS)",
+             "Operating Voltage": "12 – 48 V DC; 8 W at 1 Hz",
+             "Comm. Protocol / Output": "Ethernet + RS-232 / RS-422; 16 – 128 GB",
+             "Dimensions": "Ø142 × 212 mm; 2.21 kg in air; POM / titanium; depth 300 m",
+             "Buy Link": ("nortekgroup.com", "https://www.nortekgroup.com/products/signature-1000"),
+             "Datasheet": ("nortekgroup.com", "https://www.nortekgroup.com/products/signature-1000/pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "Range 25 – 30 m; cells 0.2 – 2 m; blanking 0.1 m. HR option profiles 0.1 – 8 m — fits our depths."},
+            {"Parameter": "Current profile (5-beam ADCP, 500 kHz)", "Sensor (Part No.)": "Signature 500",
+             "Manufacturer": ("Nortek ↗", "https://www.nortekgroup.com/products/signature-500"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "User-selectable 1.0 – 5.0 m/s",
+             "Speed Accuracy": "0.3 % of measured value ±0.3 cm/s; resolution 0.1 cm/s",
+             "Direction Range / Accuracy": "Compass 2° (tilt <30°), resolution 0.01°; tilt 0.2°",
+             "Other Sensors": "Temp −4 to 40 °C (±0.1 °C); pressure 0 – 100 m (0.1 % FS)",
+             "Operating Voltage": "12 – 48 V DC; 8 W at 1 Hz",
+             "Comm. Protocol / Output": "Ethernet + RS-232 / RS-422; 16 – 128 GB",
+             "Dimensions": "Ø228 × 274 mm; 6.4 kg in air; POM / titanium; depth 300 m",
+             "Buy Link": ("nortekgroup.com", "https://www.nortekgroup.com/products/signature-500"),
+             "Datasheet": ("nortekgroup.com", "https://www.nortekgroup.com/products/signature-500/pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "Range 60 – 70 m; cells 0.5 – 4 m; blanking 0.5 m — built for much deeper water than our 2 – 8 m sites."},
+            {"Parameter": "Current profile + waves (ADCP, 1 MHz)", "Sensor (Part No.)": "AWAC 1 MHz",
+             "Manufacturer": ("Nortek ↗", "https://www.nortekgroup.com/products/awac2-1-mhz"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "User-selectable 1.0 – 5.0 m/s",
+             "Speed Accuracy": "±1 % of measured value ±0.5 cm/s",
+             "Direction Range / Accuracy": "Compass 2° (tilt <30°), resolution 0.01°; tilt 0.2°",
+             "Other Sensors": "Temp −4 to 40 °C (±0.1 °C); pressure 0 – 100 m; waves (AST) to 35 m depth",
+             "Operating Voltage": "12 – 48 V DC; external 540 / 1800 Wh batteries",
+             "Comm. Protocol / Output": "Ethernet + RS-232 / RS-422; 16 – 128 GB",
+             "Dimensions": "Ø215 × 175 mm; 5.4 kg in air; depth 300 m",
+             "Buy Link": ("nortekgroup.com", "https://www.nortekgroup.com/products/awac2-1-mhz"),
+             "Datasheet": ("nortekgroup.com", "https://www.nortekgroup.com/products/awac2-1-mhz/pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "Range 30 m; cells 0.25 – 4 m. Also measures waves."},
+            {"Parameter": "Current profile + waves (ADCP, 600 kHz)", "Sensor (Part No.)": "AWAC 600 kHz",
+             "Manufacturer": ("Nortek ↗", "https://www.nortekgroup.com/products/awac2-600-khz"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "User-selectable 1.0 – 5.0 m/s",
+             "Speed Accuracy": "±1 % of measured value ±0.5 cm/s",
+             "Direction Range / Accuracy": "Compass 2° (tilt <30°), resolution 0.01°; tilt 0.2°",
+             "Other Sensors": "Temp −4 to 40 °C (±0.1 °C); pressure 0 – 100 m; waves to 60 m depth",
+             "Operating Voltage": "12 – 48 V DC; external 540 / 1800 Wh batteries",
+             "Comm. Protocol / Output": "Ethernet + RS-232 / RS-422; 16 – 128 GB",
+             "Dimensions": "Ø215 × 203 mm; 5.7 kg in air; depth 300 m",
+             "Buy Link": ("nortekgroup.com", "https://www.nortekgroup.com/products/awac2-600-khz"),
+             "Datasheet": ("nortekgroup.com", "https://www.nortekgroup.com/products/awac2-600-khz/pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "Range 50 m; cells 0.5 – 8 m — meant for deeper water."},
+            {"Parameter": "Current profile (ADCP, 600 kHz)", "Sensor (Part No.)": "DCPS 5400/5402/5403",
+             "Manufacturer": ("Aanderaa ↗", "https://www.aanderaa.com/stand-alone-current-sensor"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "Broadband 0 – 400 cm/s; narrowband 0 – 500 cm/s (1000 at tilt <±5°)",
+             "Speed Accuracy": "0.3 cm/s or ±1 % of reading; resolution 0.1 cm/s",
+             "Direction Range / Accuracy": "Heading <2° RMS (±3.5° at 0 – 15° tilt); tilt ±1.5°",
+             "Other Sensors": "Temp −4 to 40 °C (±0.05 °C); pressure 0 – 1 MPa on 5400P",
+             "Operating Voltage": "6 – 30 V DC; e.g. 4.2 mA average",
+             "Comm. Protocol / Output": "AiCaP (CANbus) + RS-232; R versions RS-422",
+             "Dimensions": "Ø160 × 167 mm; 5.1 kg in air; depth 100 – 6000 m",
+             "Buy Link": ("aanderaa.com", "https://www.aanderaa.com/stand-alone-current-sensor"),
+             "Datasheet": ("aanderaa.com", "https://www.aanderaa.com/media/pdfs/d411_aanderaa_dcps_low_en.pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": "Temperature sensor can be calibrated on request (product page).",
+             "Notes": "Range 30 – 80 m; blanking 1 – 2 m — too much dead zone for 2 – 8 m water."},
+            {"Parameter": "Current profile (ADCP, 38 – 1200 kHz)", "Sensor (Part No.)": "SeaPROFILER (ADCP-4)",
+             "Manufacturer": ("Rowe Technologies ↗", "https://rowetechinc.com/rpma/testWeb/products/adcp4/combinedunit/"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "±5 m/s typical, ±20 m/s max",
+             "Speed Accuracy": "±0.2 % ±0.2 mm/s (long-term)",
+             "Direction Range / Accuracy": "Compass ±2°, resolution 0.01°; tilt ±0.2° (30° range)",
+             "Other Sensors": "Temp −5 to 40 °C (±0.2 °C); optional pressure 100 – 10000 m",
+             "Operating Voltage": "12 – 48 V DC",
+             "Comm. Protocol / Output": "RS-232 / RS-422 / RS-485, Ethernet; 64 GB",
+             "Dimensions": "Not given in brochure; Delrin / aluminium / titanium; depth 200 – 6000 m",
+             "Buy Link": ("rowetechinc.com", "https://rowetechinc.com/rpma/testWeb/products/adcp4/combinedunit/"),
+             "Datasheet": ("Brochure (PDF)", "https://scrin.uca.es/wp-content/uploads/2025/03/MF-DR-Brochure-ADCP4.pdf"),
+             "Factory Calibrated?": "Yes (acoustics)", "How to Calibrate": "Inter-frequency calibrated transmit and receive; built-in self test. User procedure not given.",
+             "Notes": "1200 kHz piston version fits shallow water: range 20 – 30 m, cells 0.1 – 2 m. Product page did not load; brochure only."},
+            {"Parameter": "Current profile (ADCP, 300 / 600 / 1200 kHz)", "Sensor (Part No.)": "Workhorse II Sentinel",
+             "Manufacturer": ("Teledyne RDI ↗", "https://www.teledynemarine.com/brands/rdi/workhorse-sentinel-adcp"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "±5 m/s default, ±20 m/s max",
+             "Speed Accuracy": "0.3 % ±0.3 cm/s (1200 / 600 kHz); resolution 0.1 cm/s",
+             "Direction Range / Accuracy": "Compass ±1° RMS after field calibration; tilt ±90° (±0.3°)",
+             "Other Sensors": "Temp −5 to 45 °C (±0.4 °C); pressure 200 dBar standard",
+             "Operating Voltage": "20 – 50 V DC",
+             "Comm. Protocol / Output": "RS-232 / RS-422, 1200 – 115200 baud; 4 GB",
+             "Dimensions": "228 × 420 mm; 13.5 kg in air; depth 200 m (500 / 6000 m option)",
+             "Buy Link": ("teledynemarine.com", "https://www.teledynemarine.com/brands/rdi/workhorse-sentinel-adcp"),
+             "Datasheet": ("teledynemarine.com", "https://www.teledynemarine.com/en-us/products/SiteAssets/RD%20Instruments/wh_ii_datasheet_04_2023.pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": "Field compass calibration (>0.45 Gauss field, <70° dip) with ISM software.",
+             "Notes": "1200 kHz: typical range 12 m, cells from 0.25 m."},
+            {"Parameter": "Current profile (5-beam ADCP, 300 / 500 / 1000 kHz)", "Sensor (Part No.)": "Sentinel V",
+             "Manufacturer": ("Teledyne RDI ↗", "https://www.teledynemarine.com/brands/rdi/sentinel-v-adcp"),
+             "Unit Price (USD)": UNK, "Seawater OK?": "Yes",
+             "Speed Range": "±5 m/s default, ±20 m/s max",
+             "Speed Accuracy": "0.3 % ±0.3 cm/s (V20); resolution 0.1 cm/s",
+             "Direction Range / Accuracy": "Compass 2° RMS, resolution 0.1°; tilt 2° RMS",
+             "Other Sensors": "Temp −5 to 45 °C (±0.4 °C); pressure 300 m (0.1 % FS)",
+             "Operating Voltage": "12 – 20 V DC external; 100 / 510 Wh battery",
+             "Comm. Protocol / Output": "Wi-Fi / TCP-IP (self-contained); RS-422 (real-time); 16 GB",
+             "Dimensions": "Drawing on request; plastic housing; depth 200 m",
+             "Buy Link": ("teledynemarine.com", "https://www.teledynemarine.com/brands/rdi/sentinel-v-adcp"),
+             "Datasheet": ("teledynemarine.com", "https://www.teledynemarine.com/en-us/products/SiteAssets/RD%20Instruments/Sentinel_V_combined.pdf"),
+             "Factory Calibrated?": "Not stated", "How to Calibrate": UNK,
+             "Notes": "V20 (1 MHz): range 18 – 32 m, cells from 0.25 m."},
         ],
     },
     {
@@ -327,6 +618,10 @@ NOTES = [
     "• Estimated prices and DIY entries come from the \"Underwater Site Monitoring – Sensor Options\" sheet and are marked in each row's Notes.",
     "• Sensors within an item are alternatives. \"Include in Cost?\" = Yes marks the starter set; subtotals only count Yes rows with a numeric price.",
     "• \"Seawater OK?\" compares the stated range with seawater (~50,000 – 60,000 µS/cm). \"Check\" = seawater use not stated by the maker.",
+    "• \"Range Fit\" compares each sensor's measuring range with the suggested range in files/site_water_data/Site_Water_Parameters.xlsx "
+    "(conductivity 30 – 63 mS/cm, current 0 – 1 m/s, temperature 10 – 35 °C, turbidity 0 – 1000 NTU, oxygen 0 – 20 mg/L):",
+    "    Under-ranged = sensor max below 0.9× the suggested max (or its min starts too high) · OK range = 0.9× – 2.5× · Overpowered = above 2.5×.",
+    "• Current meters added from Water_Current_Sensors_Guide.pdf; their specs were re-read from each maker's datasheet linked in the row.",
 ]
 
 # ---------------------------------------------------------------- styles
@@ -344,13 +639,15 @@ USD = '"$"#,##0.00'
 
 # Preferred width per column name; a sheet column gets the widest preference among items.
 PREF = {"#": 5, "Parameter": 24, "Sensor (Part No.)": 18, "Manufacturer": 17, "Unit Price (USD)": 12,
-        "Include in Cost?": 11, "Seawater OK?": 11, "Buy Link": 17, "Datasheet": 20,
+        "Include in Cost?": 11, "Seawater OK?": 11, "Range Fit": 13, "Fit basis": 30, "Buy Link": 17, "Datasheet": 20,
         "Factory Calibrated?": 13, "How to Calibrate": 46, "Notes": 46}
-LEFT_COLS = {"Parameter", "Sensor (Part No.)", "Manufacturer", "How to Calibrate", "Wiring", "Other Sensors", "Notes",
+LEFT_COLS = {"Parameter", "Sensor (Part No.)", "Manufacturer", "How to Calibrate", "Wiring", "Other Sensors", "Notes", "Fit basis",
              "What's Included"}
 NCOL = max(len(i["columns"]) for i in ITEMS)
 WIDTHS = [max(PREF.get(item["columns"][c], 24) for item in ITEMS if c < len(item["columns"])) for c in range(NCOL)]
 VERDICT = {"Yes": "1E7B34", "No": "C0392B", "Check": "B26A00"}
+FIT_STYLE = {"OK range": ("1E7B34", "E2F0D9"), "Overpowered": ("B26A00", "FFF2CC"),
+             "Under-ranged": ("C0392B", "FADBD8"), "Unknown": ("7F7F7F", "F2F2F2"), "N/A": ("7F7F7F", "F2F2F2")}
 
 
 def main():
@@ -397,6 +694,7 @@ def main():
             n += 1
             bg = fill("FFFFFF" if k % 2 == 0 else ROWALT)
             row = {"#": n, "Include in Cost?": "No", **row}
+            row["Range Fit"], row["Fit basis"] = range_fit(item["title"].split()[0], row["Sensor (Part No.)"])
             csv_line, longest = [], 0
             for name, c in ci.items():
                 val = row.get(name, UNK)
@@ -415,6 +713,9 @@ def main():
                     cell.font = F(bold=True, color="1E7B34")
                 if name == "Seawater OK?":
                     cell.font = F(bold=True, color=VERDICT.get(val, TXT))
+                if name == "Range Fit" and val in FIT_STYLE:
+                    fg, bgc = FIT_STYLE[val]
+                    cell.font, cell.fill = F(bold=True, color=fg), fill(bgc)
                 if name == "Unit Price (USD)" and isinstance(val, (int, float)):
                     cell.number_format = USD
                 if str(val).startswith(UNK) or val in (NA, "Not stated", "n/a", "Not available"):
