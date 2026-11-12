@@ -84,6 +84,8 @@ body.shallow .ocean .shallow{opacity:1}
   background:var(--panel);color:var(--ink);border:1px solid var(--line2);border-radius:999px;
   padding:.45em .9em;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;backdrop-filter:blur(8px);transition:.25s}
 .theme-toggle:hover{border-color:var(--aqua);transform:translateY(-1px)}
+.theme-toggle.sound-toggle{top:58px}
+.sound-toggle.muted{color:var(--muted);opacity:.75}
 .dots{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:50}
 .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:.3s}
 .dot.on{background:var(--aqua);transform:scale(1.35);box-shadow:0 0 10px var(--aqua)}
@@ -1282,6 +1284,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 <div class="progress" id="progress"></div>
 <div class="brand">Alex<b>-Mon</b> &nbsp;×&nbsp; SSTM Research</div>
 <button class="theme-toggle" id="themeToggle" aria-label="Toggle water depth"><span id="themeIcon">🌤️</span><span id="themeLabel">Shallow</span></button>
+<button class="theme-toggle sound-toggle" id="soundToggle" aria-label="Toggle sound effects" aria-pressed="true"><span id="soundIcon">🔊</span><span id="soundLabel">Sound</span></button>
 
 <div class="deck" id="deck">
 
@@ -2118,7 +2121,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 
 <div class="dots" id="dots"></div>
 <div class="counter"><b id="cur">1</b> / <span id="total">11</span></div>
-<div class="nav-hint"><kbd>←</kbd> previous &nbsp;·&nbsp; <kbd>→</kbd> reveal / next &nbsp;·&nbsp; <kbd>F</kbd> fullscreen</div>
+<div class="nav-hint"><kbd>←</kbd> previous &nbsp;·&nbsp; <kbd>→</kbd> reveal / next &nbsp;·&nbsp; <kbd>F</kbd> fullscreen &nbsp;·&nbsp; <kbd>M</kbd> sound</div>
 
 <script>
 /* ============ deterministic random ============ */
@@ -2243,6 +2246,75 @@ function panCamera(i){
   document.getElementById('seabed').style.transform=`translateX(${pan*1.6}%)`;
 }
 
+/* ============ sound effects (synthesized with Web Audio, no files) ============ */
+const sfx=(()=>{
+  let ctx=null,master=null,noise=null,muted=false;
+  try{muted=localStorage.getItem('alexmon-muted')==='1'}catch(e){}
+  function init(){
+    if(ctx)return ctx.state==='suspended'?(ctx.resume(),ctx):ctx;
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
+    ctx=new AC();
+    const comp=ctx.createDynamicsCompressor();comp.connect(ctx.destination);
+    master=ctx.createGain();master.gain.value=.4;master.connect(comp);
+    noise=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);
+    const d=noise.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+    return ctx;
+  }
+  const ready=()=>!muted&&init();
+  function env(g,t,peak,attack,decay){
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(peak,t+attack);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+attack+decay);
+  }
+  // Single underwater bubble: a sine that glides up quickly and fades.
+  function bubble(delay=0,f=500+Math.random()*350,vol=.22){
+    if(!ready())return;
+    const t=ctx.currentTime+delay,o=ctx.createOscillator(),g=ctx.createGain();
+    o.type='sine';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*2.3,t+.09);
+    env(g,t,vol,.008,.13);o.connect(g);g.connect(master);o.start(t);o.stop(t+.18);
+  }
+  // Filtered-noise swoosh, like water rushing past; dir>0 sweeps up, dir<0 sweeps down.
+  function swoosh(dir=1,dur=.5,vol=.32,delay=0){
+    if(!ready())return;
+    const t=ctx.currentTime+delay,src=ctx.createBufferSource(),bp=ctx.createBiquadFilter(),g=ctx.createGain();
+    src.buffer=noise;bp.type='bandpass';bp.Q.value=1.4;
+    const [a,b]=dir>0?[280,1900]:[1900,280];
+    bp.frequency.setValueAtTime(a,t);bp.frequency.exponentialRampToValueAtTime(b,t+dur);
+    env(g,t,vol,dur*.35,dur*.65);
+    src.connect(bp);bp.connect(g);g.connect(master);src.start(t);src.stop(t+dur+.05);
+  }
+  // Soft two-note chime for "explain" steps.
+  function chime(){
+    if(!ready())return;
+    [[880,0],[1318.5,.09]].forEach(([f,dt])=>{
+      const t=ctx.currentTime+dt,o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='triangle';o.frequency.value=f;env(g,t,.16,.01,.7);
+      o.connect(g);g.connect(master);o.start(t);o.stop(t+.8);
+    });
+  }
+  const CARDS='.option-card,.pc-card,.local-sensor-card,.comparison-card,.sensor-card,.data-card,.stat,.row:not(.head),.cell-steps li';
+  return{
+    slide(dir){swoosh(dir,.5,.3);bubble(.12,420,.12);bubble(.24,620,.1);bubble(.33,520,.08)},
+    reveal(el){
+      if(el.matches('h2'))return swoosh(1,.28,.14);
+      const items=el.querySelectorAll(CARDS);
+      if(items.length>1){items.forEach((c,i)=>bubble(i*.14,480+i*70,.17));return}
+      bubble();
+    },
+    chime,
+    toggle(){muted=!muted;try{localStorage.setItem('alexmon-muted',muted?'1':'0')}catch(e){}if(!muted)bubble(0,600,.2);return muted},
+    get muted(){return muted},
+  };
+})();
+const soundBtn=document.getElementById('soundToggle');
+function syncSoundBtn(){
+  soundBtn.classList.toggle('muted',sfx.muted);soundBtn.setAttribute('aria-pressed',String(!sfx.muted));
+  document.getElementById('soundIcon').textContent=sfx.muted?'🔇':'🔊';
+  document.getElementById('soundLabel').textContent=sfx.muted?'Muted':'Sound';
+}
+soundBtn.addEventListener('click',e=>{e.stopPropagation();sfx.toggle();syncSoundBtn()});
+syncSoundBtn();
+
 /* ============ deck engine ============ */
 const slides=Array.from(document.querySelectorAll('.slide'));
 const total=slides.length;let idx=0;
@@ -2263,7 +2335,7 @@ function render(){
       slides[idx].classList.add('demo-stage');
       slides[idx].querySelectorAll('.kicker,h2,.current-scene,.current-legend').forEach(el=>el.classList.add('revealed'));
     }
-    if(renderedIdx!==-1)bubbleBurst();
+    if(renderedIdx!==-1){bubbleBurst();sfx.slide(idx>renderedIdx?1:-1)}
     panCamera(idx);
     renderedIdx=idx;
   }
@@ -2290,11 +2362,12 @@ const next=()=>{
     activeSlide.classList.remove('demo-stage');
     activeSlide.classList.add('explain-stage');
     activeSlide.querySelectorAll('.sub,.current-step,.fnote').forEach(el=>el.classList.add('revealed'));
+    sfx.chime();
     fitSlide(activeSlide);
     return;
   }
   const pending=activeSlide.querySelector('.rise:not(.revealed)');
-  if(pending){pending.classList.add('revealed');playIn(pending);
+  if(pending){pending.classList.add('revealed');playIn(pending);sfx.reveal(pending);
     if(pending.dataset.step){const l=activeSlide.querySelector(`.sv-legend [data-step="${pending.dataset.step}"]`);if(l)l.classList.add('on')}
     return}
   go(idx+1);
@@ -2307,6 +2380,7 @@ document.addEventListener('keydown',e=>{
   if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next()}
   else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev()}
   else if(e.key==='Home')go(0);else if(e.key==='End')go(total-1);
+  else if(e.key==='m'||e.key==='M'){sfx.toggle();syncSoundBtn()}
   else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
 });
 let tx=0;
