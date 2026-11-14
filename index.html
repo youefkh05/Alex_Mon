@@ -1472,7 +1472,8 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 @media(max-width:900px){.cm-layout,.cm-flow,.cm-pc{grid-template-columns:1fr}.cm-stats{grid-template-columns:1fr 1fr}}
 /* COMM-CSS:END */
 /* SUM-SLIDE */
-.sum-wrap{margin-top:1rem;padding:.4rem .9rem;border-radius:18px;overflow-x:auto}
+.sum-note{margin:.5rem 0 0;font-size:.9rem;color:var(--muted)}.sum-note b{color:var(--gold)}
+.sum-wrap{margin-top:.8rem;padding:.4rem .9rem;border-radius:18px;overflow-x:auto}
 .sum-table{width:100%;border-collapse:collapse;font-size:.9rem}
 .sum-table th{text-align:left;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:.55rem .7rem;border-bottom:1px solid var(--line2)}
 .sum-table td{padding:.42rem .7rem;border-bottom:1px solid rgba(160,235,255,.12);vertical-align:middle}
@@ -2407,6 +2408,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
   <div class="slide-inner">
     <span class="kicker rise" style="--i:0">Selected sensors · Summary</span>
     <h2 class="rise" style="--i:1">The <span class="hl">sensors</span> at a glance</h2>
+    <p class="sum-note rise" style="--i:2">Prices are supplier prices. Expect the final cost to be about <b>1.3 – 1.5 ×</b> higher after customs and shipping.</p>
     <div class="sum-wrap panel rise" style="--i:2">
       <table class="sum-table">
         <thead><tr><th>Picture</th><th>Sensor</th><th>Range</th><th>Price (USD)</th></tr></thead>
@@ -2415,7 +2417,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
           <td class="sum-pic"><a href="https://sensorsx.com/products/sx-ccfna-series" target="_blank" rel="noopener"><img src="files/guides/img/sx-ccfna.webp" alt="SX-CCFNA"></a></td>
           <td class="sum-name"><a href="https://sensorsx.com/products/sx-ccfna-series" target="_blank" rel="noopener"><b>SX-CCFNA</b> ↗</a><small>SensorsX · Salinity · conductivity</small></td>
           <td class="sum-range">0.001 – 100 mS/cm<br><small>0 – 80 ppt salinity</small></td>
-          <td class="sum-price"><b>$473</b><small>team price</small></td>
+          <td class="sum-price"><b>$473</b><small>sensorsx.com</small></td>
         </tr>
         <tr class="rise" style="--i:4">
           <td class="sum-pic"><a href="https://www.antratek.com/dr-ec200-water-ec-sensor-for-wqs" target="_blank" rel="noopener"><img src="files/guides/img/dr-ec200.webp" alt="DR-EC200"></a></td>
@@ -2427,7 +2429,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
           <td class="sum-pic"><a href="https://www.nortekgroup.com/products/signature-500" target="_blank" rel="noopener"><img src="files/guides/img/signature500.png" alt="Signature 500"></a></td>
           <td class="sum-name"><a href="https://www.nortekgroup.com/products/signature-500" target="_blank" rel="noopener"><b>Signature 500</b> ↗</a><small>Nortek · Water current</small></td>
           <td class="sum-range">1 – 5 m/s<br><small>user-selectable</small></td>
-          <td class="sum-price unk"><b>Unknown</b><small>quote on request</small></td>
+          <td class="sum-price"><b>~ $5,000</b><small>average · quote on request</small></td>
         </tr>
         <tr class="rise" style="--i:6">
           <td class="sum-pic"><a href="https://hackaday.io/project/158083-cheap-underwater-tilt-current-sensor" target="_blank" rel="noopener"><svg viewBox="0 0 80 64" aria-hidden="true"><rect x="0" y="0" width="80" height="64" fill="#e6f6fb"/><path d="M6 20h22l-4-3M6 30h22l-4-3" stroke="#0b6b7a" stroke-width="2.4" fill="none" stroke-linecap="round"/><rect x="30" y="54" width="22" height="6" rx="2" fill="#8e99a3"/><line x1="41" y1="54" x2="58" y2="22" stroke="#46586a" stroke-width="2.4"/><g transform="rotate(28 60 18)"><rect x="54" y="6" width="12" height="24" rx="6" fill="#0b2a4a"/><rect x="56.5" y="13" width="7" height="9" rx="1.5" fill="#14b8a6"/></g><path d="M41 40 A14 14 0 0 1 48 42" stroke="#c0392b" stroke-width="1.8" fill="none"/></svg></a></td>
