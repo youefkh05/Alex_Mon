@@ -240,6 +240,45 @@ h1 .dash{display:inline-block;color:#2de2e6;-webkit-text-fill-color:#2de2e6;marg
 .qb-chain .arr{align-self:center;color:var(--gold);font-size:1.4rem;flex:none}
 .qb-two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .qb-two .listcard + .listcard{margin-top:0}
+.qb-xsec{margin:1rem 0 .9rem;padding:.5rem;border-radius:18px;overflow:hidden}
+.qb-xsec svg{display:block;width:100%;height:auto;border-radius:12px}
+.qx-lbl rect{fill:rgba(3,31,58,.85);stroke:var(--line2)}
+.qx-lbl text{fill:#eafcff}
+.qx-lbl rect.gold{stroke:var(--gold)} .qx-lbl text.gold{fill:var(--gold)}
+.qx-wave{animation:qxWave 4s linear infinite}
+@keyframes qxWave{to{transform:translateX(-120px)}}
+.qx-flow path{stroke-dasharray:14 22;opacity:.35;animation:qxFlow 3.5s linear infinite}
+.qx-flow path:nth-child(2){animation-duration:4.6s;opacity:.25}.qx-flow path:nth-child(3){animation-duration:5.4s;opacity:.2}
+@keyframes qxFlow{to{stroke-dashoffset:-144}}
+.qx-rays path{opacity:.07;animation:qxRay 6s ease-in-out infinite alternate}
+.qx-rays path:nth-child(2){animation-delay:-2s}.qx-rays path:nth-child(3){animation-delay:-4s}
+@keyframes qxRay{to{opacity:.16}}
+.qx-fish{animation:qxFish 14s linear infinite}
+.qx-fish.f2{animation-duration:19s;animation-delay:-7s}
+@keyframes qxFish{0%{transform:translate(1200px,215px)}50%{transform:translate(760px,232px)}100%{transform:translate(400px,210px)}}
+.qx-bubbles circle{animation:qxBub 4s ease-in infinite}
+.qx-bubbles circle:nth-child(2){animation-delay:-1s}.qx-bubbles circle:nth-child(3){animation-delay:-2s}.qx-bubbles circle:nth-child(4){animation-delay:-3s}
+@keyframes qxBub{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-140px);opacity:0}}
+.qx-flag{transform-box:fill-box;transform-origin:left center;animation:qxFlag 1.6s ease-in-out infinite alternate}
+@keyframes qxFlag{to{transform:scaleX(.82) skewY(-6deg)}}
+.qx-splash circle{animation:qxSplash 2.4s ease-out infinite}
+.qx-splash circle:nth-child(2){animation-delay:.25s}.qx-splash circle:nth-child(3){animation-delay:.5s}
+@keyframes qxSplash{0%{transform:translate(0,0);opacity:0}20%{opacity:1}100%{transform:translate(18px,-22px);opacity:0}}
+.qx-art{animation:qxGlow 2.8s ease-in-out infinite alternate}
+@keyframes qxGlow{from{filter:drop-shadow(0 0 0 rgba(255,210,122,0))}to{filter:drop-shadow(0 0 6px rgba(255,210,122,.75))}}
+.qx-maybe{animation:qxMaybe 1.8s ease-in-out infinite alternate}
+@keyframes qxMaybe{from{opacity:.35}to{opacity:1}}
+.qx-span{animation:qxFlow 3s linear infinite}
+.qb-ic h4{display:flex;align-items:center;gap:.5rem}
+.qb-h-ico{font-size:1.15rem;display:inline-block;animation:bob 3s ease-in-out infinite alternate}
+.qb-ic li{padding-left:1.7rem!important}
+.qb-ic li::before{display:none}
+.li-ico{position:absolute;left:0;top:0;font-size:.95rem;width:1.3rem;text-align:center}
+.li-ico.flow-in{color:var(--aqua);animation:qxIn 1.6s ease-in-out infinite}
+.li-ico.flow-out{color:var(--gold);animation:qxOut 1.6s ease-in-out infinite}
+@keyframes qxIn{0%{transform:translateX(-4px);opacity:.3}50%{opacity:1}100%{transform:translateX(4px);opacity:.3}}
+@keyframes qxOut{0%{transform:translateX(-4px) rotate(-30deg);opacity:.3}50%{opacity:1}100%{transform:translateX(4px) rotate(-30deg);opacity:.3}}
+@media (prefers-reduced-motion:reduce){.qb-xsec *,.qb-ic *{animation:none!important}}
 .qb-num{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-top:1.2rem}
 .qb-num .panel{padding:1rem .95rem;position:relative}
 .qb-num .k{font-family:Georgia,serif;font-size:1.9rem;font-weight:700;color:var(--gold);line-height:1}
@@ -1629,7 +1668,6 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
       <div class="panel stat rise" style="--i:5"><div class="ic">📐</div><div><div class="n"><span class="count" data-to="7000">0</span> m²</div><div class="l">effective area, without the gaps</div></div></div>
       <div class="panel stat rise" style="--i:6"><div class="ic">🌊</div><div><div class="n">5 – 8 m</div><div class="l">maximum depth</div></div></div>
       <div class="panel stat rise" style="--i:7"><div class="ic">↔️</div><div><div class="n">6 m</div><div class="l">furthest distance from the citadel wall to the artefacts</div></div></div>
-      <div class="panel stat rise" style="--i:8"><div class="ic">💰</div><div><div class="n"><span class="count" data-to="130000">0</span></div><div class="l">EGP total project budget</div></div></div>
     </div>
 
     <div class="qb-about">
@@ -1677,30 +1715,96 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
     <h2 class="rise" style="--i:1">From the citadel <span class="hl">to the site</span></h2>
     <p class="sub rise" style="--i:2">We believe there may be artefacts under the wave barrier, so the study area starts at the citadel wall and reaches up to 6 m out.</p>
 
-    <div class="qb-chain">
-      <div class="panel rise" style="--i:3"><h4>The citadel</h4><p>Main tower, surrounded by a wall</p></div>
-      <span class="arr rise" style="--i:3">→</span>
-      <div class="panel rise" style="--i:4"><h4>Paved strip</h4><p>About 4 m outside the wall</p></div>
-      <span class="arr rise" style="--i:4">→</span>
-      <div class="panel rise" style="--i:5"><h4>Wave barrier</h4><p>2 m wide</p></div>
-      <span class="arr rise" style="--i:5">→</span>
-      <div class="panel goal rise" style="--i:6"><h4>Artefact site</h4><p>Up to 6 m from the citadel wall</p></div>
-    </div>
+    <figure class="panel qb-xsec rise" style="--i:3">
+      <svg viewBox="0 0 1180 360" role="img" aria-label="Cross-section from Qaitbay Citadel, past the paved strip and wave barrier, to the artefacts on the seabed">
+        <defs>
+          <linearGradient id="qxSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d4f7c" stop-opacity=".35"/><stop offset="1" stop-color="#2de2e6" stop-opacity=".08"/></linearGradient>
+          <linearGradient id="qxSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1590b8"/><stop offset="1" stop-color="#063a5e"/></linearGradient>
+          <linearGradient id="qxLand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9b27a"/><stop offset="1" stop-color="#7a6640"/></linearGradient>
+          <linearGradient id="qxStone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8dcc0"/><stop offset="1" stop-color="#b9a77f"/></linearGradient>
+          <clipPath id="qxWater"><rect x="330" y="150" width="850" height="210"/></clipPath>
+          <marker id="qxTick" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8"><path d="M5 0V10" stroke="#ffd27a" stroke-width="2"/></marker>
+        </defs>
+        <rect width="1180" height="150" fill="url(#qxSky)"/>
+        <!-- sea + seabed -->
+        <rect x="330" y="150" width="850" height="210" fill="url(#qxSea)"/>
+        <g clip-path="url(#qxWater)">
+          <g class="qx-rays" fill="#bff6ff"><path d="M520 150l40 0-90 210-40 0z"/><path d="M760 150l30 0-70 210-30 0z"/><path d="M980 150l40 0-80 210-40 0z"/></g>
+          <g class="qx-flow" fill="none" stroke="#bff6ff" stroke-width="2" stroke-linecap="round">
+            <path d="M420 200 Q600 186 780 200 T1140 200"/><path d="M460 240 Q640 228 820 240 T1160 240"/><path d="M400 272 Q560 262 720 272 T1040 272" />
+          </g>
+          <g class="qx-fish"><path d="M0 0q16-10 30 0q-14 10-30 0zm30 0l9-7v14z" fill="#ffd27a"/><circle cx="7" cy="-2" r="1.6" fill="#063a5e"/></g>
+          <g class="qx-fish f2"><path d="M0 0q12-8 22 0q-10 8-22 0zm22 0l7-5v10z" fill="#8cf8f5"/><circle cx="5" cy="-1.5" r="1.3" fill="#063a5e"/></g>
+          <g class="qx-bubbles" fill="#d8fbff" fill-opacity=".7"><circle cx="560" cy="300" r="3"/><circle cx="640" cy="310" r="2"/><circle cx="730" cy="296" r="2.5"/><circle cx="900" cy="305" r="3"/></g>
+        </g>
+        <path d="M330 300 Q420 292 520 302 T720 300 T940 304 T1180 298 V360 H330Z" fill="#c9a96b"/>
+        <!-- moving surface -->
+        <g clip-path="url(#qxWater)"><path class="qx-wave" d="M330 152 q30 -10 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 v8 h-1020z" fill="#7fe3f2" fill-opacity=".55"/></g>
+        <!-- land under citadel and quay -->
+        <rect x="0" y="150" width="330" height="210" fill="url(#qxLand)"/>
+        <g fill="#000" fill-opacity=".12"><rect x="0" y="210" width="330" height="3"/><rect x="0" y="270" width="330" height="3"/><rect x="0" y="320" width="330" height="3"/></g>
+        <!-- citadel tower -->
+        <rect x="50" y="70" width="130" height="80" fill="url(#qxStone)"/>
+        <g fill="url(#qxStone)"><rect x="50" y="58" width="16" height="14"/><rect x="78" y="58" width="16" height="14"/><rect x="106" y="58" width="16" height="14"/><rect x="134" y="58" width="16" height="14"/><rect x="164" y="58" width="16" height="14"/></g>
+        <path d="M100 150v-30a15 15 0 0 1 30 0v30z" fill="#5b4a2a"/>
+        <rect x="68" y="88" width="12" height="18" rx="6" fill="#5b4a2a"/><rect x="150" y="88" width="12" height="18" rx="6" fill="#5b4a2a"/>
+        <line x1="115" y1="58" x2="115" y2="20" stroke="#e8dcc0" stroke-width="3"/>
+        <path class="qx-flag" d="M117 22h34l-8 9 8 9h-34z" fill="#ff7a5c"/>
+        <!-- citadel wall -->
+        <rect x="195" y="100" width="22" height="50" fill="url(#qxStone)"/>
+        <g fill="url(#qxStone)"><rect x="195" y="92" width="8" height="9"/><rect x="209" y="92" width="8" height="9"/></g>
+        <!-- paved strip -->
+        <rect x="217" y="140" width="113" height="10" fill="#e8dcc0"/>
+        <g stroke="#b9a77f" stroke-width="1.5"><line x1="245" y1="140" x2="245" y2="150"/><line x1="273" y1="140" x2="273" y2="150"/><line x1="301" y1="140" x2="301" y2="150"/></g>
+        <!-- wave barrier (rock armour) -->
+        <g fill="#8d98a4" stroke="#5e6872" stroke-width="1.5">
+          <circle cx="345" cy="140" r="14"/><circle cx="370" cy="138" r="13"/><circle cx="356" cy="166" r="15"/><circle cx="380" cy="164" r="12"/>
+          <circle cx="345" cy="196" r="15"/><circle cx="372" cy="194" r="14"/><circle cx="358" cy="226" r="16"/><circle cx="384" cy="224" r="12"/>
+          <circle cx="344" cy="256" r="15"/><circle cx="372" cy="256" r="15"/><circle cx="358" cy="286" r="16"/><circle cx="386" cy="284" r="12"/>
+        </g>
+        <g class="qx-splash" fill="#d8fbff"><circle cx="392" cy="140" r="4"/><circle cx="402" cy="132" r="3"/><circle cx="398" cy="124" r="2.5"/></g>
+        <!-- possible artefacts under the barrier -->
+        <g class="qx-maybe"><rect x="340" y="300" width="40" height="22" rx="3" fill="none" stroke="#ffd27a" stroke-width="2" stroke-dasharray="5 4"/><text x="360" y="316" text-anchor="middle" font-size="15" font-weight="800" fill="#ffd27a">?</text></g>
+        <!-- artefacts on the seabed -->
+        <g class="qx-art" fill="#d9cba6" stroke="#ffd27a" stroke-width="1.5">
+          <rect x="430" y="270" width="64" height="34" rx="3"/>
+          <rect x="508" y="282" width="46" height="24" rx="3" transform="rotate(-8 531 294)"/>
+          <rect x="576" y="286" width="118" height="18" rx="9"/>
+          <circle cx="585" cy="295" r="11"/>
+          <rect x="712" y="262" width="52" height="42" rx="3"/>
+          <rect x="784" y="282" width="40" height="22" rx="3" transform="rotate(10 804 293)"/>
+        </g>
+        <!-- zone labels -->
+        <g class="qx-lbl" font-size="13" font-weight="700">
+          <rect x="12" y="4" width="166" height="30" rx="15"/><text x="95" y="24" text-anchor="middle">🏰 Citadel · tower + wall</text>
+          <rect x="186" y="4" width="150" height="30" rx="15"/><text x="261" y="24" text-anchor="middle">🛤️ Paved strip ≈ 4 m</text>
+          <rect x="338" y="40" width="156" height="30" rx="15"/><text x="416" y="60" text-anchor="middle">🪨 Wave barrier · 2 m</text>
+          <rect x="560" y="80" width="230" height="30" rx="15" class="gold"/><text x="675" y="100" text-anchor="middle" class="gold">🏺 Artefact site · 5 – 8 m deep</text>
+        </g>
+        <g stroke="#a9d8e4" stroke-width="1.2" stroke-dasharray="3 3" fill="none">
+          <path d="M100 34V56"/><path d="M260 34V138"/><path d="M380 70V124"/><path d="M675 110V262"/>
+        </g>
+        <!-- study-area bracket -->
+        <line class="qx-span" x1="217" y1="334" x2="830" y2="334" stroke="#ffd27a" stroke-width="2.5" stroke-dasharray="10 6" marker-start="url(#qxTick)" marker-end="url(#qxTick)"/>
+        <text x="524" y="354" text-anchor="middle" font-size="14" font-weight="800" fill="#3d2a08">Study area: from the citadel wall, up to 6 m out</text>
+        <text x="1170" y="352" text-anchor="end" font-size="11" fill="#5b4a2a">schematic · not to scale</text>
+      </svg>
+    </figure>
 
     <div class="qb-two">
-      <div class="panel listcard rise" style="--i:7">
-        <h4>The breakwater</h4>
+      <div class="panel listcard qb-ic rise" style="--i:4">
+        <h4><span class="qb-h-ico">🛡️</span>The breakwater</h4>
         <ul>
-          <li>Built about 3 – 4 years ago to protect the citadel and the artefact site.</li>
-          <li>A relatively large wave breaker that reaches the seabed, north-west of the citadel.</li>
-          <li>Far from the artefacts, with none beneath it, so activity on it (boat moorings and cafés built during construction) does not affect them.</li>
+          <li><span class="li-ico">🏗️</span>Built about 3 – 4 years ago to protect the citadel and the artefact site.</li>
+          <li><span class="li-ico">🌊</span>A relatively large wave breaker that reaches the seabed, north-west of the citadel.</li>
+          <li><span class="li-ico">⛵</span>Far from the artefacts, with none beneath it, so activity on it (boat moorings and cafés built during construction) does not affect them.</li>
         </ul>
       </div>
-      <div class="panel listcard alex rise" style="--i:8">
-        <h4>How water enters and leaves</h4>
+      <div class="panel listcard alex qb-ic rise" style="--i:5">
+        <h4><span class="qb-h-ico">🔄</span>How water enters and leaves</h4>
         <ul>
-          <li>One opening at the far north-west end of the citadel. It is far away and does not open directly onto the artefact area.</li>
-          <li>A natural opening at the far south-east end of the citadel, where the water flows out.</li>
+          <li><span class="li-ico flow-in">➜</span>One opening at the far north-west end of the citadel. It is far away and does not open directly onto the artefact area.</li>
+          <li><span class="li-ico flow-out">➜</span>A natural opening at the far south-east end of the citadel, where the water flows out.</li>
         </ul>
       </div>
     </div>
