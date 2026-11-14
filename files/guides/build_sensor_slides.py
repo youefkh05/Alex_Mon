@@ -78,7 +78,7 @@ SENSORS = [
          fit=("In range", "ok"), team=("Suitable", "yes"),
          links=[("Product page", "https://wizsensor.com/pro/ws-om-mul-17a-ctd-sensor/")]),
     dict(group="Salinity & conductivity", brand="Dragino", model="DR-EC200", sub="4-electrode conductivity probe for seawater",
-         tags=["Salinity", "4 electrodes"], img="dr-ec200-drawing.png", img_class="drawing",
+         tags=["Salinity", "4 electrodes"], img="dr-ec200.webp",
          desc="A digital four-electrode probe for high-conductivity water such as seawater. It measures conductivity, salinity and temperature and sends them over RS-485.",
          tiles=[("1 – 200,000 µS/cm", "Conductivity (±1 % FS)"), ("0 – 70 PSU", "Salinity (0.1 resolution)"), ("±0.5 °C", "Temperature (−5 to 80 °C)"),
                 ("RS-485", "Modbus-RTU · 9600"), ("7 – 30 V", "Supply (< 0.5 W)"), ("0.6 MPa", "Pressure · IP68 (not connector)")],
