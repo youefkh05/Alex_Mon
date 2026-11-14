@@ -329,7 +329,16 @@ h1 .dash{display:inline-block;color:#2de2e6;-webkit-text-fill-color:#2de2e6;marg
 .qp-sway{transform-box:fill-box;transform-origin:50% 100%;animation:qpSway 3s ease-in-out infinite alternate}
 .qp-sway.w2{animation-delay:-1s}.qp-sway.w3{animation-delay:-2s}
 @keyframes qpSway{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
-@media (prefers-reduced-motion:reduce){.qb-xsec *,.qb-ic *,.qo-track *,.qp-grid *{animation:none!important}}
+/* animated chip icons */
+.qo-chipico{width:18px;height:18px;vertical-align:-4px;margin-right:.45em;overflow:visible}
+.qo-ring{transform-box:fill-box;transform-origin:0 50%;animation:qoRing 1.6s ease-out infinite}
+.qo-ring.r2{animation-delay:.5s}
+@keyframes qoRing{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.qo-cal{animation:qoCal 3.2s steps(1) infinite}
+.qo-cal.c2{animation-delay:-.8s}.qo-cal.c3{animation-delay:-1.6s}.qo-cal.c4{animation-delay:-2.4s}
+@keyframes qoCal{0%{fill:#ffd27a}25%,100%{fill:rgba(169,216,228,.35)}}
+.qp-temple{animation:qpTemple 1.4s ease-in-out infinite alternate}
+@keyframes qpTemple{from{filter:drop-shadow(0 0 0 rgba(255,122,92,0))}to{filter:drop-shadow(0 0 5px rgba(255,122,92,.9))}}
 .qb-num{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-top:1.2rem}
 .qb-num .panel{padding:1rem .95rem;position:relative}
 .qb-num .k{font-family:Georgia,serif;font-size:1.9rem;font-weight:700;color:var(--gold);line-height:1}
@@ -2203,9 +2212,9 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
     </div>
 
     <div class="chiprow rise" style="--i:8">
-      <span class="pill"><i>📊</i>Expected: first baseline data</span>
-      <span class="pill"><i>🗓️</i>Seasonal comparison</span>
-      <span class="pill"><i>📣</i>Patterns of recurring events, reported to the authorities</span>
+      <span class="pill"><svg class="qo-chipico" viewBox="0 0 20 20" aria-hidden="true"><g fill="#ffd27a"><rect class="qo-bar" x="2" y="8" width="4" height="10" rx="1"/><rect class="qo-bar b2" x="8" y="4" width="4" height="14" rx="1"/><rect class="qo-bar b3" x="14" y="10" width="4" height="8" rx="1"/></g></svg>Expected: first baseline data</span>
+      <span class="pill"><svg class="qo-chipico" viewBox="0 0 20 20" aria-hidden="true"><rect x="1.5" y="3" width="17" height="15" rx="2" fill="none" stroke="#a9d8e4" stroke-width="1.5"/><path d="M1.5 7h17" stroke="#a9d8e4" stroke-width="1.5"/><rect class="qo-cal" x="4" y="9.5" width="5" height="3" rx="1"/><rect class="qo-cal c2" x="11" y="9.5" width="5" height="3" rx="1"/><rect class="qo-cal c3" x="11" y="14" width="5" height="3" rx="1"/><rect class="qo-cal c4" x="4" y="14" width="5" height="3" rx="1"/></svg>Seasonal comparison</span>
+      <span class="pill"><svg class="qo-chipico" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 8h3l6-4v12l-6-4H2z" fill="#ffd27a"/><path class="qo-ring" d="M13 6q3 4 0 8" fill="none" stroke="#2de2e6" stroke-width="1.6" stroke-linecap="round"/><path class="qo-ring r2" d="M15 4q5 6 0 12" fill="none" stroke="#2de2e6" stroke-width="1.6" stroke-linecap="round"/></svg>Patterns of recurring events, reported to the authorities</span>
     </div>
   </div>
 </section>
@@ -2268,7 +2277,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
         <svg class="dviz" viewBox="0 0 120 80" aria-hidden="true">
           <rect x="2" y="30" width="26" height="14" rx="3" fill="#5f7f95"/><rect x="24" y="27" width="6" height="20" rx="2" fill="#7f93ad"/>
           <g fill="#8a6a3a"><circle class="qp-plume" cx="36" cy="37" r="5"/><circle class="qp-plume p2" cx="36" cy="37" r="6"/><circle class="qp-plume p3" cx="36" cy="37" r="4"/></g>
-          <text x="104" y="40" text-anchor="middle" font-size="16">🏛️</text>
+          <g class="qp-temple" fill="#d9cba6"><path d="M92 30l12-7 12 7z"/><rect x="93" y="31" width="22" height="2.5"/><rect x="95" y="34" width="3" height="10"/><rect x="102.5" y="34" width="3" height="10"/><rect x="110" y="34" width="3" height="10"/><rect x="92" y="44" width="24" height="3"/></g>
           <text x="60" y="76" text-anchor="middle" font-size="8" fill="#a9d8e4" letter-spacing="1">EL-WARDIAN · 5–6 KM</text>
         </svg>
         <h3>Sewage</h3>
