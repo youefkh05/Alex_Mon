@@ -210,6 +210,48 @@ h1 .dash{display:inline-block;color:#2de2e6;-webkit-text-fill-color:#2de2e6;marg
 .threat p{font-size:.93rem;line-height:1.5;color:var(--muted)}
 .threat p b{color:var(--ink)}
 .threat em{font-style:normal;color:var(--aqua);font-weight:700}
+/* Qaitbay project slides */
+.qb-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin:1.1rem 0 .9rem}
+.qb-stats .stat .n{font-size:1.9rem}
+.qb-about{display:grid;grid-template-columns:1.15fr 1fr;gap:1rem;align-items:stretch}
+.qb-about .panel{padding:1rem 1.2rem}
+.qb-about h4{font-family:Georgia,serif;font-size:1.05rem;margin-bottom:.45rem;color:var(--gold)}
+.qb-about p{font-size:.88rem;line-height:1.55;color:var(--muted);text-shadow:0 1px 8px rgba(0,25,50,.8)}
+.qb-about p b{color:var(--ink)}
+.qb-site{display:grid;grid-template-columns:1.45fr 1fr;gap:1rem;margin-top:1rem;align-items:start}
+.qb-map{position:relative;margin:0;padding:.45rem;border-radius:18px}
+.qb-map .pic{position:relative}
+.qb-map img{display:block;width:100%;border-radius:12px}
+.qb-lbl{position:absolute;transform:translate(-50%,-50%);font-size:.68rem;font-weight:700;padding:.28em .7em;border-radius:999px;
+  background:rgba(3,31,58,.82);border:1px solid var(--line2);color:var(--ink);white-space:nowrap;pointer-events:none}
+.qb-lbl.gold{border-color:var(--gold);color:var(--gold)}
+.qb-map figcaption{font-size:.72rem;color:var(--faint);padding:.45rem .3rem .1rem;line-height:1.4}
+.qb-facts{padding:.4rem .9rem}
+.qb-facts div{display:grid;grid-template-columns:5.6rem 1fr;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--line);font-size:.8rem;line-height:1.4}
+.qb-facts div:last-child{border-bottom:0}
+.qb-facts b{color:var(--aqua);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
+.qb-facts span{color:var(--muted)}
+.qb-chain{display:flex;align-items:stretch;gap:.5rem;margin:1.2rem 0 1rem}
+.qb-chain .panel{flex:1;padding:.9rem 1rem;text-align:center}
+.qb-chain .panel h4{font-family:Georgia,serif;font-size:1.02rem;margin-bottom:.25rem}
+.qb-chain .panel p{font-size:.78rem;color:var(--muted);line-height:1.4}
+.qb-chain .panel.goal{border-color:var(--gold);background:rgba(255,210,122,.12)}
+.qb-chain .panel.goal h4{color:var(--gold)}
+.qb-chain .arr{align-self:center;color:var(--gold);font-size:1.4rem;flex:none}
+.qb-two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.qb-two .listcard + .listcard{margin-top:0}
+.qb-num{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-top:1.2rem}
+.qb-num .panel{padding:1rem .95rem;position:relative}
+.qb-num .k{font-family:Georgia,serif;font-size:1.9rem;font-weight:700;color:var(--gold);line-height:1}
+.qb-num h4{font-size:.95rem;margin:.45rem 0 .35rem}
+.qb-num p{font-size:.78rem;color:var(--muted);line-height:1.45}
+.qb-probs{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-top:1.1rem}
+.qb-probs .panel{padding:.95rem 1.05rem}
+.qb-probs .ico{font-size:1.6rem}
+.qb-probs h4{font-family:Georgia,serif;font-size:1.02rem;margin:.3rem 0 .3rem;color:var(--coral)}
+.qb-probs p{font-size:.8rem;color:var(--muted);line-height:1.45;text-shadow:0 1px 8px rgba(0,25,50,.8)}
+@media (max-width:900px){.qb-stats,.qb-probs{grid-template-columns:repeat(2,1fr)}.qb-num{grid-template-columns:repeat(2,1fr)}
+  .qb-site,.qb-about,.qb-two{grid-template-columns:1fr}.qb-chain{flex-direction:column}.qb-chain .arr{transform:rotate(90deg)}}
 
 /* ================= SLIDES 5-8 · SMART BUOY REFERENCE ================= */
 
@@ -1574,6 +1616,97 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
   </div>
 </section>
 
+<!-- ===================== 3a · QAITBAY: ABOUT THE PROJECT ===================== -->
+<section class="slide" data-hook="stats">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Our site · Qaitbay Citadel</span>
+    <h2 class="rise" style="--i:1">About the <span class="hl">project</span></h2>
+    <p class="sub rise" style="--i:2">We are building a device that measures the key water properties at the sunken antiquities site next to Qaitbay Citadel, to help preserve the artefacts that lie under the water.</p>
+
+    <div class="qb-stats">
+      <div class="panel stat rise" style="--i:3"><div class="ic">🧱</div><div><div class="n"><span class="count" data-to="4200">0</span></div><div class="l">archaeological pieces on the site</div></div></div>
+      <div class="panel stat rise" style="--i:4"><div class="ic">🗺️</div><div><div class="n"><span class="count" data-to="13000">0</span> m²</div><div class="l">total area of the site</div></div></div>
+      <div class="panel stat rise" style="--i:5"><div class="ic">📐</div><div><div class="n"><span class="count" data-to="7000">0</span> m²</div><div class="l">effective area, without the gaps</div></div></div>
+      <div class="panel stat rise" style="--i:6"><div class="ic">🌊</div><div><div class="n">5 – 8 m</div><div class="l">maximum depth</div></div></div>
+      <div class="panel stat rise" style="--i:7"><div class="ic">↔️</div><div><div class="n">6 m</div><div class="l">furthest distance from the citadel wall to the artefacts</div></div></div>
+      <div class="panel stat rise" style="--i:8"><div class="ic">💰</div><div><div class="n"><span class="count" data-to="130000">0</span></div><div class="l">EGP total project budget</div></div></div>
+    </div>
+
+    <div class="qb-about">
+      <div class="panel rise" style="--i:9"><h4>Preserve in place</h4><p>Following the <b>2001 UNESCO Convention</b> on the Protection of the Underwater Cultural Heritage, we aim to leave the artefacts where they are, while letting Egyptian and foreign visitors dive down to see them. A diving centre already organises visits to the site.</p></div>
+      <div class="panel rise" style="--i:10"><h4>Timeline</h4><p><b>6 months</b>, starting 1 October. A first <b>prototype within 3 months</b>, which can be tested in a swimming pool as part of the project.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3b · QAITBAY: SITE DESCRIPTION ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Our site · Location</span>
+    <h2 class="rise" style="--i:1">Site <span class="hl">description</span></h2>
+    <p class="sub rise" style="--i:2">The site lies north-east of Qaitbay Citadel, right next to the citadel quay.</p>
+
+    <div class="qb-site">
+      <figure class="panel qb-map rise" style="--i:3">
+        <div class="pic">
+          <img src="files/guides/img/qaitbay-site.jpg" alt="Google Earth view of Qaitbay Citadel with the artefact area outlined in yellow" onerror="missingAsset(this,'files/guides/img/qaitbay-site.jpg')">
+          <span class="qb-lbl gold" style="left:48%;top:40%">Artefact area (approx.)</span>
+          <span class="qb-lbl" style="left:35%;top:62%">Qaitbay Citadel</span>
+          <span class="qb-lbl" style="left:36%;top:9%">Breakwater</span>
+          <span class="qb-lbl" style="left:15%;top:54%">Bridge with two openings</span>
+        </div>
+        <figcaption>Google Earth: the yellow box is roughly where the artefacts lie. The narrow road beside the left yellow line is the bridge with the two openings.</figcaption>
+      </figure>
+      <div class="panel qb-facts rise" style="--i:4">
+        <div><b>Pieces</b><span>4,200 archaeological pieces</span></div>
+        <div><b>Area</b><span>13,000 m² in total, about 7,000 m² without the gaps</span></div>
+        <div><b>Depth</b><span>5 to 8 m at most</span></div>
+        <div><b>Pieces are</b><span>Large blocks of different stones; none weighs less than half a ton</span></div>
+        <div><b>Origin</b><span>Remains of the ancient Pharos lighthouse, plus two other groups linked to the same place</span></div>
+        <div><b>Theft</b><span>No risk: the blocks are very large and the site is next to the border guard</span></div>
+        <div><b>Fish</b><span>Do not affect the artefacts, because they are igneous stone</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3c · QAITBAY: AREA COMPONENTS ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Our site · Layout</span>
+    <h2 class="rise" style="--i:1">From the citadel <span class="hl">to the site</span></h2>
+    <p class="sub rise" style="--i:2">We believe there may be artefacts under the wave barrier, so the study area starts at the citadel wall and reaches up to 6 m out.</p>
+
+    <div class="qb-chain">
+      <div class="panel rise" style="--i:3"><h4>The citadel</h4><p>Main tower, surrounded by a wall</p></div>
+      <span class="arr rise" style="--i:3">→</span>
+      <div class="panel rise" style="--i:4"><h4>Paved strip</h4><p>About 4 m outside the wall</p></div>
+      <span class="arr rise" style="--i:4">→</span>
+      <div class="panel rise" style="--i:5"><h4>Wave barrier</h4><p>2 m wide</p></div>
+      <span class="arr rise" style="--i:5">→</span>
+      <div class="panel goal rise" style="--i:6"><h4>Artefact site</h4><p>Up to 6 m from the citadel wall</p></div>
+    </div>
+
+    <div class="qb-two">
+      <div class="panel listcard rise" style="--i:7">
+        <h4>The breakwater</h4>
+        <ul>
+          <li>Built about 3 – 4 years ago to protect the citadel and the artefact site.</li>
+          <li>A relatively large wave breaker that reaches the seabed, north-west of the citadel.</li>
+          <li>Far from the artefacts, with none beneath it, so activity on it (boat moorings and cafés built during construction) does not affect them.</li>
+        </ul>
+      </div>
+      <div class="panel listcard alex rise" style="--i:8">
+        <h4>How water enters and leaves</h4>
+        <ul>
+          <li>One opening at the far north-west end of the citadel. It is far away and does not open directly onto the artefact area.</li>
+          <li>A natural opening at the far south-east end of the citadel, where the water flows out.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===================== 4 · IMPORTANCE ===================== -->
 <section class="slide">
   <div class="slide-inner">
@@ -1855,6 +1988,47 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 </section>
 
 
+
+<!-- ===================== 9a · QAITBAY: PROJECT OBJECTIVES ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Qaitbay project · Goals</span>
+    <h2 class="rise" style="--i:1">Project <span class="hl">objectives</span></h2>
+    <p class="sub rise" style="--i:2">What the measurements at Qaitbay should deliver.</p>
+
+    <div class="qb-num">
+      <div class="panel rise" style="--i:3"><div class="k">1</div><h4>Baseline data</h4><p>Provide the first data about the site, and make it possible to compare the seasons.</p></div>
+      <div class="panel rise" style="--i:4"><div class="k">2</div><h4>Current speed &amp; direction</h4><p>Measure the currents after the breakwater was built and their effect on the artefacts: strong currents can scour them.</p></div>
+      <div class="panel rise" style="--i:5"><div class="k">3</div><h4>Sedimentation</h4><p>Measure how much sediment settles on the site.</p></div>
+      <div class="panel rise" style="--i:6"><div class="k">4</div><h4>Event patterns</h4><p>Find patterns in events that happen at certain times, such as sewage arriving, and report their effect on the artefacts to the authorities.</p></div>
+      <div class="panel rise" style="--i:7"><div class="k">5</div><h4>Reduce the currents</h4><p>Use the results later to find a way to weaken the currents.</p></div>
+    </div>
+
+    <div class="chiprow rise" style="--i:8">
+      <span class="pill"><i>●</i>Expected: first baseline data</span>
+      <span class="pill"><i>●</i>Seasonal comparison</span>
+      <span class="pill"><i>●</i>Patterns of recurring events, reported to the authorities</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 9b · QAITBAY: CURRENT PROBLEMS ===================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <span class="kicker rise" style="--i:0">Qaitbay project · Problems</span>
+    <h2 class="rise" style="--i:1">Current <span class="hl">problems</span></h2>
+    <p class="sub rise" style="--i:2">After the breakwater was built, the waves dropped, the current changed direction and the area became partly enclosed.</p>
+
+    <div class="qb-probs">
+      <div class="panel rise" style="--i:3"><span class="ico">⏬</span><h4>More sedimentation</h4><p>Weaker waves and a new current direction have increased sedimentation on the site.</p></div>
+      <div class="panel rise" style="--i:4"><span class="ico">🔀</span><h4>Changed currents</h4><p>The current direction changed after the breakwater; if the currents are strong they can scour the artefacts.</p></div>
+      <div class="panel rise" style="--i:5"><span class="ico">🔁</span><h4>Current reversal</h4><p>Egypt's prevailing wind blows from the north-west, from the breakwater side. On the few days with easterly wind from the opening side, the current reverses.</p></div>
+      <div class="panel rise" style="--i:6"><span class="ico">🛥️</span><h4>More pollution</h4><p>When the area was open, the waves carried waste away. Tourist boats on the site also leave waste behind.</p></div>
+      <div class="panel rise" style="--i:7"><span class="ico">🚱</span><h4>Sewage</h4><p>Sewers are sometimes opened far away, with the outlet in El-Wardian 5 – 6 km off, but the sea sometimes carries the pollution to the site.</p></div>
+      <div class="panel rise" style="--i:8"><span class="ico">🌿</span><h4>Stagnant water</h4><p>The water now stays still for long periods and flows less, which can cause pollution and more plant and algae growth than normal.</p></div>
+    </div>
+  </div>
+</section>
 
 <!-- ===================== 10 · DATA WE NEED ===================== -->
 <section class="slide">
