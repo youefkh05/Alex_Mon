@@ -1486,6 +1486,7 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
 .sum-name a b{color:var(--aqua)}
 .sum-name a:hover b{text-decoration:underline}
 .sum-range{font-variant-numeric:tabular-nums;white-space:nowrap}
+.sum-alex{font-variant-numeric:tabular-nums;white-space:nowrap;color:#7af0c0}.sum-alex small{color:var(--muted)}
 .sum-price b{color:var(--gold);font-size:1rem}
 .sum-price.unk b{color:var(--muted)}
 .sum-table tbody tr{transition:background .2s}
@@ -2411,42 +2412,48 @@ h2.rise.revealed{clip-path:inset(-20% -5% -20% 0)}
     <p class="sum-note rise" style="--i:2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 23 21.5H1z" fill="#d7261e" stroke="#8f120c" stroke-width="1" stroke-linejoin="round"/><rect x="11" y="9" width="2" height="7" rx="1" fill="#fff"/><circle cx="12" cy="18.4" r="1.2" fill="#fff"/></svg><span>Prices are supplier prices. Expect the final cost to be about <b>1.3 – 1.5 ×</b> higher after customs and shipping.</span></p>
     <div class="sum-wrap panel rise" style="--i:2">
       <table class="sum-table">
-        <thead><tr><th>Picture</th><th>Sensor</th><th>Range</th><th>Price (USD)</th></tr></thead>
+        <thead><tr><th>Picture</th><th>Sensor</th><th>Sensor range</th><th>Alex recommended range</th><th>Price (USD)</th></tr></thead>
         <tbody>
         <tr class="rise" style="--i:3">
           <td class="sum-pic"><a href="https://sensorsx.com/products/sx-ccfna-series" target="_blank" rel="noopener"><img src="files/guides/img/sx-ccfna.webp" alt="SX-CCFNA"></a></td>
           <td class="sum-name"><a href="https://sensorsx.com/products/sx-ccfna-series" target="_blank" rel="noopener"><b>SX-CCFNA</b> ↗</a><small>SensorsX · Salinity · conductivity</small></td>
           <td class="sum-range">0.001 – 100 mS/cm<br><small>0 – 80 ppt salinity</small></td>
+          <td class="sum-alex">30 – 63 mS/cm<small>measured 34.8 – 40.5 PSU</small></td>
           <td class="sum-price"><b>$473</b><small>sensorsx.com</small></td>
         </tr>
         <tr class="rise" style="--i:4">
           <td class="sum-pic"><a href="https://www.antratek.com/dr-ec200-water-ec-sensor-for-wqs" target="_blank" rel="noopener"><img src="files/guides/img/dr-ec200.webp" alt="DR-EC200"></a></td>
           <td class="sum-name"><a href="https://www.antratek.com/dr-ec200-water-ec-sensor-for-wqs" target="_blank" rel="noopener"><b>DR-EC200</b> ↗</a><small>Dragino · Salinity · conductivity</small></td>
           <td class="sum-range">1 – 200,000 µS/cm<br><small>0 – 70 PSU salinity</small></td>
+          <td class="sum-alex">30 – 63 mS/cm<small>measured 34.8 – 40.5 PSU</small></td>
           <td class="sum-price"><b>≈ $375</b><small>€325.61 at Antratek</small></td>
         </tr>
         <tr class="rise" style="--i:5">
           <td class="sum-pic"><a href="https://www.nortekgroup.com/products/signature-500" target="_blank" rel="noopener"><img src="files/guides/img/signature500.png" alt="Signature 500"></a></td>
           <td class="sum-name"><a href="https://www.nortekgroup.com/products/signature-500" target="_blank" rel="noopener"><b>Signature 500</b> ↗</a><small>Nortek · Water current</small></td>
           <td class="sum-range">1 – 5 m/s<br><small>user-selectable</small></td>
+          <td class="sum-alex">0 – 1 m/s<small>measured max 0.7 m/s</small></td>
           <td class="sum-price"><b>~ $5,000</b><small>average · quote on request</small></td>
         </tr>
         <tr class="rise" style="--i:6">
           <td class="sum-pic"><a href="https://hackaday.io/project/158083-cheap-underwater-tilt-current-sensor" target="_blank" rel="noopener"><svg viewBox="0 0 80 64" aria-hidden="true"><rect x="0" y="0" width="80" height="64" fill="#e6f6fb"/><path d="M6 20h22l-4-3M6 30h22l-4-3" stroke="#0b6b7a" stroke-width="2.4" fill="none" stroke-linecap="round"/><rect x="30" y="54" width="22" height="6" rx="2" fill="#8e99a3"/><line x1="41" y1="54" x2="58" y2="22" stroke="#46586a" stroke-width="2.4"/><g transform="rotate(28 60 18)"><rect x="54" y="6" width="12" height="24" rx="6" fill="#0b2a4a"/><rect x="56.5" y="13" width="7" height="9" rx="1.5" fill="#14b8a6"/></g><path d="M41 40 A14 14 0 0 1 48 42" stroke="#c0392b" stroke-width="1.8" fill="none"/></svg></a></td>
           <td class="sum-name"><a href="https://hackaday.io/project/158083-cheap-underwater-tilt-current-sensor" target="_blank" rel="noopener"><b>Tilt Current Meter</b> ↗</a><small>DIY build · Water current</small></td>
           <td class="sum-range">Unknown<br><small>target 0 – 1 m/s</small></td>
+          <td class="sum-alex">0 – 1 m/s<small>measured max 0.7 m/s</small></td>
           <td class="sum-price"><b>≈ $200</b><small>parts estimate</small></td>
         </tr>
         <tr class="rise" style="--i:7">
           <td class="sum-pic"><a href="https://wiki.dfrobot.com/sen0710/" target="_blank" rel="noopener"><img src="files/guides/img/sen0710.webp" alt="SEN0710"></a></td>
           <td class="sum-name"><a href="https://wiki.dfrobot.com/sen0710/" target="_blank" rel="noopener"><b>SEN0710</b> ↗</a><small>DFRobot · Turbidity · sedimentation</small></td>
           <td class="sum-range">0 – 1000 NTU</td>
+          <td class="sum-alex">0 – 1000 NTU<small>no NTU data · Secchi 0.3 – 4 m</small></td>
           <td class="sum-price"><b>$229</b><small>dfrobot.com</small></td>
         </tr>
         <tr class="rise" style="--i:8">
           <td class="sum-pic"><a href="https://wiki.dfrobot.com/SEN0681" target="_blank" rel="noopener"><img src="files/guides/img/sen0681.webp" alt="SEN0681"></a></td>
           <td class="sum-name"><a href="https://wiki.dfrobot.com/SEN0681" target="_blank" rel="noopener"><b>SEN0681</b> ↗</a><small>DFRobot · Dissolved oxygen · pollution</small></td>
           <td class="sum-range">0 – 20 mg/L</td>
+          <td class="sum-alex">0 – 20 mg/L<small>measured ≈ 0.14 – 15 mg/L</small></td>
           <td class="sum-price"><b>$209</b><small>dfrobot.com</small></td>
         </tr>
         </tbody>
