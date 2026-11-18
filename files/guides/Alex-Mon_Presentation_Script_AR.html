@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>سكريبت عرض Alex-Mon</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0b2a4a;--aqua:#0fa3b1;--aqua2:#e3f6f8;--gold:#f2b632;--gold2:#fff6dc;--coral:#e4572e;--green:#2bb673;--ink:#1d2b3a;--muted:#5c6b7a;--line:#d8e3ea}
+@page{size:A4;margin:14mm 13mm 16mm}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Cairo",sans-serif;color:var(--ink);font-size:11.3pt;line-height:1.75;background:#fff}
+.cover{height:265mm;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  background:linear-gradient(180deg,#0b2a4a 0%,#0c4a6e 55%,#0fa3b1 100%);color:#fff;border-radius:18px;position:relative;overflow:hidden;page-break-after:always}
+.cover svg.waves{position:absolute;bottom:0;left:0;width:100%;height:70mm}
+.cover .tag{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);padding:4px 16px;border-radius:999px;font-weight:700;font-size:10.5pt}
+.cover h1{font-size:40pt;margin:14px 0 0;line-height:1.2;font-weight:800}
+.cover h1 span{color:var(--gold)}
+.cover p{font-size:14pt;margin:8px 0 0;opacity:.92}
+.cover .meta{display:flex;gap:12px;margin-top:26px;position:relative;z-index:2}
+.cover .meta div{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:10px 18px;min-width:120px}
+.cover .meta b{display:block;font-size:20pt;color:var(--gold);line-height:1.2}
+.cover .meta span{font-size:10pt}
+h2.part{display:flex;align-items:center;gap:12px;margin:0 0 10px;font-size:17pt;color:var(--navy);break-after:avoid}
+h2.part .n{width:38px;height:38px;border-radius:50%;background:var(--aqua);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15pt;flex:none}
+h2.part small{margin-right:auto;background:var(--gold2);color:#8a5a00;border:1px solid #f0d38a;border-radius:999px;padding:1px 12px;font-size:10pt;font-weight:700}
+.idea{background:var(--aqua2);border-right:5px solid var(--aqua);border-radius:12px;padding:12px 16px;margin:0 0 14px}
+.idea b{color:var(--navy)}
+.timeline{display:flex;height:34px;border-radius:10px;overflow:hidden;margin:6px 0 4px;font-weight:700;font-size:10pt;color:#fff}
+.timeline div{display:flex;align-items:center;justify-content:center}
+.tl-legend{display:flex;justify-content:space-between;font-size:9.5pt;color:var(--muted);margin-bottom:16px}
+.card{border:1px solid var(--line);border-radius:14px;padding:10px 14px 10px;margin:0 0 10px;break-inside:avoid;background:#fff;box-shadow:0 2px 0 rgba(11,42,74,.04)}
+.card .hd{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.badge{background:var(--navy);color:#fff;border-radius:8px;padding:0 9px;font-weight:800;font-size:10pt;white-space:nowrap}
+.card .hd h3{margin:0;font-size:12.5pt;color:var(--navy)}
+.card .hd .tip{margin-right:auto;font-size:9pt;color:var(--muted);font-weight:600}
+.say{background:#f7fafc;border-radius:10px;padding:8px 12px 8px 36px;position:relative;margin:0}
+.say:before{content:"🎤";position:absolute;left:10px;top:6px;font-size:12pt;opacity:.8}
+.say p{margin:0 0 4px}.say p:last-child{margin:0}
+.say ul{margin:2px 0 0;padding:0 20px 0 0}.say li{margin:1px 0}
+.fast{border-style:dashed;background:#fbfdfe}
+.fast .badge{background:var(--muted)}
+.star{border:2px solid var(--gold);background:var(--gold2)}
+.star .badge{background:var(--coral)}
+.end{border:2px solid var(--aqua);background:var(--aqua2)}
+.page{page-break-before:always}
+.tips{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.tipc{border-radius:14px;padding:12px 14px;break-inside:avoid}
+.tipc h4{margin:0 0 4px;font-size:12pt}
+.tipc p{margin:0}
+.t1{background:#fde8e3;border:1px solid #f5b9a8}.t1 h4{color:var(--coral)}
+.t2{background:var(--gold2);border:1px solid #f0d38a}.t2 h4{color:#8a5a00}
+.t3{background:#e2f6ec;border:1px solid #a9e2c4}.t3 h4{color:#167a4a}
+.t4{background:var(--aqua2);border:1px solid #a8dde3}.t4 h4{color:#0b6b7a}
+.words{width:100%;border-collapse:collapse;margin-top:14px;font-size:10.5pt;break-inside:avoid}
+.words th{background:var(--navy);color:#fff;padding:6px 10px;text-align:right}
+.words td{border-bottom:1px solid var(--line);padding:5px 10px}
+.words td:first-child{color:var(--coral);font-weight:700;direction:ltr;text-align:right}
+.words td:last-child{color:#167a4a;font-weight:700}
+.check{list-style:none;padding:0;margin:8px 0 0}
+.check li{padding:4px 30px 4px 0;position:relative}
+.check li:before{content:"";position:absolute;right:0;top:9px;width:16px;height:16px;border:2px solid var(--aqua);border-radius:4px}
+.foot{margin-top:14px;text-align:center;color:var(--muted);font-size:9pt}
+.ltr{direction:ltr;unicode-bidi:embed}
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <span class="tag">دليل العرض · لنفسي</span>
+  <h1>سكريبت عرض<br><span>Alex-Mon</span></h1>
+  <p>إزاي أعرض الشرايح في ٥ دقايق، بالمصري، لناس الآثار</p>
+  <div class="meta">
+    <div><b>٥</b><span>دقايق</span></div>
+    <div><b>٢٦</b><span>شريحة</span></div>
+    <div><b>٤</b><span>أجزاء</span></div>
+  </div>
+  <svg class="waves" viewBox="0 0 800 200" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 80 Q100 50 200 80 T400 80 T600 80 T800 80 V200 H0z" fill="rgba(255,255,255,.10)"/>
+    <path d="M0 110 Q100 80 200 110 T400 110 T600 110 T800 110 V200 H0z" fill="rgba(255,255,255,.12)"/>
+    <path d="M0 150 Q120 120 240 150 T480 150 T720 150 T800 150 V200 H0z" fill="#e8d6a8" opacity=".55"/>
+    <g fill="#d9c58f" opacity=".9"><rect x="560" y="140" width="14" height="40"/><rect x="590" y="132" width="14" height="48"/><rect x="620" y="140" width="14" height="40"/><rect x="552" y="126" width="90" height="8"/></g>
+  </svg>
+</section>
+
+<h2 class="part"><span class="n">💡</span>الفكرة في جملة واحدة</h2>
+<div class="idea">إحنا مش جايين نشرح أجهزة. إحنا جايين نقول إن الآثار اللي تحت المية <b>محتاجة "ممرضة" تقيس حرارتها ونبضها طول الوقت</b>، وده الجهاز اللي بيعمل كده.<br>
+<b>القاعدة:</b> من غير أسماء موديلات ولا وحدات قياس. الشرايح التقنية عدّيها في ثواني.</div>
+
+<div class="timeline">
+  <div style="width:30%;background:#0b6b7a">١ · الآثار والموقع</div>
+  <div style="width:30%;background:#0fa3b1">٢ · المشكلة والحل</div>
+  <div style="width:20%;background:#f2b632;color:#3a2a00">٣ · الحساسات</div>
+  <div style="width:20%;background:#e4572e">٤ · الاتصال والختام</div>
+</div>
+<div class="tl-legend"><span>٠:٠٠</span><span>١:٣٠</span><span>٣:٠٠</span><span>٤:٠٠</span><span>٥:٠٠</span></div>
+
+<h2 class="part"><span class="n">١</span>الآثار والموقع<small>سلايد ١–٧ · دقيقة ونص</small></h2>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ١</span><h3>العنوان</h3></div>
+<div class="say"><p>"صباح الخير. أنا [الاسم] من فريق Alex-Mon. النهارده هكلمكم في خمس دقايق عن جهاز صغير هدفه يحمي آثار إسكندرية الغارقة."</p></div></div>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ٢</span><h3>الآثار الغارقة</h3></div>
+<div class="say"><p>"زي ما حضراتكم عارفين أكتر مني، الزلازل وارتفاع البحر غرّقوا أجزاء من إسكندرية القديمة وكانوب وهيراكليون. النهارده الآثار دي ممتدة حوالي ٣٠ كيلو على الساحل، من قايتباي لحد خليج أبو قير."</p></div></div>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ٣</span><h3>العمق</h3></div>
+<div class="say"><p>"الخبر الحلو إنها كلها قريبة، على عمق حوالي ٨ متر بس. والخبر الوحش إن الموج والتيار والرواسب واصلين لها بسهولة."</p></div></div>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ٤</span><h3>عن المشروع</h3></div>
+<div class="say"><p>"مشروعنا جهاز بيقيس خواص المية حوالين الآثار اللي جنب قلعة قايتباي، علشان نفهم إيه اللي بيأذيها ونحافظ عليها في مكانها."</p></div></div>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ٥–٦</span><h3>الموقع</h3></div>
+<div class="say"><p>"الموقع في شمال شرق القلعة، جنب الرصيف على طول. وإحنا شاكين إن فيه قطع أثرية تحت حاجز الأمواج نفسه، علشان كده منطقة الدراسة بتبدأ من سور القلعة."</p></div></div>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ٧</span><h3>ليه مهم</h3></div>
+<div class="say"><p>"الآثار دي بتربط تاريخ مصر بالبحر المتوسط كله، وهي كنز سياحي لسه ما اتعرضش للناس زي ما يستاهل."</p></div></div>
+
+<h2 class="part" style="margin-top:14px"><span class="n">٢</span>المشكلة والحل<small>سلايد ٨–١١ · دقيقة ونص</small></h2>
+
+<div class="card star"><div class="hd"><span class="badge">سلايد ١٠</span><h3>المشاكل</h3><span class="tip">⭐ ابدأ بيها قبل ٨، دي أقرب حاجة للجمهور</span></div>
+<div class="say"><p>"بعد ما اتبنى حاجز الأمواج، الموج هدي آه، بس التيار غيّر اتجاهه والمنطقة بقت شبه مقفولة. ده معناه رواسب أكتر بتترسب على القطع، وتلوث بيقعد ما يتجددش. والمشكلة إن محدش بيقيس ده بشكل مستمر."</p></div></div>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ٨</span><h3>إزاي الجهاز بيشتغل</h3></div>
+<div class="say"><p>"الحل: عوّامة صغيرة شغالة بالطاقة الشمسية، متوصّل بيها حساسات تحت المية. الحساسات تقيس، والعوّامة تبعت القراءات على الموبايل أو الكمبيوتر أول بأول، من غير ما غطّاس ينزل كل مرة."</p></div></div>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ٩</span><h3>الأهداف</h3></div>
+<div class="say"><p>"الهدف إننا نعرف بالأرقام إيه اللي بيحصل للآثار، ونكتشف أي خطر بدري قبل ما يأثر عليها."</p></div></div>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ١١</span><h3>البيانات اللي محتاجينها</h3></div>
+<div class="say"><p>"إحنا بنقيس ست حاجات أساسية، أهمهم:</p>
+<ul><li><b>الملوحة والحرارة</b>، علشان بيأثروا على تآكل الحجر والمعادن.</li>
+<li><b>التيار</b>، يعني المية بتتحرك إزاي حوالين القطع.</li>
+<li><b>العكارة</b>، ودي بتقولنا قد إيه فيه طمي ورواسب نازلة على الآثار.</li>
+<li><b>الأكسجين في المية</b>، ولو نزل فجأة يبقى فيه غالبًا صرف أو تلوث وصل للموقع."</li></ul></div></div>
+
+<h2 class="part"><span class="n">٣</span>الحساسات<small>سلايد ١٢–٢٢ · دقيقة</small></h2>
+
+<div class="card star"><div class="hd"><span class="badge">سلايد ١٢</span><h3>جدول الحساسات</h3><span class="tip">⭐ أهم سلايد تقني، وقّف هنا شوية</span></div>
+<div class="say"><p>"ده ملخص الحساسات اللي اخترناها. العمود الأخضر هو المدى اللي إحنا عملنا عليه بحث في مية إسكندرية نفسها، علشان نتأكد إن كل حساس مناسب للموقع ده بالذات. والنجوم بتوضح التكلفة: الأخضر رخيص والأحمر غالي. والتنبيه الأصفر معناه إن السعر الحقيقي هيزيد تقريبًا ٣٠ لـ٥٠٪ بسبب الجمارك والشحن."</p></div></div>
+
+<div class="card fast"><div class="hd"><span class="badge">سلايد ١٣–٢٢</span><h3>شرح كل حساس</h3><span class="tip">⏩ عدّي بسرعة · حوالي ٥ ثواني لكل شريحة</span></div>
+<div class="say"><p>"الشرايح الجاية بتشرح كل حساس شغال إزاي بالتفصيل، وهسيبها للأسئلة لو حد حابب. باختصار:</p>
+<ul><li>حساس الملوحة بيقيس قد إيه المية بتوصّل كهربا.</li>
+<li>حساس التيار بيبعت صوت ويسمع صداه.</li>
+<li>حساس العكارة بيبعت ضوء ويشوف قد إيه بيتشتت.</li>
+<li>حساس الأكسجين بيعتمد على صبغة بتنوّر."</li></ul></div></div>
+
+<h2 class="part"><span class="n">٤</span>الاتصال والختام<small>سلايد ٢٣–٢٦ · ٤٥ ثانية</small></h2>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ٢٣</span><h3>الاتصال</h3></div>
+<div class="say"><p>"العوّامة مالهاش سلك للبر، فبتبعت القراءات في الهوا."</p></div></div>
+
+<div class="card"><div class="hd"><span class="badge">سلايد ٢٤–٢٦</span><h3>الاختيارات التلاتة</h3></div>
+<div class="say"><p>"عندنا تلات طرق:</p>
+<ul><li><b>شريحة موبايل</b> زي التليفون.</li>
+<li><b>راديو بعيد المدى</b> موفّر جدًا في الطاقة.</li>
+<li><b>وصلة لاسلكي مباشرة</b> بين العوّامة والشط.</li></ul>
+<p>هنختار الأنسب حسب التكلفة والتغطية في المنطقة."</p></div></div>
+
+<div class="card end"><div class="hd"><span class="badge" style="background:var(--aqua)">الختام</span><h3>كلمة الآخر</h3><span class="tip">↩️ ارجع لسلايد ٢ أو ٤ لو تقدر</span></div>
+<div class="say"><p>"في الآخر، الآثار دي فضلت تحت المية آلاف السنين. هدفنا إنها تفضل كمان آلاف السنين، بس المرة دي وإحنا عارفين بالظبط إيه اللي بيحصل حواليها. شكرًا، وأنا موجود لأي سؤال."</p></div></div>
+
+<h2 class="part page"><span class="n">✓</span>نصايح سريعة</h2>
+<div class="tips">
+  <div class="tipc t1"><h4>🚫 ممنوع المصطلحات</h4><p>ما تقولش "ADCP" ولا "Modbus" ولا "mS/cm". قول "حساس التيار" و"حساس الملوحة".</p></div>
+  <div class="tipc t2"><h4>⭐ سلايد الجدول</h4><p>شاوِر على العمود الأخضر والنجوم بس، من غير ما تقرا الأرقام.</p></div>
+  <div class="tipc t3"><h4>⏱️ اتمرّن بتايمر</h4><p>لو عدّيت ٥ دقايق، اختصر شرايح الحساسات (١٣–٢٢) لأقل حاجة.</p></div>
+  <div class="tipc t4"><h4>❓ سؤال متوقع</h4><p><b>"الجهاز هيأذي الآثار؟"</b> الرد: "لأ، الحساسات بتتركب على شاسيه جنب القطع، مش عليها، وده متماشي مع مبدأ اليونسكو إن الآثار تتحفظ في مكانها."</p></div>
+</div>
+
+<table class="words">
+  <tr><th>بدل ما تقول</th><th>قول</th></tr>
+  <tr><td>ADCP / Doppler</td><td>حساس التيار</td></tr>
+  <tr><td>Conductivity / mS/cm</td><td>الملوحة</td></tr>
+  <tr><td>Turbidity / NTU</td><td>العكارة، الطمي في المية</td></tr>
+  <tr><td>Dissolved oxygen</td><td>الأكسجين في المية</td></tr>
+  <tr><td>Buoy / Dashboard</td><td>العوّامة / الشاشة اللي بنتابع عليها</td></tr>
+  <tr><td>LoRa / LTE-M</td><td>راديو بعيد المدى / شريحة موبايل</td></tr>
+</table>
+
+<h2 class="part" style="margin-top:18px"><span class="n">☐</span>قبل ما تبدأ</h2>
+<ul class="check">
+  <li>افتح العرض: <span class="ltr">youefkh05.github.io/Alex_Mon</span> واضغط <b>F</b> للشاشة الكاملة.</li>
+  <li>اضغط <b>M</b> لو عايز تقفل الصوت.</li>
+  <li>السهم → بيظهر النقطة الجاية، وبعدها الشريحة الجاية.</li>
+  <li>جرّب الإنترنت في القاعة، أو افتح الملف <span class="ltr">index.html</span> من اللابتوب.</li>
+  <li>مَيّه جنبك، وابتسم 🙂</li>
+</ul>
+
+<div class="foot">Alex-Mon · SSTM · دليل عرض شخصي</div>
+</body>
+</html>
